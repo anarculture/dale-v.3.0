@@ -1,0 +1,37 @@
+# Global owners
+* @dale-team/developers
+
+# Frontend
+/frontend/ @dale-team/frontend-developers
+/frontend/src/ @dale-team/frontend-developers
+/frontend/public/ @dale-team/frontend-developers
+/frontend/*.js @dale-team/frontend-developers
+/frontend/*.ts @dale-team/frontend-developers
+/frontend/*.json @dale-team/frontend-developers
+/frontend/*.config.* @dale-team/frontend-developers
+
+# Backend
+/backend/ @dale-team/backend-developers
+/backend/*.py @dale-team/backend-developers
+/backend/requirements.txt @dale-team/backend-developers
+/backend/Dockerfile @dale-team/backend-developers
+
+# CI/CD
+/.github/ @dale-team/devops
+/.github/workflows/ @dale-team/devops
+
+# Documentation
+*.md @dale-team/docs
+/docs/ @dale-team/docs
+
+# Docker
+Dockerfile* @dale-team/devops
+docker-compose* @dale-team/devops
+*.sh @dale-team/devops
+
+# Configuration files
+.env* @dale-team/devops
+.eslintrc* @dale-team/frontend-developers
+/tsconfig.json @dale-team/frontend-developers
+/tailwind.config.js @dale-team/frontend-developers
+/postcss.config.js @dale-team/frontend-developers

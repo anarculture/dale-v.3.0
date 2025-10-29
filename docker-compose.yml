@@ -1,0 +1,316 @@
+# Docker Compose para Dale Rides Platform
+# Orquestación de servicios Backend (FastAPI) y Frontend (Next.js)
+# Version: 1.0
+
+version: '3.8'
+
+# ========================================
+# DEFINICIÓN DE SERVICIOS
+# ========================================
+
+services:
+  # ----------------------------------------
+  # SERVICIO BACKEND - FastAPI
+  # ----------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: runtime
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    container_name: dale-backend
+    restart: unless-stopped
+    
+    # Mapeo de puertos (Host:Container)
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    
+    # Variables de entorno
+    environment:
+      # Configuración de aplicación
+      - ENV=development
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      
+      # Configuración de Supabase
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      
+      # Configuración de CORS
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+    
+    # Volúmenes para desarrollo (hot reload)
+    volumes:
+      - ./backend:/app:rw
+      - backend_cache:/home/appuser/.local
+    profiles:
+      - dev
+    
+    # Configuración de red
+    networks:
+      - dale-network
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Dependencias
+    depends_on:
+      - frontend
+      - redis
+    
+    # Recursos
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    # Logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------
+  # SERVICIO FRONTEND - Next.js
+  # ----------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: runtime
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    container_name: dale-frontend
+    restart: unless-stopped
+    
+    # Mapeo de puertos (Host:Container)
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    
+    # Variables de entorno
+    environment:
+      # Configuración de Next.js
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      
+      # Configuración de la aplicación
+      - NEXT_PUBLIC_SUPABASE_URL=${SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      
+      # Configuración de desarrollo
+      - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
+    
+    # Volúmenes para desarrollo (hot reload)
+    volumes:
+      - ./frontend:/app:rw
+      - frontend_node_modules:/app/node_modules
+    profiles:
+      - dev
+    
+    # Configuración de red
+    networks:
+      - dale-network
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Dependencias
+    depends_on:
+      backend:
+        condition: service_healthy
+    
+    # Recursos
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    # Logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------
+  # SERVICIO REDIS - Cache y Sesiones
+  # ----------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: dale-redis
+    restart: unless-stopped
+    
+    # Mapeo de puertos (solo local)
+    ports:
+      - "6379:6379"
+    
+    # Variables de entorno
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    
+    # Volúmenes persistentes
+    volumes:
+      - redis_data:/data
+    profiles:
+      - dev
+    
+    # Configuración de red
+    networks:
+      - dale-network
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    
+    # Configuración de Redis
+    command: redis-server --appendonly yes
+    
+    # Recursos
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+# ========================================
+# DEFINICIÓN DE VOLÚMENES
+# ========================================
+
+volumes:
+  # Cache de dependencias Python
+  backend_cache:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./backend/.cache
+  
+  # Node modules del frontend
+  frontend_node_modules:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./frontend/.node_modules
+  
+  # Datos persistentes de Redis
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/redis
+
+# ========================================
+# DEFINICIÓN DE REDES
+# ========================================
+
+networks:
+  # Red personalizada para la aplicación
+  dale-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: dale-bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+
+# ========================================
+# CONFIGURACIONES ADICIONALES
+# ========================================
+
+# Configuración de x-common (variables comunes)
+x-common-variables: &common-variables
+  # Supabase Configuration
+  SUPABASE_URL: ${SUPABASE_URL:-http://localhost:54321}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+  SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+  SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET:-your-jwt-secret}
+  
+  # Google Maps API
+  GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+  
+  # Redis Configuration
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+  
+  # Port Configuration
+  BACKEND_PORT: ${BACKEND_PORT:-8000}
+  FRONTEND_PORT: ${FRONTEND_PORT:-3000}
+
+# ========================================
+# PERFILES DE DEPLOYMENT
+# ========================================
+
+# Perfil de desarrollo (completo con hot reload)
+x-development-profile: &development-profile
+  - dev
+
+# Perfil de producción (optimizado)
+x-production-profile: &production-profile
+  - production
+
+# ========================================
+# EXTENSIONES
+# ========================================
+
+# Configuración extendida para backend en producción
+x-backend-production:
+  <<: *development-profile
+  environment:
+    - ENV=production
+    - PYTHONUNBUFFERED=1
+    - PYTHONDONTWRITEBYTECODE=1
+  volumes: []  # Sin volúmenes en producción
+  deploy:
+    resources:
+      limits:
+        memory: 1G
+        cpus: '1.0'
+      reservations:
+        memory: 512M
+        cpus: '0.5'
+
+# Configuración extendida para frontend en producción
+x-frontend-production:
+  <<: *development-profile
+  environment:
+    - NODE_ENV=production
+    - NEXT_TELEMETRY_DISABLED=1
+  volumes: []  # Sin volúmenes en producción
+  deploy:
+    resources:
+      limits:
+        memory: 1G
+        cpus: '1.0'
+      reservations:
+        memory: 512M
+        cpus: '0.5'

@@ -1,0 +1,343 @@
+{
+  "version": "0.2",
+  "language": "es",
+  "words": [
+    // ========================================
+    // PROJECT SPECIFIC TERMS
+    // ========================================
+    "dale",
+    "Dale",
+    "DALE",
+    
+    // ========================================
+    // COMMON TECHNICAL TERMS
+    // ========================================
+    "autoprefixer",
+    "FastAPI",
+    "TypeScript",
+    "JavaScript",
+    "NextJS",
+    "ReactJS",
+    "TailwindCSS",
+    "Supabase",
+    "PostgreSQL",
+    "Redis",
+    "Docker",
+    "Dockerfile",
+    "Kubernetes",
+    "Microservicio",
+    "API",
+    "RESTful",
+    "GraphQL",
+    "WebSocket",
+    "JSON",
+    "YAML",
+    "Markdown",
+    "PWA",
+    "SPA",
+    "SSR",
+    "SSG",
+    "SEO",
+    "UX",
+    "UI",
+    "CI/CD",
+    "DevOps",
+    
+    // ========================================
+    // GOOGLE MAPS TERMS
+    // ========================================
+    "GoogleMaps",
+    "Maps",
+    "Places",
+    "Geocoding",
+    "LatLng",
+    "Polygon",
+    "Polyline",
+    "Marker",
+    "InfoWindow",
+    
+    // ========================================
+    // DATABASE TERMS
+    // ========================================
+    "SQL",
+    "NoSQL",
+    "Migration",
+    "Schema",
+    "Table",
+    "Row",
+    "Column",
+    "Index",
+    "Query",
+    "CRUD",
+    "Aggregate",
+    "JOIN",
+    "Transaction",
+    "Rollback",
+    
+    // ========================================
+    // JAVASCRIPT/REACT TERMS
+    // ========================================
+    "Component",
+    "Props",
+    "State",
+    "Hook",
+    "Context",
+    "Reducer",
+    "Effect",
+    "Ref",
+    "Callback",
+    "Memo",
+    "Portal",
+    "Suspense",
+    "Router",
+    "Route",
+    "Link",
+    "Navigation",
+    
+    // ========================================
+    // PYTHON TERMS
+    // ========================================
+    "Pydantic",
+    "SQLAlchemy",
+    "Uvicorn",
+    "Requests",
+    "Dependencies",
+    "Middleware",
+    "Decorator",
+    "Generator",
+    "Iterator",
+    "Coroutine",
+    "Async",
+    "Await",
+    
+    // ========================================
+    // DEVELOPMENT TERMS
+    // ========================================
+    "Linter",
+    "Formatter",
+    "Prettier",
+    "ESLint",
+    "Precommit",
+    "Hook",
+    "Test",
+    "Jest",
+    "Pytest",
+    "Coverage",
+    "Bundle",
+    "Webpack",
+    "Vite",
+    "Rollup",
+    "Tree",
+    "Shaking",
+    
+    // ========================================
+    // CLOUD TERMS
+    // ========================================
+    "Vercel",
+    "AWS",
+    "GCP",
+    "Azure",
+    "Cloudflare",
+    "CDN",
+    "Serverless",
+    "Edge",
+    "Function",
+    "Lambda",
+    "Compute",
+    "Storage",
+    "Database",
+    "Analytics",
+    
+    // ========================================
+    // COMMON ABBREVIATIONS
+    // ========================================
+    "HTTP",
+    "HTTPS",
+    "TCP",
+    "UDP",
+    "DNS",
+    "IP",
+    "URL",
+    "URI",
+    "CORS",
+    "CSP",
+    "JWT",
+    "OAuth",
+    "SAML",
+    "SSO",
+    "MFA",
+    "TOTP",
+    
+    // ========================================
+    // MEXICAN SPANISH TERMS
+    // ========================================
+    "pedido",
+    "pedidos",
+    "repartidor",
+    "repartidores",
+    "restaurante",
+    "restaurantes",
+    "dirección",
+    "direcciones",
+    "ubicación",
+    "ubicaciones",
+    "entrega",
+    "entregas",
+    "cliente",
+    "clientes",
+    "usuario",
+    "usuarios",
+    "cuenta",
+    "cuentas",
+    "perfil",
+    "perfiles",
+    "pago",
+    "pagos",
+    "factura",
+    "facturas",
+    "producto",
+    "productos",
+    "categoría",
+    "categorías",
+    "menú",
+    "menús"
+  ],
+  "ignoreWords": [
+    // ========================================
+    // CODE SPECIFIC IGNORES
+    // ========================================
+    "src",
+    "dist",
+    "build",
+    "next",
+    "node",
+    "npm",
+    "yarn",
+    "pnpm",
+    "git",
+    "vscode",
+    "eslint",
+    "prettier",
+    "tailwind",
+    "postcss",
+    "tsconfig",
+    "jsconfig",
+    "vite",
+    "vitejs",
+    
+    // ========================================
+    // FILE EXTENSIONS
+    // ========================================
+    "js",
+    "ts",
+    "tsx",
+    "jsx",
+    "json",
+    "md",
+    "yml",
+    "yaml",
+    "toml",
+    "ini",
+    "cfg",
+    "conf",
+    "config",
+    
+    // ========================================
+    // COMMON PATTERNS
+    // ========================================
+    "localhost",
+    "127.0.0.1",
+    "true",
+    "false",
+    "null",
+    "undefined",
+    "any",
+    "void",
+    "never",
+    "unknown",
+    "export",
+    "import",
+    "default",
+    "const",
+    "let",
+    "var",
+    "function",
+    "return",
+    "async",
+    "await",
+    "class",
+    "interface",
+    "type",
+    "enum",
+    "namespace",
+    
+    // ========================================
+    // MATH/NUMBERS
+    // ========================================
+    "1st",
+    "2nd",
+    "3rd",
+    "4th",
+    "5th",
+    "10px",
+    "100px",
+    "1000px",
+    "50%",
+    "100%",
+    "0px",
+    "1px",
+    "2px"
+  ],
+  "ignoreRegExpList": [
+    // URLs
+    "https?://[^\\s]+",
+    "http://[^\\s]+",
+    
+    // File paths
+    "['\\\"][^'\\\"]*\\.(js|ts|tsx|jsx|json|md|yml|yaml)['\\\"]",
+    
+    // Code comments
+    "//.*",
+    "/\\*.*\\*/",
+    
+    // HTML attributes
+    "class=['\\\"][^'\\\"]*['\\\"]",
+    "id=['\\\"][^'\\\"]*['\\\"]",
+    
+    // Console logs and debug
+    "console\\.log\\([^)]+\\)",
+    "console\\.error\\([^)]+\\)",
+    "console\\.warn\\([^)]+\\)",
+    
+    // String templates
+    "`[^`]*`",
+    
+    // Environment variables
+    "\\$\\{[^}]+\\}",
+    
+    // Imports/exports
+    "from ['\\\"][^'\\\"]*['\\\"]",
+    "import .* from ['\\\"][^'\\\"]*['\\\"]"
+  ],
+  "languageSettings": [
+    {
+      "languageId": "typescript",
+      "ignoreRegExpList": [
+        "import.*from.*['\\\"][^'\\\"]*['\\\"]"
+      ]
+    },
+    {
+      "languageId": "javascript",
+      "ignoreRegExpList": [
+        "import.*from.*['\\\"][^'\\\"]*['\\\"]"
+      ]
+    },
+    {
+      "languageId": "python",
+      "ignoreRegExpList": [
+        "from .* import .*",
+        "import .*"
+      ]
+    }
+  ]
+}

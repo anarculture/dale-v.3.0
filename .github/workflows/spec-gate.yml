@@ -1,0 +1,149 @@
+name: Spec Gate
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  spec-changes-check:
+    name: Check Spec Changes
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Check for spec changes
+      id: spec-changes
+      run: |
+        # Get list of changed files
+        git diff --name-only HEAD~1 HEAD > changed_files.txt
+        echo "Changed files:"
+        cat changed_files.txt
+        
+        # Check if any spec files were changed
+        SPEC_FILES=$(grep -E '\.(spec|test)\.(js|ts|jsx|tsx|py)$' changed_files.txt || true)
+        
+        if [ -z "$SPEC_FILES" ]; then
+          echo "No spec files changed"
+          SPEC_CHANGED=false
+        else
+          echo "Spec files changed: $SPEC_FILES"
+          SPEC_CHANGED=true
+        fi
+        
+        # Set output
+        echo "spec_changed=$SPEC_CHANGED" >> $GITHUB_OUTPUT
+        
+    - name: Comment on PR
+      if: steps.spec-changes.outputs.spec_changed == 'false'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && comment.body.includes('⚠️ Spec Requirements')
+          );
+          
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: `⚠️ **Spec Requirements Not Met**\n\nThis PR does not include changes to spec/test files. Please ensure that:\n- Unit tests are updated/added for new features\n- E2E tests cover new functionality\n- Spec files follow naming conventions:\n  - Frontend: \`.spec.ts\`, \`.spec.tsx\`, \`.test.ts\`, \`.test.tsx\`\n  - Backend: \`test_*.py\` or \`*_test.py\`\n\nReviewed at: ${new Date().toISOString()}`
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `⚠️ **Spec Requirements Not Met**\n\nThis PR does not include changes to spec/test files. Please ensure that:\n- Unit tests are updated/added for new features\n- E2E tests cover new functionality\n- Spec files follow naming conventions:\n  - Frontend: \`.spec.ts\`, \`.spec.tsx\`, \`.test.ts\`, \`.test.tsx\`\n  - Backend: \`test_*.py\` or \`*_test.py\`\n\nReviewed at: ${new Date().toISOString()}`
+            });
+          }
+
+    - name: Fail check if no spec changes
+      if: steps.spec-changes.outputs.spec_changed == 'false'
+      run: |
+        echo "❌ PR does not include spec/test changes"
+        echo "Please add or update test files for this PR"
+        exit 1
+
+  frontend-spec-check:
+    name: Frontend Spec Coverage
+    runs-on: ubuntu-latest
+    needs: spec-changes-check
+    if: steps.spec-changes.outputs.spec_changed == 'true' || always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+        
+    - name: Run tests
+      run: |
+        cd frontend
+        npm test -- --coverage --watchAll=false
+      continue-on-error: true
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./frontend/coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+      continue-on-error: true
+
+  backend-spec-check:
+    name: Backend Spec Coverage
+    runs-on: ubuntu-latest
+    needs: spec-changes-check
+    if: steps.spec-changes.outputs.spec_changed == 'true' || always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+        
+    - name: Run tests with coverage
+      run: |
+        cd backend
+        pytest --cov=. --cov-report=xml
+      continue-on-error: true
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./backend/coverage.xml
+        flags: backend
+        name: backend-coverage
+      continue-on-error: true

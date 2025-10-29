@@ -1,0 +1,211 @@
+site_name: Dale - Plataforma de Carpooling
+site_description: Documentación completa de la plataforma de carpooling Dale
+site_author: Equipo Dale
+site_url: https://docs.dale-app.com
+
+# Repository
+repo_name: dale/app
+repo_url: https://github.com/dale/app
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright &copy; 2025 Dale Team - Licencia MIT
+
+# Configuration
+theme:
+  name: material
+  language: es
+  features:
+    # Navegación
+    - navigation.top
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.tracking
+    - navigation.path
+    - navigation.prune
+    # Busqueda
+    - search.highlight
+    - search.share
+    - search.suggest
+    - search.stickytabs
+    # Contenido
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+    - content.tooltips
+    # Layout
+    - header.autohide
+    - announce.dismiss
+    # Máscarón
+    - logo.sponsor
+    - icon.external
+    - icon.repo
+  palette:
+    # Modo claro
+    - scheme: default
+      primary: blue
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+    # Modo oscuro
+    - scheme: slate
+      primary: blue
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a modo claro
+  font:
+    text: Roboto
+    code: Roboto Mono
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+# Extras
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/dale/app
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/dale
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/dale_app
+    - icon: material/email
+      link: mailto:soporte@dale-app.com
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+    feedback:
+      title: ¿Esta página te fue útil?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: Esta página fue útil
+          data: 1
+          note: >-
+            Gracias por tu feedback!
+        - icon: material/emoticon-sad-outline
+          name: Esta página podría mejorarse
+          data: 0
+          note: >-
+            Gracias por tu feedback. ¡Ayúdanos a mejorar!
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\.,:;\=\(\)\[\]\/!"\|\$\{\}]+'
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - git-authors:
+      show_contribution: true
+      show_line_count: true
+  - awesome-pages
+  - git-info:
+      date_format: "%Y-%m-%d %H:%M:%S"
+
+# Customization
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/dale.css
+
+# Extensions
+markdown_extensions:
+  # Python Markdown
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: darrenburns
+      repo: posting
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Watch
+watch:
+  - includes/
+
+# Page tree
+nav:
+  - Inicio: index.md
+  - Introducción:
+      - Sobre Dale: introduction/about.md
+      - Arquitectura: introduction/architecture.md
+      - Stack Tecnológico: introduction/tech-stack.md
+  - Instalación:
+      - Requisitos: installation/requirements.md
+      - Configuración: installation/configuration.md
+      - Setup Local: installation/local-setup.md
+      - Docker: installation/docker.md
+  - Desarrollo:
+      - Estructura del Proyecto: development/project-structure.md
+      - Guía de Contribución: development/contributing.md
+      - Convenciones de Código: development/coding-standards.md
+      - Testing: development/testing.md
+      - Debugging: development/debugging.md
+  - APIs:
+      - Resumen: api/overview.md
+      - Autenticación: api/authentication.md
+      - Usuarios: api/users.md
+      - Viajes: api/rides.md
+      - Reservas: api/bookings.md
+      - Ejemplos: api/examples.md
+  - Deployment:
+      - Frontend (Vercel): deployment/frontend-vercel.md
+      - Backend (Railway): deployment/backend-railway.md
+      - Base de Datos: deployment/database.md
+      - Variables de Entorno: deployment/environment-vars.md
+      - CI/CD: deployment/cicd.md
+  - Filosofía SDD:
+      - Principios: sdd/principles.md
+      - Metodología: sdd/methodology.md
+      - Casos de Uso: sdd/use-cases.md
+  - Guías:
+      - Usuario Final: guides/user-guide.md
+      - Administrador: guides/admin-guide.md
+      - Solución de Problemas: guides/troubleshooting.md
+      - FAQ: guides/faq.md
+  - Recursos:
+      - Changelog: resources/changelog.md
+      - Licencia: resources/license.md
+      - Contacto: resources/contact.md
