@@ -2,14 +2,14 @@ from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 import os
 from supabase import create_client, Client
 import uvicorn
-from datetime import datetime
+from datetime import datetime, timedelta
+import jwt
 from jose import jwt as jose_jwt
 from jose.exceptions import JWTError
-from typing import cast
 
 # Configuración
 app = FastAPI(title="Dale API", description="API para la aplicación de rides Dale")
@@ -27,22 +27,13 @@ app.add_middleware(
 supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
-supabase: Optional[Client]
-if supabase_url and supabase_key:
-    supabase = create_client(supabase_url, supabase_key)
-else:
-    supabase = None
+if not supabase_url or not supabase_key:
+    raise ValueError("Missing Supabase credentials")
 
-
-def get_supabase_client() -> Client:
-    """Return the configured Supabase client or raise an HTTP error."""
-    client = cast(Optional[Client], globals().get("supabase"))
-    if client is None:
-        raise HTTPException(status_code=500, detail="Supabase client is not configured")
-    return client
+supabase: Client = create_client(supabase_url, supabase_key)
 
 # Configuración JWT
-JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET") or supabase_key or "test-secret"
+JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", supabase_key)
 JWT_ALGORITHM = "HS256"
 
 # Modelos de datos
@@ -80,13 +71,12 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         # Verificar JWT con Supabase
         payload = jose_jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")
-
+        
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token")
-
+            
         # Obtener usuario de Supabase
-        client = get_supabase_client()
-        user_response = client.table("users").select("*").eq("id", user_id).execute()
+        user_response = supabase.table("users").select("*").eq("id", user_id).execute()
         
         if not user_response.data:
             raise HTTPException(status_code=404, detail="User not found")
@@ -100,7 +90,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 # Endpoints de salud
 @app.get("/health")
 async def health():
-    return {"status": "ok", "timestamp": datetime.now().isoformat()}
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
 @app.get("/")
 async def root():
@@ -114,8 +104,7 @@ async def get_user_profile(user_id: str, current_user: dict = Depends(get_curren
         if user_id != current_user["id"]:
             raise HTTPException(status_code=403, detail="Unauthorized")
         
-        client = get_supabase_client()
-        response = client.table("users").select("*").eq("id", user_id).execute()
+        response = supabase.table("users").select("*").eq("id", user_id).execute()
         
         if not response.data:
             raise HTTPException(status_code=404, detail="User not found")
@@ -137,8 +126,7 @@ async def update_user_profile(
         
         # Actualizar en Supabase
         update_data = {k: v for k, v in updates.dict(exclude_unset=True).items() if v is not None}
-        client = get_supabase_client()
-        response = client.table("users").update(update_data).eq("id", user_id).execute()
+        response = supabase.table("users").update(update_data).eq("id", user_id).execute()
         
         if not response.data:
             raise HTTPException(status_code=404, detail="User not found")
@@ -171,8 +159,7 @@ async def create_ride(
             "status": "active"
         }
         
-        client = get_supabase_client()
-        response = client.table("rides").insert(ride_payload).execute()
+        response = supabase.table("rides").insert(ride_payload).execute()
         
         if not response.data:
             raise HTTPException(status_code=400, detail="Failed to create ride")
@@ -189,8 +176,7 @@ async def search_rides(
     max_price: Optional[float] = None
 ):
     try:
-        client = get_supabase_client()
-        query = client.table("rides").select("*").eq("status", "active")
+        query = supabase.table("rides").select("*").eq("status", "active")
         
         # Aplicar filtros
         if from_city:
@@ -215,8 +201,7 @@ async def search_rides(
 @app.get("/api/rides/{ride_id}")
 async def get_ride(ride_id: str):
     try:
-        client = get_supabase_client()
-        response = client.table("rides").select("*").eq("id", ride_id).execute()
+        response = supabase.table("rides").select("*").eq("id", ride_id).execute()
         
         if not response.data:
             raise HTTPException(status_code=404, detail="Ride not found")
@@ -232,8 +217,7 @@ async def cancel_ride(
 ):
     try:
         # Verificar que el usuario es el conductor
-        client = get_supabase_client()
-        ride_response = client.table("rides").select("*").eq("id", ride_id).execute()
+        ride_response = supabase.table("rides").select("*").eq("id", ride_id).execute()
         
         if not ride_response.data:
             raise HTTPException(status_code=404, detail="Ride not found")
@@ -243,8 +227,7 @@ async def cancel_ride(
             raise HTTPException(status_code=403, detail="Unauthorized")
             
         # Cancelar ride
-        client = get_supabase_client()
-        response = client.table("rides").update({"status": "cancelled"}).eq("id", ride_id).execute()
+        response = supabase.table("rides").update({"status": "cancelled"}).eq("id", ride_id).execute()
         
         return {"success": True, "data": response.data[0]}
     except Exception as e:
@@ -258,8 +241,7 @@ async def create_booking(
 ):
     try:
         # Verificar que el ride existe y tiene asientos disponibles
-        client = get_supabase_client()
-        ride_response = client.table("rides").select("*").eq("id", booking_data.ride_id).eq("status", "active").execute()
+        ride_response = supabase.table("rides").select("*").eq("id", booking_data.ride_id).eq("status", "active").execute()
         
         if not ride_response.data:
             raise HTTPException(status_code=404, detail="Ride not found or not available")
@@ -278,7 +260,7 @@ async def create_booking(
             "status": "pending"
         }
         
-        booking_response = client.table("bookings").insert(booking_payload).execute()
+        booking_response = supabase.table("bookings").insert(booking_payload).execute()
         
         if not booking_response.data:
             raise HTTPException(status_code=400, detail="Failed to create booking")
@@ -287,7 +269,7 @@ async def create_booking(
         new_seats_available = ride["seats_available"] - booking_data.seats_booked
         new_status = "full" if new_seats_available == 0 else "active"
         
-        client.table("rides").update({
+        supabase.table("rides").update({
             "seats_available": new_seats_available,
             "status": new_status
         }).eq("id", booking_data.ride_id).execute()
@@ -304,8 +286,7 @@ async def get_user_bookings(user_id: str, current_user: dict = Depends(get_curre
             raise HTTPException(status_code=403, detail="Unauthorized")
             
         # Obtener bookings con información del ride
-        client = get_supabase_client()
-        response = client.table("bookings").select("*, rides(*, users!rides_driver_id_fkey(name))").eq("rider_id", user_id).order("created_at", desc=True).execute()
+        response = supabase.table("bookings").select("*, rides(*, users!rides_driver_id_fkey(name)").eq("rider_id", user_id).order("created_at", desc=True).execute()
         
         return {"success": True, "data": response.data or []}
     except Exception as e:
@@ -318,8 +299,7 @@ async def cancel_booking(
 ):
     try:
         # Obtener booking
-        client = get_supabase_client()
-        booking_response = client.table("bookings").select("*").eq("id", booking_id).execute()
+        booking_response = supabase.table("bookings").select("*").eq("id", booking_id).execute()
         
         if not booking_response.data:
             raise HTTPException(status_code=404, detail="Booking not found")
@@ -335,16 +315,16 @@ async def cancel_booking(
             raise HTTPException(status_code=400, detail="Booking already cancelled")
             
         # Cancelar booking
-        client.table("bookings").update({"status": "cancelled"}).eq("id", booking_id).execute()
+        supabase.table("bookings").update({"status": "cancelled"}).eq("id", booking_id).execute()
         
         # Liberar asientos en el ride
-        ride_response = client.table("rides").select("*").eq("id", booking["ride_id"]).execute()
+        ride_response = supabase.table("rides").select("*").eq("id", booking["ride_id"]).execute()
         if ride_response.data:
             ride = ride_response.data[0]
             new_seats_available = ride["seats_available"] + booking["seats_booked"]
             new_status = "active" if ride["status"] == "full" else ride["status"]
             
-            client.table("rides").update({
+            supabase.table("rides").update({
                 "seats_available": new_seats_available,
                 "status": new_status
             }).eq("id", booking["ride_id"]).execute()
