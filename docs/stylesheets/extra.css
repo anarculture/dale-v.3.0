@@ -1,0 +1,756 @@
+/* 
+ * Extra CSS para documentación de Dale
+ * Estilos adicionales para mejorar la presentación
+ */
+
+/* ==========================================================================
+   Mejoras para Mermaid diagrams
+   ========================================================================== */
+
+/* Container para diagramas de Mermaid */
+.mermaid {
+  text-align: center;
+  background: white;
+  padding: var(--dale-space-lg);
+  border-radius: var(--dale-border-radius-lg);
+  box-shadow: var(--dale-shadow-sm);
+  margin: var(--dale-space-xl) 0;
+  border: 1px solid var(--dale-gray-200);
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Títulos para diagramas */
+.mermaid-title {
+  text-align: center;
+  font-weight: 600;
+  color: var(--dale-primary);
+  margin-bottom: var(--dale-space-md);
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   Mejoras para código
+   ========================================================================== */
+
+/* Syntax highlighting mejorado */
+.highlight {
+  position: relative;
+  border-radius: var(--dale-border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--dale-shadow-md);
+}
+
+.highlight::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--dale-gray-700);
+  color: white;
+  padding: var(--dale-space-xs) var(--dale-space-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom-left-radius: var(--dale-border-radius);
+}
+
+/* Copy button para código */
+.code-copy-btn {
+  position: absolute;
+  top: var(--dale-space-sm);
+  right: var(--dale-space-sm);
+  background: var(--dale-gray-700);
+  color: white;
+  border: none;
+  padding: var(--dale-space-xs) var(--dale-space-sm);
+  border-radius: var(--dale-border-radius);
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.highlight:hover .code-copy-btn {
+  opacity: 1;
+}
+
+.code-copy-btn:hover {
+  background: var(--dale-primary);
+  transform: scale(1.05);
+}
+
+/* Line numbers */
+.highlight .linenos {
+  user-select: none;
+  background: var(--dale-gray-800);
+  color: var(--dale-gray-400);
+  padding: var(--dale-space-sm) var(--dale-space-md);
+  border-right: 1px solid var(--dale-gray-600);
+  font-family: var(--dale-font-mono);
+  font-size: 0.875rem;
+  min-width: 3rem;
+  text-align: right;
+}
+
+/* ==========================================================================
+   Mejoras para admonitions (note, warning, etc.)
+   ========================================================================== */
+
+.admonition {
+  border-radius: var(--dale-border-radius-lg);
+  padding: var(--dale-space-lg);
+  margin: var(--dale-space-xl) 0;
+  border-left: 4px solid;
+  position: relative;
+  overflow: hidden;
+}
+
+.admonition::before {
+  position: absolute;
+  top: var(--dale-space-sm);
+  right: var(--dale-space-sm);
+  font-size: 1.5rem;
+  opacity: 0.3;
+}
+
+.admonition.note {
+  background: #e0f2fe;
+  border-left-color: var(--dale-info);
+}
+
+.admonition.note::before {
+  content: "📝";
+}
+
+.admonition.tip {
+  background: #d1fae5;
+  border-left-color: var(--dale-success);
+}
+
+.admonition.tip::before {
+  content: "💡";
+}
+
+.admonition.warning {
+  background: #fef3c7;
+  border-left-color: var(--dale-warning);
+}
+
+.admonition.warning::before {
+  content: "⚠️";
+}
+
+.admonition.danger {
+  background: #fee2e2;
+  border-left-color: var(--dale-error);
+}
+
+.admonition.danger::before {
+  content: "🚨";
+}
+
+.admonition-title {
+  font-weight: 600;
+  color: var(--dale-gray-800);
+  margin-bottom: var(--dale-space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--dale-space-sm);
+}
+
+.admonition-title::before {
+  font-size: 1.2rem;
+}
+
+.admonition.note .admonition-title::before {
+  content: "📝";
+}
+
+.admonition.tip .admonition-title::before {
+  content: "💡";
+}
+
+.admonition.warning .admonition-title::before {
+  content: "⚠️";
+}
+
+.admonition.danger .admonition-title::before {
+  content: "🚨";
+}
+
+/* ==========================================================================
+   Mejoras para tabs
+   ========================================================================== */
+
+.md-tabs {
+  border-bottom: 2px solid var(--dale-gray-200);
+  margin-bottom: var(--dale-space-xl);
+}
+
+.md-tabs__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dale-space-sm);
+  margin: 0;
+  padding: 0;
+}
+
+.md-tabs__item {
+  list-style: none;
+  margin: 0;
+}
+
+.md-tabs__link {
+  display: block;
+  padding: var(--dale-space-sm) var(--dale-space-lg);
+  background: var(--dale-gray-100);
+  color: var(--dale-gray-600);
+  text-decoration: none;
+  border-radius: var(--dale-border-radius) var(--dale-border-radius) 0 0;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  position: relative;
+}
+
+.md-tabs__link:hover {
+  background: var(--dale-gray-200);
+  color: var(--dale-gray-800);
+}
+
+.md-tabs__link--active {
+  background: var(--dale-primary);
+  color: white;
+}
+
+.md-tabs__link--active:hover {
+  background: var(--dale-primary-dark);
+  color: white;
+}
+
+.md-tabs__content {
+  padding: var(--dale-space-lg);
+  background: white;
+  border: 1px solid var(--dale-gray-200);
+  border-top: none;
+  border-radius: 0 var(--dale-border-radius-lg) var(--dale-border-radius-lg) var(--dale-border-radius-lg);
+}
+
+/* ==========================================================================
+   Mejoras para detalles (collapsible sections)
+   ========================================================================== */
+
+details {
+  background: var(--dale-gray-50);
+  border: 1px solid var(--dale-gray-200);
+  border-radius: var(--dale-border-radius-lg);
+  margin: var(--dale-space-lg) 0;
+  overflow: hidden;
+}
+
+summary {
+  padding: var(--dale-space-lg);
+  background: var(--dale-gray-100);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--dale-gray-800);
+  list-style: none;
+  position: relative;
+  transition: background-color 0.2s ease;
+}
+
+summary:hover {
+  background: var(--dale-gray-200);
+}
+
+summary::before {
+  content: "▶";
+  position: absolute;
+  left: var(--dale-space-lg);
+  color: var(--dale-primary);
+  transition: transform 0.2s ease;
+}
+
+details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+details > *:not(summary) {
+  padding: var(--dale-space-lg);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   Mejoras para tooltips
+   ========================================================================== */
+
+[title] {
+  position: relative;
+  cursor: help;
+}
+
+[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dale-gray-900);
+  color: white;
+  padding: var(--dale-space-xs) var(--dale-space-sm);
+  border-radius: var(--dale-border-radius);
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: var(--dale-shadow-lg);
+}
+
+[title]:hover::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(1px);
+  border: 4px solid transparent;
+  border-top-color: var(--dale-gray-900);
+  z-index: 1000;
+}
+
+/* ==========================================================================
+   Mejoras para progress bars
+   ========================================================================== */
+
+.progress-bar {
+  background: var(--dale-gray-200);
+  border-radius: var(--dale-border-radius);
+  height: 8px;
+  overflow: hidden;
+  margin: var(--dale-space-md) 0;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--dale-primary), var(--dale-primary-light));
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar__fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==========================================================================
+   Mejoras para elementos de usuario
+   ========================================================================== */
+
+/* Avatar circles */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--dale-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar--sm {
+  width: 32px;
+  height: 32px;
+  font-size: 0.75rem;
+}
+
+.avatar--lg {
+  width: 56px;
+  height: 56px;
+  font-size: 1rem;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dale-space-xs);
+  padding: var(--dale-space-xs) var(--dale-space-sm);
+  border-radius: var(--dale-border-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-indicator--online {
+  background: #d1fae5;
+  color: var(--dale-success);
+}
+
+.status-indicator--online::before {
+  content: "🟢";
+}
+
+.status-indicator--offline {
+  background: var(--dale-gray-100);
+  color: var(--dale-gray-500);
+}
+
+.status-indicator--offline::before {
+  content: "🔴";
+}
+
+.status-indicator--busy {
+  background: #fef3c7;
+  color: var(--dale-warning);
+}
+
+.status-indicator--busy::before {
+  content: "🟡";
+}
+
+/* ==========================================================================
+   Mejoras para páginas de contenido
+   ========================================================================== */
+
+/* Header mejorado para páginas */
+.md-content__inner > header {
+  background: linear-gradient(135deg, var(--dale-primary) 0%, var(--dale-primary-dark) 100%);
+  color: white;
+  padding: var(--dale-space-2xl) 0;
+  margin: calc(-1 * var(--md-content-margin)) calc(-1 * var(--md-content-margin)) var(--dale-space-xl);
+  text-align: center;
+}
+
+.md-content__inner > header h1 {
+  color: white;
+  border: none;
+  margin: 0;
+  font-size: 3rem;
+}
+
+.md-content__inner > header p {
+  font-size: 1.25rem;
+  margin: var(--dale-space-md) 0 0;
+  opacity: 0.9;
+}
+
+/* ==========================================================================
+   Mejoras para búsqueda
+   ========================================================================== */
+
+.md-search__input {
+  border-radius: var(--dale-border-radius-lg);
+  border: 2px solid var(--dale-gray-200);
+  transition: all 0.2s ease;
+}
+
+.md-search__input:focus {
+  border-color: var(--dale-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Resultados de búsqueda */
+.md-search-result__item {
+  border-radius: var(--dale-border-radius);
+  margin-bottom: var(--dale-space-sm);
+  transition: all 0.2s ease;
+}
+
+.md-search-result__item:hover {
+  background: var(--dale-gray-50);
+  transform: translateX(4px);
+}
+
+.md-search-result__item--active {
+  background: var(--dale-primary);
+  color: white;
+}
+
+.md-search-result__item--active:hover {
+  background: var(--dale-primary-dark);
+}
+
+/* ==========================================================================
+   Mejoras para navigation
+   ========================================================================== */
+
+/* Active navigation items */
+.md-nav__link--active {
+  background: var(--dale-primary);
+  color: white;
+  box-shadow: var(--dale-shadow-sm);
+}
+
+/* Nested navigation */
+.md-nav__item--nested .md-nav__link {
+  position: relative;
+}
+
+.md-nav__item--nested .md-nav__link::after {
+  content: "▸";
+  position: absolute;
+  right: var(--dale-space-md);
+  color: var(--dale-gray-400);
+  transition: transform 0.2s ease;
+}
+
+.md-nav__item--nested .md-nav__link--active::after {
+  content: "▼";
+  color: white;
+}
+
+/* ==========================================================================
+   Mejoras para footer
+   ========================================================================== */
+
+.md-footer {
+  background: linear-gradient(135deg, var(--dale-gray-900) 0%, var(--dale-gray-800) 100%);
+  color: white;
+}
+
+.md-footer a {
+  color: var(--dale-gray-300);
+  transition: color 0.2s ease;
+}
+
+.md-footer a:hover {
+  color: var(--dale-primary-light);
+}
+
+/* Social icons en footer */
+.social-links {
+  display: flex;
+  gap: var(--dale-space-md);
+  justify-content: center;
+  margin: var(--dale-space-lg) 0;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--dale-gray-700);
+  border-radius: 50%;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.social-link:hover {
+  background: var(--dale-primary);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Mejoras para modo oscuro
+   ========================================================================== */
+
+[data-md-color-scheme="slate"] {
+  /* Overrides para modo oscuro */
+}
+
+[data-md-color-scheme="slate"] .md-card {
+  background: var(--dale-gray-800);
+  border-color: var(--dale-gray-700);
+  color: var(--dale-gray-200);
+}
+
+[data-md-color-scheme="slate"] .md-grid-card {
+  background: var(--dale-gray-800);
+  border-color: var(--dale-gray-700);
+  color: var(--dale-gray-200);
+}
+
+[data-md-color-scheme="slate"] .mermaid {
+  background: var(--dale-gray-800);
+  border-color: var(--dale-gray-700);
+}
+
+[data-md-color-scheme="slate"] .highlight {
+  background: var(--dale-gray-800);
+}
+
+[data-md-color-scheme="slate"] .admonition {
+  background: var(--dale-gray-800);
+  border-color: var(--dale-gray-600);
+  color: var(--dale-gray-200);
+}
+
+/* ==========================================================================
+   Mejoras para accessibility
+   ========================================================================== */
+
+/* Focus styles mejorados */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--dale-primary);
+  outline-offset: 2px;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--dale-primary);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: var(--dale-border-radius);
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --dale-primary: #0000ff;
+    --dale-secondary: #ff6600;
+    --dale-success: #008000;
+    --dale-warning: #ff9900;
+    --dale-error: #cc0000;
+  }
+  
+  .md-card,
+  .md-grid-card,
+  .highlight,
+  .admonition {
+    border-width: 2px;
+    border-style: solid;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Print styles adicionales
+   ========================================================================== */
+
+@media print {
+  /* Ocultar elementos no necesarios en print */
+  .md-sidebar,
+  .md-nav,
+  .md-header,
+  .md-footer,
+  .md-search,
+  .md-clipboard,
+  .code-copy-btn {
+    display: none !important;
+  }
+  
+  /* Optimizar espacios para print */
+  .md-content {
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  
+  /* Break handling */
+  h1, h2, h3 {
+    break-after: avoid-page;
+  }
+  
+  .md-card, .md-grid-card, .admonition {
+    break-inside: avoid-page;
+  }
+  
+  /* Mejorar legibilidad */
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: black;
+    background: white;
+  }
+  
+  h1 {
+    font-size: 24pt;
+  }
+  
+  h2 {
+    font-size: 18pt;
+  }
+  
+  h3 {
+    font-size: 14pt;
+  }
+  
+  code, pre {
+    background: #f5f5f5 !important;
+    color: black !important;
+    border: 1px solid #ccc;
+  }
+  
+  /* Links en print */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+  }
+  
+  a[href^="#"]:after,
+  a[href^="javascript:"]:after {
+    content: "";
+  }
+}

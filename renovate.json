@@ -1,0 +1,98 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":automergeDigest",
+    ":automergeBranch"
+  ],
+  "timezone": "America/Mexico_City",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "chore(deps):",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "to {{newVersion}}",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 10,
+  "rebaseWhen": "conflicted",
+  "automerge": true,
+  "automergeType": "pr",
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "description": "Automerge TypeScript and React dependencies",
+      "matchPackagePatterns": [
+        "^@types/",
+        "^react",
+        "^@react",
+        "^typescript"
+      ],
+      "automerge": true,
+      "major": {
+        "automerge": false
+      }
+    },
+    {
+      "description": "Automerge patch versions",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "Automerge minor versions for non-major dependencies",
+      "matchUpdateTypes": ["minor"],
+      "matchPackagePatterns": [
+        "^@supabase/",
+        "^@googlemaps/",
+        "^lucide-"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Disable automajor for major updates",
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "description": "Group all eslint plugins",
+      "matchPackagePatterns": ["^eslint"],
+      "groupName": "ESLint",
+      "automerge": true
+    },
+    {
+      "description": "Group all Next.js related packages",
+      "matchPackagePatterns": ["^next"],
+      "groupName": "Next.js",
+      "automerge": false
+    },
+    {
+      "description": "Group all Tailwind packages",
+      "matchPackagePatterns": ["^tailwindcss"],
+      "groupName": "Tailwind CSS",
+      "automerge": true
+    },
+    {
+      "description": "Security updates",
+      "matchPackagePatterns": ["*"],
+      "vulnerabilityAlerts": {
+        "enabled": true,
+        "automerge": false
+      }
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "schedule": ["at any time"]
+  },
+  "prBody": "This PR updates dependencies as part of Renovate's automated dependency updates.\n\n---\n\n### Configuration\n\n📅 **Schedule**: Renovate checks for updates once a week (before 6am on Mondays).\n\n🤖 **Automation**: Dependencies are automatically merged when possible.\n\n🔒 **Security**: Critical security updates are merged immediately.\n\n💬 **Feedback**: If you have any questions or feedback, please comment on this PR.",
+  "prBodyColumns": [
+    "Package",
+    "Type",
+    "Update",
+    "Current",
+    "Pending",
+    "Age",
+    "Advisory"
+  ]
+}

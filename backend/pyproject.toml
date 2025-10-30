@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "dale-backend"
+version = "0.1.0"
+description = "Backend API para Dale - Plataforma de viajes compartidos"
+authors = ["MiniMax Agent"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.0"
+uvicorn = {extras = ["standard"], version = "^0.27.0"}
+prisma = "^0.11.0"
+pydantic = "^2.5.0"
+python-jose = "^3.3.0"
+pyjwt = "^2.8.0"
+supabase = "^2.3.0"
+python-dotenv = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+httpx = "^0.26.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

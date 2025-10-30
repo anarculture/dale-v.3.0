@@ -1,0 +1,722 @@
+/* 
+ * Dale Documentation - Custom Styles
+ * Estilos adicionales para personalizar la documentación de Dale
+ */
+
+/* ==========================================================================
+   Variables CSS para el tema de Dale
+   ========================================================================== */
+:root {
+  /* Colores principales de Dale */
+  --dale-primary: #3b82f6;
+  --dale-primary-dark: #2563eb;
+  --dale-primary-light: #60a5fa;
+  --dale-secondary: #f97316;
+  --dale-secondary-dark: #ea580c;
+  --dale-secondary-light: #fb923c;
+  
+  /* Colores semánticos */
+  --dale-success: #10b981;
+  --dale-warning: #f59e0b;
+  --dale-error: #ef4444;
+  --dale-info: #06b6d4;
+  
+  /* Grises */
+  --dale-gray-50: #f9fafb;
+  --dale-gray-100: #f3f4f6;
+  --dale-gray-200: #e5e7eb;
+  --dale-gray-300: #d1d5db;
+  --dale-gray-400: #9ca3af;
+  --dale-gray-500: #6b7280;
+  --dale-gray-600: #4b5563;
+  --dale-gray-700: #374151;
+  --dale-gray-800: #1f2937;
+  --dale-gray-900: #111827;
+  
+  /* Tipografía */
+  --dale-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --dale-font-mono: 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+  
+  /* Espaciado */
+  --dale-space-xs: 0.25rem;
+  --dale-space-sm: 0.5rem;
+  --dale-space-md: 1rem;
+  --dale-space-lg: 1.5rem;
+  --dale-space-xl: 2rem;
+  --dale-space-2xl: 3rem;
+  
+  /* Bordes y sombras */
+  --dale-border-radius: 0.5rem;
+  --dale-border-radius-lg: 1rem;
+  --dale-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --dale-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --dale-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   Estilos generales
+   ========================================================================== */
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body y tipografía base */
+body {
+  font-family: var(--dale-font-family);
+  line-height: 1.6;
+  color: var(--dale-gray-800);
+}
+
+/* Títulos con mejor espaciado */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: var(--dale-space-xl);
+  margin-bottom: var(--dale-space-lg);
+  color: var(--dale-gray-900);
+}
+
+h1 {
+  font-size: 2.5rem;
+  border-bottom: 3px solid var(--dale-primary);
+  padding-bottom: var(--dale-space-sm);
+}
+
+h2 {
+  font-size: 2rem;
+  border-left: 4px solid var(--dale-primary);
+  padding-left: var(--dale-space-md);
+}
+
+h3 {
+  font-size: 1.5rem;
+  color: var(--dale-primary-dark);
+}
+
+h4 {
+  font-size: 1.25rem;
+  color: var(--dale-secondary-dark);
+}
+
+/* Párrafos mejorados */
+p {
+  margin-bottom: var(--dale-space-lg);
+  text-align: justify;
+}
+
+/* Enlaces con hover effects */
+a {
+  color: var(--dale-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--dale-primary-dark);
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Componentes personalizados
+   ========================================================================== */
+
+/* Cards informativos */
+.md-card {
+  background: var(--dale-gray-50);
+  border: 1px solid var(--dale-gray-200);
+  border-radius: var(--dale-border-radius);
+  padding: var(--dale-space-lg);
+  margin: var(--dale-space-lg) 0;
+  box-shadow: var(--dale-shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.md-card:hover {
+  box-shadow: var(--dale-shadow-md);
+  border-color: var(--dale-primary-light);
+}
+
+.md-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--dale-primary);
+  margin-bottom: var(--dale-space-sm);
+}
+
+/* Badges y etiquetas */
+.dale-badge {
+  display: inline-block;
+  padding: var(--dale-space-xs) var(--dale-space-sm);
+  border-radius: var(--dale-border-radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dale-badge-primary {
+  background: var(--dale-primary);
+  color: white;
+}
+
+.dale-badge-secondary {
+  background: var(--dale-secondary);
+  color: white;
+}
+
+.dale-badge-success {
+  background: var(--dale-success);
+  color: white;
+}
+
+.dale-badge-warning {
+  background: var(--dale-warning);
+  color: white;
+}
+
+.dale-badge-error {
+  background: var(--dale-error);
+  color: white;
+}
+
+/* Listas mejoradas */
+ul, ol {
+  padding-left: var(--dale-space-xl);
+  margin-bottom: var(--dale-space-lg);
+}
+
+li {
+  margin-bottom: var(--dale-space-xs);
+}
+
+/* Listas con iconos */
+.md-list-with-icons {
+  list-style: none;
+  padding-left: 0;
+}
+
+.md-list-with-icons li {
+  position: relative;
+  padding-left: var(--dale-space-xl);
+  margin-bottom: var(--dale-space-sm);
+}
+
+.md-list-with-icons li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--dale-success);
+  font-weight: bold;
+}
+
+.md-list-with-icons li.cross::before {
+  content: "✗";
+  color: var(--dale-error);
+}
+
+.md-list-with-icons li.info::before {
+  content: "ℹ";
+  color: var(--dale-info);
+}
+
+/* Blockquotes con estilo */
+blockquote {
+  border-left: 4px solid var(--dale-secondary);
+  background: var(--dale-gray-50);
+  margin: var(--dale-space-xl) 0;
+  padding: var(--dale-space-lg);
+  border-radius: 0 var(--dale-border-radius) var(--dale-border-radius) 0;
+  font-style: italic;
+  position: relative;
+}
+
+blockquote::before {
+  content: "💡";
+  position: absolute;
+  top: var(--dale-space-sm);
+  right: var(--dale-space-sm);
+  font-size: 1.5rem;
+}
+
+/* ==========================================================================
+   Tablas mejoradas
+   ========================================================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--dale-space-xl) 0;
+  background: white;
+  border-radius: var(--dale-border-radius);
+  overflow: hidden;
+  box-shadow: var(--dale-shadow-sm);
+}
+
+th {
+  background: var(--dale-primary);
+  color: white;
+  padding: var(--dale-space-md) var(--dale-space-lg);
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: var(--dale-space-md) var(--dale-space-lg);
+  border-bottom: 1px solid var(--dale-gray-200);
+}
+
+tr:hover {
+  background: var(--dale-gray-50);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   Código y sintaxis
+   ========================================================================== */
+
+code {
+  background: var(--dale-gray-100);
+  padding: var(--dale-space-xs) var(--dale-space-sm);
+  border-radius: var(--dale-border-radius);
+  font-family: var(--dale-font-mono);
+  font-size: 0.875rem;
+  color: var(--dale-gray-800);
+}
+
+pre {
+  background: var(--dale-gray-900);
+  color: #f8f8f2;
+  padding: var(--dale-space-lg);
+  border-radius: var(--dale-border-radius);
+  overflow-x: auto;
+  margin: var(--dale-space-xl) 0;
+  box-shadow: var(--dale-shadow-lg);
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: 0.875rem;
+}
+
+/* Línea de código inline en texto */
+p code, li code, td code {
+  background: var(--dale-gray-100);
+  color: var(--dale-gray-800);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   Grid y layouts
+   ========================================================================== */
+
+/* Grid de cards */
+.md-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--dale-space-lg);
+  margin: var(--dale-space-xl) 0;
+}
+
+.md-grid-card {
+  background: white;
+  border: 1px solid var(--dale-gray-200);
+  border-radius: var(--dale-border-radius-lg);
+  padding: var(--dale-space-xl);
+  box-shadow: var(--dale-shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.md-grid-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--dale-shadow-lg);
+}
+
+/* ==========================================================================
+   Botones y CTAs
+   ========================================================================== */
+
+.dale-btn {
+  display: inline-block;
+  padding: var(--dale-space-md) var(--dale-space-xl);
+  border-radius: var(--dale-border-radius);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+}
+
+.dale-btn-primary {
+  background: var(--dale-primary);
+  color: white;
+}
+
+.dale-btn-primary:hover {
+  background: var(--dale-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--dale-shadow-md);
+  color: white;
+  text-decoration: none;
+}
+
+.dale-btn-secondary {
+  background: var(--dale-secondary);
+  color: white;
+}
+
+.dale-btn-secondary:hover {
+  background: var(--dale-secondary-dark);
+  color: white;
+  text-decoration: none;
+}
+
+.dale-btn-outline {
+  background: transparent;
+  color: var(--dale-primary);
+  border: 2px solid var(--dale-primary);
+}
+
+.dale-btn-outline:hover {
+  background: var(--dale-primary);
+  color: white;
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   Alertas y notificaciones
+   ========================================================================== */
+
+.dale-alert {
+  padding: var(--dale-space-lg);
+  border-radius: var(--dale-border-radius);
+  margin: var(--dale-space-lg) 0;
+  border-left: 4px solid;
+  position: relative;
+}
+
+.dale-alert::before {
+  content: "";
+  position: absolute;
+  left: var(--dale-space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.dale-alert-info {
+  background: #e0f2fe;
+  border-left-color: var(--dale-info);
+  color: #0c4a6e;
+}
+
+.dale-alert-success {
+  background: #d1fae5;
+  border-left-color: var(--dale-success);
+  color: #065f46;
+}
+
+.dale-alert-warning {
+  background: #fef3c7;
+  border-left-color: var(--dale-warning);
+  color: #92400e;
+}
+
+.dale-alert-error {
+  background: #fee2e2;
+  border-left-color: var(--dale-error);
+  color: #991b1b;
+}
+
+/* ==========================================================================
+   Navegación y sidebar
+   ========================================================================== */
+
+/* Sidebar personalizado */
+.md-sidebar {
+  background: var(--dale-gray-50);
+  border-right: 1px solid var(--dale-gray-200);
+}
+
+.md-nav__item {
+  margin-bottom: var(--dale-space-xs);
+}
+
+.md-nav__link {
+  padding: var(--dale-space-sm) var(--dale-space-md);
+  border-radius: var(--dale-border-radius);
+  transition: all 0.2s ease;
+}
+
+.md-nav__link:hover {
+  background: var(--dale-primary);
+  color: white;
+}
+
+/* Breadcrumbs */
+.dale-breadcrumbs {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--dale-space-lg);
+  font-size: 0.875rem;
+}
+
+.dale-breadcrumbs a {
+  color: var(--dale-gray-600);
+  text-decoration: none;
+}
+
+.dale-breadcrumbs a:hover {
+  color: var(--dale-primary);
+}
+
+.dale-breadcrumb-separator {
+  margin: 0 var(--dale-space-sm);
+  color: var(--dale-gray-400);
+}
+
+/* ==========================================================================
+   Footer personalizado
+   ========================================================================== */
+
+.dale-footer {
+  background: var(--dale-gray-900);
+  color: white;
+  padding: var(--dale-space-2xl) 0;
+  margin-top: var(--dale-space-2xl);
+}
+
+.dale-footer h3 {
+  color: var(--dale-primary-light);
+  border-bottom: 2px solid var(--dale-primary);
+  padding-bottom: var(--dale-space-sm);
+  margin-bottom: var(--dale-space-lg);
+}
+
+.dale-footer a {
+  color: var(--dale-gray-300);
+  transition: color 0.2s ease;
+}
+
+.dale-footer a:hover {
+  color: var(--dale-primary-light);
+}
+
+/* ==========================================================================
+   Responsive design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --dale-space-xs: 0.125rem;
+    --dale-space-sm: 0.25rem;
+    --dale-space-md: 0.75rem;
+    --dale-space-lg: 1rem;
+    --dale-space-xl: 1.5rem;
+    --dale-space-2xl: 2rem;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  .md-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  table {
+    font-size: 0.875rem;
+  }
+  
+  th, td {
+    padding: var(--dale-space-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .md-card {
+    padding: var(--dale-space-md);
+  }
+  
+  .dale-btn {
+    width: 100%;
+    margin-bottom: var(--dale-space-sm);
+  }
+  
+  pre {
+    padding: var(--dale-space-md);
+    font-size: 0.75rem;
+  }
+}
+
+/* ==========================================================================
+   Animaciones y transiciones
+   ========================================================================== */
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Pulse animation for CTAs */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Hover effects para cards */
+.md-grid-card, .md-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.md-grid-card:hover, .md-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Loading spinner */
+.spinner {
+  border: 2px solid var(--dale-gray-200);
+  border-top: 2px solid var(--dale-primary);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: var(--dale-space-sm);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Utilidades personalizadas
+   ========================================================================== */
+
+/* Text alignment */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Text colors */
+.text-primary { color: var(--dale-primary); }
+.text-secondary { color: var(--dale-secondary); }
+.text-success { color: var(--dale-success); }
+.text-warning { color: var(--dale-warning); }
+.text-error { color: var(--dale-error); }
+.text-info { color: var(--dale-info); }
+
+/* Background colors */
+.bg-primary { background-color: var(--dale-primary); }
+.bg-secondary { background-color: var(--dale-secondary); }
+.bg-success { background-color: var(--dale-success); }
+.bg-warning { background-color: var(--dale-warning); }
+.bg-error { background-color: var(--dale-error); }
+.bg-info { background-color: var(--dale-info); }
+.bg-gray { background-color: var(--dale-gray-100); }
+
+/* Spacing utilities */
+.m-0 { margin: 0; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.p-0 { padding: 0; }
+.pt-0 { padding-top: 0; }
+.pb-0 { padding-bottom: 0; }
+
+/* Border utilities */
+.border { border: 1px solid var(--dale-gray-300); }
+.border-primary { border-color: var(--dale-primary); }
+.border-secondary { border-color: var(--dale-secondary); }
+.rounded { border-radius: var(--dale-border-radius); }
+.rounded-lg { border-radius: var(--dale-border-radius-lg); }
+
+/* Shadow utilities */
+.shadow-sm { box-shadow: var(--dale-shadow-sm); }
+.shadow-md { box-shadow: var(--dale-shadow-md); }
+.shadow-lg { box-shadow: var(--dale-shadow-lg); }
+
+/* Display utilities */
+.hidden { display: none; }
+.block { display: block; }
+.inline { display: inline; }
+.inline-block { display: inline-block; }
+.flex { display: flex; }
+.grid { display: grid; }
+
+/* Position utilities */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+/* Width utilities */
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.max-w-none { max-width: none; }
+.max-w-sm { max-width: 24rem; }
+.max-w-md { max-width: 28rem; }
+.max-w-lg { max-width: 32rem; }
+.max-w-xl { max-width: 36rem; }
+
+/* ==========================================================================
+   Print styles
+   ========================================================================== */
+@media print {
+  .md-sidebar,
+  .md-nav,
+  .md-header,
+  .md-footer {
+    display: none !important;
+  }
+  
+  .md-content {
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+  }
+  
+  .md-card, .md-grid-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  pre, blockquote {
+    break-inside: avoid;
+  }
+}

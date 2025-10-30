@@ -1,0 +1,432 @@
+# ========================================
+# DALE RIDES PLATFORM - PRODUCTION DOCKER COMPOSE
+# ========================================
+# Configuración optimizada para producción
+# Usar con: docker-compose -f docker-compose.prod.yml up -d
+
+version: '3.8'
+
+# ========================================
+# DEFINICIÓN DE SERVICIOS
+# ========================================
+
+services:
+  # ----------------------------------------
+  # BACKEND SERVICE - FastAPI (Production)
+  # ----------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    container_name: dale-backend-prod
+    restart: always
+    
+    # Networking optimizado para producción
+    networks:
+      - backend-network
+    
+    # Sin mapeo de puertos público (uso de proxy reverso)
+    # Los puertos se manejan a través del reverse proxy
+    
+    # Variables de entorno de producción
+    environment:
+      # Configuración de aplicación
+      - ENV=production
+      - NODE_ENV=production
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - WORKERS=4
+      
+      # Configuración de Supabase
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      
+      # Configuración de Redis
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      
+      # Configuración de seguridad
+      - CORS_ORIGINS=${CORS_ORIGINS:-https://tu-dominio.com}
+      - SESSION_SECRET=${SESSION_SECRET}
+      
+      # Configuración de logging
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      
+      # Health check
+      - HEALTH_CHECK_PATH=/health
+    
+    # Sin volúmenes en producción (inmutable)
+    # Para debugging, usar docker exec
+    volumes: []
+    
+    # Health check robusto
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Configuración de recursos para producción
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+    
+    # Logging estructurado
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+        labels: "service=backend,env=production"
+    
+    # Labels para orchestration
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.tu-dominio.com`)"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+      - "com.dale.service=backend"
+      - "com.dale.env=production"
+
+  # ----------------------------------------
+  # FRONTEND SERVICE - Next.js (Production)
+  # ----------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+        - NODE_ENV=production
+    container_name: dale-frontend-prod
+    restart: always
+    
+    # Networking optimizado para producción
+    networks:
+      - frontend-network
+      - backend-network
+    
+    # Sin mapeo de puertos público (uso de proxy reverso)
+    
+    # Variables de entorno de producción
+    environment:
+      # Configuración de Next.js
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:8000}
+      - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+      
+      # Configuración de performance
+      - OUTPUT_STANDALONE=true
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      
+      # Configuración de seguridad
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://tu-dominio.com}
+      
+      # Configuración de analytics
+      - NEXT_PUBLIC_ANALYTICS_ID=${NEXT_PUBLIC_ANALYTICS_ID:-}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+    
+    # Sin volúmenes en producción
+    volumes: []
+    
+    # Health check para Next.js
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    
+    # Configuración de recursos para producción
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+    
+    # Logging estructurado
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+        labels: "service=frontend,env=production"
+    
+    # Labels para orchestration
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`tu-dominio.com`)"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "com.dale.service=frontend"
+      - "com.dale.env=production"
+
+  # ----------------------------------------
+  # REDIS SERVICE - Cache Production
+  # ----------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: dale-redis-prod
+    restart: always
+    
+    # Networking
+    networks:
+      - backend-network
+    
+    # Sin mapeo de puertos público
+    # Solo accesible internamente por otros servicios
+    
+    # Variables de entorno
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    
+    # Configuración de Redis para producción
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD}
+      --bind 0.0.0.0
+      --port 6379
+    
+    # Volumen persistente para datos
+    volumes:
+      - redis_data:/data
+    
+    # Health check robusto
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    
+    # Configuración de recursos
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Labels
+    labels:
+      - "com.dale.service=redis"
+      - "com.dale.env=production"
+
+  # ----------------------------------------
+  # NGINX REVERSE PROXY (Optional)
+  # ----------------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: dale-nginx-prod
+    restart: always
+    
+    # Puertos públicos
+    ports:
+      - "80:80"
+      - "443:443"
+    
+    # Networking
+    networks:
+      - frontend-network
+      - backend-network
+    
+    # Configuración personalizada
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      - frontend
+      - backend
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+# ========================================
+# DEFINICIÓN DE VOLÚMENES
+# ========================================
+
+volumes:
+  # Datos persistentes de Redis
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/production/redis
+  
+  # Cache de Nginx
+  nginx_cache:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/production/nginx/cache
+
+# ========================================
+# DEFINICIÓN DE REDES
+# ========================================
+
+networks:
+  # Red para frontend (acceso público controlado)
+  frontend-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: dale-frontend-prod
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1
+  
+  # Red para backend (solo acceso interno)
+  backend-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: dale-backend-prod
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16
+          gateway: 172.22.0.1
+
+# ========================================
+# CONFIGURACIÓN DE COMPOSE PARA SWARM
+# ========================================
+
+# Para Docker Swarm, descomenta las siguientes líneas:
+# x-deploy-config: &deploy-config
+#   replicas: 2
+#   restart_policy:
+#     condition: on-failure
+#     delay: 5s
+#     max_attempts: 3
+#   resources:
+#     limits:
+#       memory: 1G
+#       cpus: '1.0'
+
+# ========================================
+# NOTAS DE DEPLOYMENT
+# ========================================
+#
+# COMANDOS DE DEPLOYMENT:
+#
+# 1. Deploy básico:
+#    docker-compose -f docker-compose.prod.yml up -d
+#
+# 2. Deploy con escalado:
+#    docker-compose -f docker-compose.prod.yml up -d --scale backend=3 --scale frontend=2
+#
+# 3. Deploy con actualización:
+#    docker-compose -f docker-compose.prod.yml up -d --force-recreate --build
+#
+# 4. Docker Swarm (recomendado para producción):
+#    docker stack deploy -c docker-compose.prod.yml dale
+#
+# REQUISITOS PREVIOS:
+#
+# 1. Crear directorios de datos:
+#    mkdir -p data/production/{redis,nginx}
+#
+# 2. Configurar SSL:
+#    - Colocar certificados en nginx/ssl/
+#    - Actualizar configuración en nginx/nginx.prod.conf
+#
+# 3. Variables de entorno:
+#    - Crear .env.production desde .env.example
+#    - Configurar todos los secrets
+#
+# 4. Configurar Traefik (alternativa a Nginx):
+#    - Descomentar labels de Traefik
+#    - Configurar DNS para api.tu-dominio.com
+#
+# MONITOREO:
+#
+# 1. Logs:
+#    docker-compose -f docker-compose.prod.yml logs -f [servicio]
+#
+# 2. Estado de servicios:
+#    docker-compose -f docker-compose.prod.yml ps
+#
+# 3. Health checks:
+#    docker exec dale-backend-prod curl -f http://localhost:8000/health
+#
+# BACKUP Y RESTAURACIÓN:
+#
+# 1. Backup de Redis:
+#    docker exec dale-redis-prod redis-cli BGSAVE
+#    docker cp dale-redis-prod:/data/dump.rdb ./backup/redis-$(date +%Y%m%d).rdb
+#
+# 2. Restauración de Redis:
+#    docker cp ./backup/redis-20241201.rdb dale-redis-prod:/data/dump.rdb
+#    docker restart dale-redis-prod
