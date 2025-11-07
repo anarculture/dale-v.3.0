@@ -7,7 +7,7 @@ import { Card, CardBody } from '@/components/ui/Card';
 import { CityAutocomplete } from './CityAutocomplete';
 import { getPlaceDetails, geocodeAddress } from '@/lib/maps';
 
-interface RideFormData {
+export interface RideFormData {
   from_city: string;
   from_place_id?: string;
   from_lat?: number;
@@ -47,7 +47,10 @@ export function RideForm({ onSubmit, loading = false }: RideFormProps) {
   /**
    * Actualizar campo del formulario
    */
-  const updateField = (field: keyof RideFormData, value: any) => {
+  const updateField = (
+    field: keyof RideFormData,
+    value: RideFormData[keyof RideFormData]
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Limpiar error del campo
     if (errors[field]) {
@@ -208,9 +211,6 @@ export function RideForm({ onSubmit, loading = false }: RideFormProps) {
         });
         return;
       }
-
-      // Combinar fecha y hora
-      const dateTime = `${formData.date}T${formData.time}:00`;
 
       // Enviar datos
       await onSubmit({

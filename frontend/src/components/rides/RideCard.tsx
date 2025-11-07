@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Ride } from '@/lib/api';
 import { Card, CardBody, CardFooter } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -96,9 +97,11 @@ export function RideCard({
           <div className="flex items-center gap-3 mt-4 pt-4 border-t border-neutral-200">
             <div className="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center">
               {ride.driver.avatar_url ? (
-                <img 
+                <Image 
                   src={ride.driver.avatar_url} 
                   alt={ride.driver.name}
+                  width={40}
+                  height={40}
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (

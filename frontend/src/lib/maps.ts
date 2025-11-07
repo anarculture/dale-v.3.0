@@ -21,6 +21,44 @@ export interface PlaceDetails {
   city?: string;
 }
 
+interface AutocompletePrediction {
+  place_id: string;
+  description: string;
+  structured_formatting?: {
+    main_text?: string;
+    secondary_text?: string;
+  };
+}
+
+interface GeometryLocation {
+  lat: number;
+  lng: number;
+}
+
+interface PlaceDetailsResult {
+  place_id: string;
+  name: string;
+  formatted_address: string;
+  geometry?: {
+    location?: GeometryLocation;
+  };
+}
+
+interface GeocodeAddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+interface GeocodeResult {
+  place_id: string;
+  formatted_address: string;
+  geometry?: {
+    location?: GeometryLocation;
+  };
+  address_components?: GeocodeAddressComponent[];
+}
+
 /**
  * Buscar lugares usando Google Places Autocomplete API
  */
@@ -43,7 +81,7 @@ export async function searchPlaces(input: string): Promise<PlaceSuggestion[]> {
     const data = await response.json();
 
     if (data.status === 'OK' && data.predictions) {
-      return data.predictions.map((prediction: any) => ({
+      return (data.predictions as AutocompletePrediction[]).map((prediction) => ({
         place_id: prediction.place_id,
         description: prediction.description,
         main_text: prediction.structured_formatting?.main_text || '',
@@ -74,7 +112,7 @@ export async function getPlaceDetails(placeId: string): Promise<PlaceDetails | n
     const data = await response.json();
 
     if (data.status === 'OK' && data.result) {
-      const result = data.result;
+      const result = data.result as PlaceDetailsResult;
       const location = result.geometry?.location;
 
       if (!location) {
@@ -120,7 +158,7 @@ export async function geocodeAddress(address: string): Promise<PlaceDetails | nu
     const data = await response.json();
 
     if (data.status === 'OK' && data.results && data.results.length > 0) {
-      const result = data.results[0];
+      const result = data.results[0] as GeocodeResult;
       const location = result.geometry?.location;
 
       if (!location) {
@@ -129,7 +167,7 @@ export async function geocodeAddress(address: string): Promise<PlaceDetails | nu
 
       // Extraer ciudad de los componentes de dirección
       const cityComponent = result.address_components?.find(
-        (component: any) =>
+        (component: GeocodeAddressComponent) =>
           component.types.includes('locality') ||
           component.types.includes('administrative_area_level_2')
       );

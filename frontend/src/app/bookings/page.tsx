@@ -1,328 +1,257 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '@/lib/AuthContext';
-import { api, Booking } from '@/lib/api';
-import BookingCard from '@/components/BookingCard';
-import { 
-  Calendar, 
-  Filter, 
-  RefreshCw, 
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  XCircle,
-  Plus,
-  Search
-} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient, type ApiError, type Booking } from '@/lib/api';
+import { BookingCard } from '@/components/rides/BookingCard';
+import { Button } from '@/components/ui/Button';
+import { Card, CardBody } from '@/components/ui/Card';
 
-type FilterStatus = 'all' | 'pending' | 'confirmed' | 'cancelled' | 'completed';
-
-const BookingsPage: React.FC = () => {
-  const { user, loading: authLoading } = useAuth();
+export default function BookingsPage() {
+  const router = useRouter();
+  const { user, getToken } = useAuth();
+  
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentFilter, setCurrentFilter] = useState<FilterStatus>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'confirmed' | 'pending' | 'cancelled'>('all');
 
-  // Cargar reservas del usuario
-  const loadBookings = useCallback(async () => {
-    if (!user?.id) return;
+  // Protección de ruta
+  useEffect(() => {
+    if (!user) {
+      router.push('/login');
+    }
+  }, [user, router]);
 
-    try {
-      setLoading(true);
-      setError(null);
+  // Configurar token getter para el API client
+  useEffect(() => {
+    if (getToken) {
+      apiClient.setTokenGetter(getToken);
+    }
+  }, [getToken]);
 
-      const response = await api.getUserBookings(user.id, '');
-      
-      if (response.success && response.data) {
-        setBookings(response.data);
-      } else {
-        setError(response.error || 'Error al cargar las reservas');
+  // Cargar reservas
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await apiClient.getMyBookings();
+        // Ordenar por fecha de creación (más recientes primero)
+        const sortedBookings = data.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() -
+            new Date(a.created_at).getTime()
+        );
+        setBookings(sortedBookings);
+        setFilteredBookings(sortedBookings);
+      } catch (err) {
+        const apiError = err as ApiError;
+        console.error('Error fetching bookings:', err);
+        setError(apiError.detail || apiError.error || 'Error al conectar con el servidor');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError('Error de conexión');
-      console.error('Error loading bookings:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
+    };
 
-  // Cargar reservas al montar el componente
+    if (user) {
+      fetchBookings();
+    }
+  }, [user]);
+
+  // Filtrar reservas cuando cambia el filtro
   useEffect(() => {
-    if (!authLoading && user?.id) {
-      loadBookings();
+    if (statusFilter === 'all') {
+      setFilteredBookings(bookings);
+    } else {
+      setFilteredBookings(bookings.filter(b => b.status === statusFilter));
     }
-  }, [authLoading, user?.id, loadBookings]);
+  }, [statusFilter, bookings]);
 
-  // Filtrar reservas
-  useEffect(() => {
-    let filtered = bookings;
-
-    // Filtrar por estado
-    if (currentFilter !== 'all') {
-      filtered = filtered.filter(booking => booking.status === currentFilter);
-    }
-
-    // Filtrar por búsqueda
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(booking => 
-        booking.ride?.from_city?.toLowerCase().includes(query) ||
-        booking.ride?.to_city?.toLowerCase().includes(query) ||
-        booking.ride?.driver_name?.toLowerCase().includes(query)
-      );
-    }
-
-    setFilteredBookings(filtered);
-  }, [bookings, currentFilter, searchQuery]);
-
-  // Cancelar reserva con actualización optimista
+  // Manejar cancelación
   const handleCancelBooking = async (bookingId: string) => {
-    // Actualización optimista - actualizar estado inmediatamente
-    const previousBookings = [...bookings];
-    setBookings(prevBookings =>
-      prevBookings.map(booking =>
-        booking.id === bookingId
-          ? { ...booking, status: 'cancelled' as const }
-          : booking
-      )
-    );
-
     try {
-      await api.cancelBooking(bookingId, '');
+      await apiClient.cancelBooking(bookingId);
       
-      // Si la cancelación fue exitosa, recargar las reservas para asegurar sincronización
-      await loadBookings();
+      // Actualizar la lista de reservas optimísticamente
+      setBookings(prevBookings =>
+        prevBookings.map(booking =>
+          booking.id === bookingId
+            ? { ...booking, status: 'cancelled' as const }
+            : booking
+        )
+      );
+      
+      alert('Reserva cancelada exitosamente');
     } catch (error) {
-      // Revertir la actualización optimista si hay error
-      setBookings(previousBookings);
-      throw error;
+      const apiError = error as ApiError;
+      console.error('Error cancelling booking:', error);
+      alert(apiError.detail || apiError.error || 'Error al cancelar reserva');
     }
   };
 
-  const getFilterIcon = (filter: FilterStatus) => {
-    switch (filter) {
-      case 'pending':
-        return <Clock size={16} />;
-      case 'confirmed':
-        return <CheckCircle size={16} />;
-      case 'cancelled':
-        return <XCircle size={16} />;
-      case 'completed':
-        return <CheckCircle size={16} />;
-      default:
-        return <Filter size={16} />;
-    }
-  };
-
-  const getFilterLabel = (filter: FilterStatus) => {
-    switch (filter) {
-      case 'pending':
-        return 'Pendientes';
-      case 'confirmed':
-        return 'Confirmadas';
-      case 'cancelled':
-        return 'Canceladas';
-      case 'completed':
-        return 'Completadas';
-      default:
-        return 'Todas';
-    }
-  };
-
-  const getFilterCount = (filter: FilterStatus) => {
-    if (filter === 'all') return bookings.length;
-    return bookings.filter(booking => booking.status === filter).length;
-  };
-
-  // Mostrar loading mientras se verifica la autenticación
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-blue-600">
-          <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <span>Cargando...</span>
-        </div>
-      </div>
-    );
-  }
-
-  // Redirigir si no está autenticado
   if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
-          <AlertCircle size={48} className="mx-auto text-red-500 mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Autenticación requerida
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Debes iniciar sesión para ver tus reservas.
-          </p>
-          <a
-            href="/login"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Iniciar Sesión
-          </a>
-        </div>
-      </div>
-    );
+    return null; // O un loading spinner
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Mis Reservas</h1>
-              <p className="text-gray-600 mt-1">
-                Gestiona todas tus reservas de viajes
-              </p>
-            </div>
-            
-            <button
-              onClick={loadBookings}
-              disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-              <span>Actualizar</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Barra de búsqueda */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar por destino, origen o conductor..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-            />
-          </div>
+    <div className="container mx-auto py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Mis Reservas
+          </h1>
+          <p className="text-gray-600">
+            Gestiona tus viajes reservados
+          </p>
         </div>
 
         {/* Filtros */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="flex flex-wrap gap-2">
-            {(['all', 'pending', 'confirmed', 'cancelled', 'completed'] as FilterStatus[]).map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setCurrentFilter(filter)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  currentFilter === filter
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                }`}
-              >
-                {getFilterIcon(filter)}
-                <span>{getFilterLabel(filter)}</span>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  currentFilter === filter
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {getFilterCount(filter)}
-                </span>
-              </button>
-            ))}
+            <Button
+              onClick={() => setStatusFilter('all')}
+              variant={statusFilter === 'all' ? 'primary' : 'outline'}
+              className="flex-1 sm:flex-none"
+            >
+              Todas ({bookings.length})
+            </Button>
+            <Button
+              onClick={() => setStatusFilter('confirmed')}
+              variant={statusFilter === 'confirmed' ? 'primary' : 'outline'}
+              className="flex-1 sm:flex-none"
+            >
+              Confirmadas ({bookings.filter(b => b.status === 'confirmed').length})
+            </Button>
+            <Button
+              onClick={() => setStatusFilter('pending')}
+              variant={statusFilter === 'pending' ? 'primary' : 'outline'}
+              className="flex-1 sm:flex-none"
+            >
+              Pendientes ({bookings.filter(b => b.status === 'pending').length})
+            </Button>
+            <Button
+              onClick={() => setStatusFilter('cancelled')}
+              variant={statusFilter === 'cancelled' ? 'primary' : 'outline'}
+              className="flex-1 sm:flex-none"
+            >
+              Canceladas ({bookings.filter(b => b.status === 'cancelled').length})
+            </Button>
           </div>
         </div>
 
-        {/* Estado de error */}
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <AlertCircle size={20} className="text-red-600 flex-shrink-0" />
-              <div>
-                <p className="text-red-800 font-medium">Error al cargar las reservas</p>
-                <p className="text-red-600 text-sm mt-1">{error}</p>
-              </div>
-            </div>
+        {/* Estado de carga */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-gray-600">Cargando reservas...</p>
           </div>
         )}
 
-        {/* Estado de carga */}
-        {loading && bookings.length === 0 && (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-600">Cargando reservas...</p>
-            </div>
-          </div>
+        {/* Error */}
+        {error && !loading && (
+          <Card className="bg-red-50 border-red-200">
+            <CardBody className="p-6 text-center">
+              <svg
+                className="w-12 h-12 text-red-600 mx-auto mb-3"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p className="text-red-800 font-medium mb-2">{error}</p>
+              <Button
+                onClick={() => window.location.reload()}
+                variant="outline"
+                className="mt-4"
+              >
+                Reintentar
+              </Button>
+            </CardBody>
+          </Card>
         )}
 
         {/* Lista de reservas */}
-        {!loading || bookings.length > 0 ? (
-          <div className="space-y-6">
+        {!loading && !error && (
+          <>
             {filteredBookings.length === 0 ? (
-              <div className="text-center py-12">
-                <Calendar size={48} className="mx-auto text-gray-400 mb-4" />
-                {bookings.length === 0 ? (
-                  <>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      No tienes reservas aún
-                    </h3>
-                    <p className="text-gray-600 mb-6">
-                      ¡Explora nuestros viajes disponibles y haz tu primera reserva!
-                    </p>
-                    <a
-                      href="/rides"
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <Plus size={20} />
-                      <span>Ver Viajes Disponibles</span>
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      No se encontraron reservas
-                    </h3>
-                    <p className="text-gray-600">
-                      Intenta cambiar los filtros o el término de búsqueda
-                    </p>
-                  </>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Contador de resultados */}
-                <div className="flex items-center justify-between">
-                  <p className="text-gray-600">
-                    Mostrando {filteredBookings.length} de {bookings.length} reservas
-                  </p>
-                </div>
-
-                {/* Grid de reservas */}
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                  {filteredBookings.map((booking) => (
-                    <BookingCard
-                      key={booking.id}
-                      booking={booking}
-                      onCancel={handleCancelBooking}
-                      className="hover:scale-[1.02] transition-transform duration-200"
+              <Card className="bg-gray-50">
+                <CardBody className="p-12 text-center">
+                  <svg
+                    className="w-16 h-16 text-gray-400 mx-auto mb-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
-                  ))}
-                </div>
-              </>
+                  </svg>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {statusFilter === 'all' 
+                      ? 'No tienes reservas'
+                      : `No tienes reservas ${
+                          statusFilter === 'confirmed' ? 'confirmadas' :
+                          statusFilter === 'pending' ? 'pendientes' :
+                          'canceladas'
+                        }`
+                    }
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    {statusFilter === 'all'
+                      ? 'Busca viajes disponibles y haz tu primera reserva'
+                      : 'Intenta con otro filtro para ver más reservas'
+                    }
+                  </p>
+                  {statusFilter === 'all' && (
+                    <Button
+                      onClick={() => router.push('/rides')}
+                      variant="primary"
+                    >
+                      Buscar viajes
+                    </Button>
+                  )}
+                </CardBody>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {filteredBookings.map((booking) => (
+                  <BookingCard
+                    key={booking.id}
+                    booking={booking}
+                    onCancel={handleCancelBooking}
+                  />
+                ))}
+              </div>
             )}
+          </>
+        )}
+
+        {/* Botón buscar más viajes */}
+        {!loading && !error && filteredBookings.length > 0 && (
+          <div className="mt-8 text-center">
+            <Button
+              onClick={() => router.push('/rides')}
+              variant="outline"
+            >
+              Buscar más viajes
+            </Button>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );
-};
-
-export default BookingsPage;
+}

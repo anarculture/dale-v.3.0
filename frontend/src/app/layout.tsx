@@ -1,43 +1,44 @@
-// Root layout for Dale PWA
-import './globals.css'
-import { AuthProvider } from '@/lib/AuthContext'
-import ServiceWorker from '@/components/ServiceWorker'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { HeroUIProvider } from "@heroui/react";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/components/ui";
 
-export const metadata = {
-  title: 'Dale - Comparte tu viaje',
-  description: 'Plataforma para compartir viajes y ahorrar dinero',
-  manifest: '/manifest.json',
-  themeColor: '#3b82f6',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+export const metadata: Metadata = {
+  title: "Dale - Comparte viajes y ahorra",
+  description: "Encuentra y comparte viajes de forma fácil, económica y sostenible con Dale.",
+  manifest: "/manifest.json",
+  themeColor: "#00AFF5",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
-    title: 'Dale',
+    statusBarStyle: "default",
+    title: "Dale",
   },
-  icons: {
-    icon: [
-      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-    ],
-  },
-}
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="es">
-      <body>
-        <AuthProvider>
-          <ServiceWorker />
-          {children}
-        </AuthProvider>
+      <body className={`${inter.variable} font-sans antialiased bg-neutral-50`}>
+        <HeroUIProvider>
+          <AuthProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </AuthProvider>
+        </HeroUIProvider>
       </body>
     </html>
-  )
+  );
 }
