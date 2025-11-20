@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Build artifacts
+frontend/.next/
+.next/
+dist/
+build/
+coverage/
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Python environment
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+*.tmp

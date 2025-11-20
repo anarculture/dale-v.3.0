@@ -120,9 +120,10 @@ if [ ! -f ".env" ]; then
     info "Creando archivo .env de ejemplo..."
     cat > .env << EOF
 # Configuración de Supabase
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+SUPABASE_URL=your_supabase_url_here 
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here 
 SUPABASE_JWT_SECRET=your_jwt_secret_here
+
 
 # Configuración del servidor
 API_HOST=0.0.0.0
