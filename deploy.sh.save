@@ -6,9 +6,7 @@
 echo "🚀 Configurando deployment de Dale PWA..."
 
 # 1. Ir al directorio del proyecto
-cd /home/anarculture/Downloads/DALE3/dale-v.3.0
-
-# 2. Configurar remote con token si es necesario
+cd necesario
 # Si no tienes permisos, puedes usar tu token personal de GitHub:
 # export GITHUB_TOKEN="tu_token_personal_aqui"
 # git remote set-url origin https://$GITHUB_TOKEN@github.com/anarculture/dale-v.3.0.git
