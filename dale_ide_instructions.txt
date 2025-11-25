@@ -1,0 +1,272 @@
+Contexto para la IA del IDE
+
+Proyecto: Dale (v3)
+Tipo: Plataforma web de carpooling inspirada en BlaBlaCar, adaptada a Venezuela.
+Objetivo actual: Terminar el MVP web completo, con foco en el frontend sobre HeroUI, alineado con el plan de proyecto, el estado actual (PROJECT_STATUS) y la arquitectura definida.
+
+HeroUI GitHub: https://github.com/heroui-inc/heroui
+
+Fuentes de verdad del proyecto
+
+1) Plan de Proyecto (PDF)
+   - Archivo: Plan de Proyecto_ Plataforma de Carpooling “BlaBlaCar Venezuela” (Spec-Driven Development).pdf
+   - Contiene:
+     - Visión de producto tipo BlaBlaCar Venezuela.
+     - Funcionalidades clave: registro/login, publicar viaje, búsqueda y reserva, perfiles, reputación, comunicación básica, pagos (diferibles).
+     - Arquitectura: frontend Next.js + Tailwind + HeroUI, backend FastAPI, BD PostgreSQL (Supabase) + Prisma, Supabase Auth, PWA, CI/CD, tests.
+     - Metodología: Agile + Spec-Driven Development (SDD), tests automatizados, CI/CD.
+
+2) PROJECT_STATUS
+   - Archivo en el repo v3: PROJECT_STATUS.md (y su PDF previo).
+   - Contiene:
+     - Fases 1–6 completas: SDD, specs, arquitectura, base de datos, backend API, configuración básica.
+     - Fases pendientes: frontend de usuario (páginas MVP), testing (pytest + Playwright), CI/CD (GitHub Actions), PWA, documentación ampliada.
+     - Backend FastAPI y esquema Supabase ya implementan el núcleo del MVP (rides, bookings, users, reglas de negocio).
+
+3) Objetivo actual de frontend
+   - Usar HeroUI como framework de componentes base.
+   - Construir un mini design system “Dale”.
+   - Implementar los flujos clave del MVP (auth, ofrecer viaje, buscar/reservar, mis reservas).
+   - Reutilizar solo lógica y tipos de dominio útiles del repo anterior (dale2-mvp), NO su maquetado ni estilos.
+
+Instrucciones generales para la IA del IDE
+
+1. Stack y arquitectura a respetar
+   - Frontend: Next.js (App Router) + TypeScript + Tailwind CSS + HeroUI.
+   - Backend: FastAPI (Python) + Prisma Client Python.
+   - Base de datos: PostgreSQL gestionado por Supabase (Auth, Storage, opcional Realtime).
+   - Despliegue: frontend en Vercel, backend en plataforma de contenedores (Railway/Render/Fly.io), BD en Supabase.
+   - Autenticación: Supabase Auth con JWT; el frontend obtiene el token y lo envía al backend en cabecera Authorization.
+
+2. Metodología de trabajo (SDD + Agile)
+   - Siempre leer primero las especificaciones existentes (.spec/ en el repo v3) y el Plan de Proyecto.
+   - Respetar el flujo “especificación → implementación → pruebas”.
+   - No inventar nuevas funcionalidades grandes fuera del plan; si es necesario extender, proponerlo como comentario estructurado.
+   - Mantener el código alineado con las historias de usuario y criterios de aceptación del Plan.
+
+3. Reutilización controlada de código antiguo (dale2-mvp)
+   - SÍ reutilizar:
+     - Tipos de dominio: Ride, Booking, User, etc.
+     - Helpers de lógica: formateo de fechas/horas, rutas “Origen → Destino”, cálculo de precios, helpers de validación genéricos.
+     - Hooks de datos agnósticos de UI, si existen y son fácilmente adaptables.
+   - NO reutilizar:
+     - Componentes visuales (JSX), CSS, layouts, estilos.
+     - Cualquier cosa que choque con HeroUI o con el diseño actual de Dale (v3).
+
+4. Prioridad global
+   - Completar el MVP web funcional extremo a extremo para:
+     - Conductores: publicar y gestionar viajes.
+     - Pasajeros: buscar viajes y reservar asientos.
+     - Usuarios: gestionar perfil y ver reputación básica (aunque sea minimal).
+   - Luego, reforzar calidad: tests, CI/CD, PWA, documentación.
+
+Plan de trabajo (fases para la IA del IDE)
+
+Fase 1 – Design system Dale sobre HeroUI
+
+Objetivo: Definir la “cara” consistente del producto y los componentes base reutilizables.
+
+Tareas:
+
+1) Instalar y configurar HeroUI
+   - Asegurar que HeroUI está instalado y registrado en el proyecto Next.js según la documentación oficial.
+   - Integrarlo con Tailwind (configuración de tema y plugins).
+
+2) Definir tema “Dale”
+   - Paleta de colores: primario, secundario, fondo, estados (success, warning, error).
+   - Tipografía base.
+   - Radios, sombras y spacing global.
+   - Dejar esto centralizado en la configuración de HeroUI/Tailwind.
+
+3) Crear componentes base (design system)
+   - Implementar los siguientes componentes “D*” como wrappers sobre HeroUI:
+
+   Base / Design System:
+   - DButton
+     - Variantes: primary, secondary, ghost, danger.
+     - Props: variant, size, isLoading, leftIcon, rightIcon, fullWidth, resto de props estándar.
+   - DInput
+     - Props: label, name, placeholder, helperText, error, type (text, email, password, number, date, time).
+   - DSelect
+     - Props: label, name, options (label/value), placeholder, error.
+   - DTextarea
+     - Para notas/comentarios largos.
+   - DCard
+     - Contenedor estándar con padding, borde, sombra ligera.
+     - Variantes: outlined, elevated.
+   - DBadge / DTag
+     - Para: ciudades, precio, seats disponibles, estado de reserva.
+   - DIconButton
+     - Botones de solo icono (volver, cerrar, etc.).
+   - DFormField
+     - Wrapper para label + control + error para evitar duplicar markup.
+
+   Layout / Navegación:
+   - AppLayout
+     - Layout principal con header fijo y contenido.
+     - Debe aceptar slots: header, children y bottomNav (opcional).
+   - DHeader
+     - Header con logo, título de página y acciones (avatar/menú usuario).
+   - DBottomNav
+     - Navegación tipo app móvil para tabs: Buscar, Ofrecer, Reservas, Perfil.
+   - DPageSection
+     - Título + descripción + contenido; usado para secciones dentro de cada página.
+
+   Estados:
+   - DAlert
+   - DSpinner
+   - DEmptyState
+   - DConfirmDialog (opcional en esta fase).
+
+Resultado esperado: todas las pantallas del MVP deben construirse exclusivamente con estos componentes (o extensiones consistentes de ellos).
+
+Fase 2 – Flujos clave end-to-end
+
+Objetivo: Implementar los flujos críticos para conductores y pasajeros usando el design system.
+
+Flujo 1 – Auth + Perfil mínimo
+
+Páginas:
+- /signup
+- /login
+- /profile
+
+Componentes requeridos:
+- AuthLayout (layout simple centrado para auth).
+- LoginForm:
+  - Campos: email, password.
+  - Manejo de errores de Supabase Auth.
+- SignupForm:
+  - Campos: email, password, nombre (o campos mínimos definidos).
+- ProfileHeader:
+  - Avatar, nombre, email, botón “Editar perfil” (puede ser placeholder).
+- ProfileSection:
+  - Secciones para “Mis viajes ofrecidos”, “Mis reservas” (links o listas).
+
+Requisitos:
+- Seguir la lógica de Supabase Auth según el Plan de Proyecto.
+- Respetar el manejo de sesión previsto (auth helpers + JWT enviado al backend).
+
+Flujo 2 – Conductor: ofrecer viaje
+
+Página:
+- /offer (publicar viaje)
+- Opcional: /my-rides o sección en /profile con “Mis viajes ofrecidos”.
+
+Componentes:
+- OfferRideForm:
+  - Campos: origen, destino, fecha, hora, precio por asiento, número de asientos, notas.
+  - Validaciones: fechas futuras, precios numéricos, asientos > 0.
+  - Implementado con DInput, DSelect, DTextarea, DButton, DFormField.
+- RideCard (modo conductor):
+  - Para listar viajes ofrecidos por el usuario.
+
+Lógica:
+- Usar los endpoints de backend ya definidos para crear rides.
+- Asegurar que el usuario actual actúa como conductor según las reglas de negocio.
+
+Flujo 3 – Pasajero: buscar y reservar viaje
+
+Página:
+- /rides (buscador + listado de resultados).
+- /rides/[id] (detalle de viaje, opcional pero recomendado).
+
+Componentes:
+- RideSearchForm:
+  - Campos: origen, destino, fecha, asientos (opcional).
+  - Botón “Buscar”.
+- RideFiltersBar (opcional, simple al inicio).
+- RideCard:
+  - Origen → Destino.
+  - Fecha/hora.
+  - Precio por asiento.
+  - Seats disponibles.
+  - Nombre / rating del conductor (placeholder si no hay aún).
+- RideList:
+  - Lista de RideCard con estados: cargando, vacío, error.
+- RideDetail:
+  - Información completa de un viaje + botón “Reservar ahora”.
+
+Lógica:
+- Llamar endpoints de búsqueda de viajes.
+- Manejar correctamente estados: sin resultados, error de red, etc.
+
+Flujo 4 – Mis reservas
+
+Página:
+- /bookings
+
+Componentes:
+- BookingCard:
+  - Viaje asociado (ciudades, fecha/hora).
+  - Estado de la reserva.
+  - Cantidad de asientos.
+  - Precio total.
+- BookingList:
+  - Lista de BookingCard + estado vacío/cargando.
+
+Lógica:
+- Listar reservas del usuario autenticado.
+- Preparar el UI para una futura opción de cancelación (botón puede estar deshabilitado o no implementado todavía).
+
+Regla general para esta fase:
+- Cada flujo debe poder completarse extremo a extremo por un usuario externo sin explicaciones adicionales.
+
+Fase 3 – Estado, API y calidad mínima
+
+Objetivo: Consolidar la capa de datos y asegurar un mínimo de calidad técnica.
+
+Tareas:
+
+1) Capa de API frontend
+   - Crear /lib/api con funciones para:
+     - login/signup (si aplica en front).
+     - fetch de rides.
+     - creación de rides (offer).
+     - búsqueda/filtrado de rides.
+     - creación de bookings.
+     - fetch de bookings.
+   - Opcional pero recomendado: integrar TanStack Query (React Query) para cache, reintentos y estados de carga.
+
+2) Hooks de lógica
+   - Implementar hooks para separar lógica de negocio de la UI:
+     - useOfferRideForm()
+     - useRideSearch()
+     - useRideDetail()
+     - useBookingActions()
+   - Los componentes de UI deben ser lo más “tontos” posible, delegando la lógica a estos hooks.
+
+3) Tests mínimos
+   - Backend: verificar que existan o empezar pytest para casos críticos (según PROJECT_STATUS).
+   - Frontend: agregar al menos 1–2 pruebas E2E con Playwright:
+     - Caso 1: Registro de usuario + login + ofrecer viaje + ver el viaje en listado de conductor.
+     - Caso 2: Login como pasajero + buscar viaje + reservar + ver reserva en /bookings.
+
+4) CI/CD mínimo
+   - Poner workflows básicos de CI si aún están incompletos:
+     - Lint + tests + build para frontend.
+     - Tests básicos para backend.
+   - Respetar la intención del Plan de Proyecto y PROJECT_STATUS.
+
+Reglas de comportamiento para la IA del IDE
+
+- Siempre:
+  - Priorizar que el código sea legible, tipado y siguiendo la arquitectura descrita en el Plan.
+  - Mantener separación clara entre UI, lógica de negocio y acceso a datos.
+  - Documentar brevemente cambios que afecten flujos de negocio (comentarios cortos o notas en el código).
+
+- Nunca:
+  - Cambiar contratos de API backend sin motivo explícito y justificación.
+  - Ignorar las especificaciones SDD existentes.
+  - Introducir dependencias grandes no alineadas con el stack actual sin necesidad fuerte.
+
+- Si hay ambigüedad:
+  - Preferir soluciones mínimas y consistentes con el Plan de Proyecto y PROJECT_STATUS.
+  - Señalar la ambigüedad mediante un comentario en el código o en la descripción de cambios, pero seguir con una suposición razonable.
+
+Con este contexto y estas instrucciones, el objetivo es que la IA del IDE pueda:
+- Entender la visión del proyecto.
+- Respetar la arquitectura y la metodología SDD.
+- Completar el frontend del MVP sobre HeroUI.
+- Integrarse correctamente con el backend ya implementado.
+- Mejorar la calidad general (tests, CI/CD) sin salirse del plan.

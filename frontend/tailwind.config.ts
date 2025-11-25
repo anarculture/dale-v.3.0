@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import forms from "@tailwindcss/forms";
+import { heroui } from "@heroui/react";
 
 const config: Config = {
   content: [
@@ -58,8 +59,10 @@ const config: Config = {
       },
     },
   },
+  darkMode: "class",
   plugins: [
     forms,
+    heroui(),
   ],
 };
 export default config;
