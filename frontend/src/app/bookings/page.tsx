@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { DPageSection, DSpinner } from "@/components/ui";
+import { DSpinner } from "@/components/ui";
+import { DPageSection } from "@/components/layout/DPageSection";
 import { BookingList } from "@/components/bookings/BookingList";
 import { apiClient, Booking } from "@/lib/api";
 

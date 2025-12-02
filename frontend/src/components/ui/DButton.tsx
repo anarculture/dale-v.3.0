@@ -24,7 +24,7 @@ export const DButton: React.FC<DButtonProps> = ({
     <Button
       variant={variant}
       color={color}
-      className={`font-medium ${className}`}
+      className={`font-medium ${className || ''}`}
       isDisabled={isLoading || props.isDisabled}
       {...props}
     >

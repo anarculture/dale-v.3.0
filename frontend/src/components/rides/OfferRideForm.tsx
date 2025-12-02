@@ -55,12 +55,16 @@ export const OfferRideForm: React.FC = () => {
       return;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const selectedDate = new Date(formData.date);
+    const selectedDateTime = new Date(`${formData.date}T${formData.time}`);
     
-    if (selectedDate < today) {
-      setError("La fecha del viaje no puede ser en el pasado.");
+    if (isNaN(selectedDateTime.getTime())) {
+      setError("La fecha u hora del viaje no es válida.");
+      setLoading(false);
+      return;
+    }
+    
+    if (selectedDateTime <= new Date()) {
+      setError("La fecha y hora del viaje deben ser en el futuro.");
       setLoading(false);
       return;
     }
@@ -84,9 +88,8 @@ export const OfferRideForm: React.FC = () => {
         date_time: dateTime.toISOString(),
         seats_total: parseInt(formData.seats),
         price: parseFloat(formData.price),
-        notes: formData.notes,
       });
-
+      
       setSuccess(true);
       setTimeout(() => {
         router.push("/rides"); // Redirect to rides list (or my rides)

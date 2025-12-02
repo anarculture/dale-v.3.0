@@ -32,6 +32,10 @@ export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
   if (!booking.ride) return null;
 
   const date = new Date(booking.ride.date_time);
+  if (isNaN(date.getTime())) {
+    console.error("Invalid date_time:", booking.ride.date_time);
+    return null; // or display an error message
+  }
   const formattedDate = date.toLocaleDateString("es-VE", {
     weekday: "short",
     day: "numeric",
@@ -89,7 +93,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
           </div>
         </div>
 
-        <div className="flex flex-row md:flex-col justify-between items-end border-t md:border-t-0 pt-3 md:pt-0">
+
           <div className="text-right">
             <p className="text-sm text-gray-500">Precio Total</p>
             <p className="text-xl font-bold text-primary">
@@ -111,7 +115,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
             </DButton>
           )}
         </div>
-      </div>
+
     </DCard>
   );
 };

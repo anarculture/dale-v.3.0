@@ -4,8 +4,11 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { DCard, DButton, DSpinner, DPageSection, DAlert } from "@/components/ui";
+import { DCard, DButton, DSpinner, DAlert } from "@/components/ui";
+import { DPageSection } from "@/components/layout/DPageSection";
 import { User, LogOut, Car, Calendar } from "lucide-react";
+import Image from "next/image";
+import { isValidAvatarUrl } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { user, loading, signOut } = useAuth();
@@ -37,12 +40,14 @@ export default function ProfilePage() {
           <div className="md:col-span-1">
             <DCard className="h-full">
               <div className="flex flex-col items-center text-center p-4">
-                <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mb-4 text-primary-600">
-                  {user.user_metadata?.avatar_url ? (
-                    <img 
+                <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mb-4 text-primary-600 overflow-hidden relative">
+                  {user.user_metadata?.avatar_url && isValidAvatarUrl(user.user_metadata.avatar_url) ? (
+                    <Image 
                       src={user.user_metadata.avatar_url} 
                       alt="Avatar" 
-                      className="w-full h-full rounded-full object-cover"
+                      width={96}
+                      height={96}
+                      className="object-cover"
                     />
                   ) : (
                     <User size={48} />

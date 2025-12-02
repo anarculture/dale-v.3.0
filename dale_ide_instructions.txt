@@ -226,7 +226,10 @@ Tareas:
      - búsqueda/filtrado de rides.
      - creación de bookings.
      - fetch de bookings.
-   - Opcional pero recomendado: integrar TanStack Query (React Query) para cache, reintentos y estados de carga.
+   - Gestión de estado de servidor:
+      - Recomendado: SWR como alternativa ligera por defecto.
+      - TanStack Query: aceptable solo si se requieren funciones avanzadas (reintentos, sync, deduplicación) y su tamaño se justifica.
+      - Decidir según complejidad para respetar la regla de "no dependencias grandes sin justificación".
 
 2) Hooks de lógica
    - Implementar hooks para separar lógica de negocio de la UI:

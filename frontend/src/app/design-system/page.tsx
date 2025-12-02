@@ -57,7 +57,7 @@ export default function DesignSystemPage() {
 
           <DTextarea label="Notes" placeholder="Add any additional notes..." />
           
-          <DFormField label="Custom Field" helpText="This is a custom form field wrapper">
+          <DFormField id="custom-field" label="Custom Field" helpText="This is a custom form field wrapper">
             <div className="p-2 border rounded bg-gray-50">Custom Content</div>
           </DFormField>
         </div>

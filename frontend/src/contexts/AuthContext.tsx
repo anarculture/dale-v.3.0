@@ -49,8 +49,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     
     if (error) {
+      console.error("Supabase signUp error:", error);
       return { error: error.message };
     }
+    
+    // Log success for debugging or tracking
+    console.log("User signed up successfully!");
     
     return {};
   };

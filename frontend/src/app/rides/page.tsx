@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { DPageSection } from "@/components/layout/DPageSection";
 import { RideSearchForm } from "@/components/rides/RideSearchForm";
 import { RideList } from "@/components/rides/RideList";
 import { apiClient, Ride, RideSearchParams } from "@/lib/api";
+import { DSpinner } from "@/components/ui";
 
-export default function RidesPage() {
+function RidesContent() {
   const searchParams = useSearchParams();
   const [rides, setRides] = useState<Ride[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,16 +37,24 @@ export default function RidesPage() {
   }, [searchParams]);
 
   return (
+    <div className="max-w-4xl mx-auto">
+      <DPageSection 
+        title="Buscar Viaje" 
+        description="Encuentra el viaje perfecto al mejor precio."
+      >
+        <RideSearchForm />
+        <RideList rides={rides} loading={loading} />
+      </DPageSection>
+    </div>
+  );
+}
+
+export default function RidesPage() {
+  return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto">
-        <DPageSection 
-          title="Buscar Viaje" 
-          description="Encuentra el viaje perfecto al mejor precio."
-        >
-          <RideSearchForm />
-          <RideList rides={rides} loading={loading} />
-        </DPageSection>
-      </div>
+      <Suspense fallback={<div className="flex justify-center p-8"><DSpinner size="lg" /></div>}>
+        <RidesContent />
+      </Suspense>
     </AppLayout>
   );
 }

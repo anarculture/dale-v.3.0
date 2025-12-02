@@ -45,9 +45,7 @@ export default function RideDetailPage() {
     try {
       await apiClient.createBooking(ride!.id);
       router.push("/bookings");
-    } catch (err: any) {
-      console.error("Error booking ride:", err);
-      alert(err.error || "Error al reservar el viaje.");
+
     } finally {
       setBookingLoading(false);
     }
@@ -73,6 +71,18 @@ export default function RideDetailPage() {
   }
 
   const date = new Date(ride.date_time);
+  const isValidDate = !isNaN(date.getTime());
+
+  if (!isValidDate) {
+    return (
+      <AppLayout>
+        <DAlert variant="error" title="Error" description="Fecha de viaje inválida" />
+        <DButton onPress={() => router.back()} startContent={<ArrowLeft />}>
+          Volver
+        </DButton>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>

@@ -21,7 +21,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         description={helperText}
         isInvalid={!!error}
         className={cn("w-full", className)}
-        {...props}
+        {...(props as any)}
       />
     );
   }

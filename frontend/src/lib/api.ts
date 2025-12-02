@@ -83,9 +83,9 @@ class ApiClient {
     // Obtener token si está disponible
     const token = this.getToken ? await this.getToken() : null;
     
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     // Agregar token de autorización si existe

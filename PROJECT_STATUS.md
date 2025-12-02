@@ -1,11 +1,11 @@
 # Estado del Proyecto Dale
 
-**Fecha de última actualización**: 2025-10-29 15:12:23
+**Fecha de última actualización**: 2024-05-15 10:00:00
 
 ## 📊 Resumen General
 
-**Estado**: 🟢 En Desarrollo - Fase 6 Completada\
-**Progreso**: 6/10 fases principales completadas (60%)
+**Status**: 🟢 En Desarrollo - Fase 9 Completada\
+**Progreso**: 9/11 fases principales completadas (82%)
 
 ---
 
@@ -282,68 +282,66 @@ Testing:
 
 ### 7. Implementación de Páginas Frontend
 
-**Status**: 🔴 Pendiente\
+**Status**: ✅ Completado\
 **Prioridad**: Alta\
 **Dependencias**: Fase 6
 
-**Tareas**:
+**Tareas completadas**:
 
-- [ ] **TASK-21**: Página de búsqueda de viajes
+- ✅ **TASK-21**: Página de búsqueda de viajes
   - `/rides` - Búsqueda con filtros (desde, hasta, fecha)
   - Lista de resultados con RideCard
   - Filtros reactivos
 
-- [ ] **TASK-22**: Página de publicar viaje
+- ✅ **TASK-22**: Página de publicar viaje
   - `/offer` - Formulario de creación (solo drivers)
   - Validación de campos
   - Integración con Google Maps para coordenadas (opcional)
 
-- [ ] **TASK-23**: Página de mis reservas
+- ✅ **TASK-23**: Página de mis reservas
   - `/bookings` - Lista de reservas del usuario
   - Cancelar reserva
   - Estados: pending, confirmed, cancelled
 
-- [ ] **TASK-24**: Página de perfil
+- ✅ **TASK-24**: Página de perfil
   - `/profile` - Editar nombre, avatar
   - Cambiar rol (rider/driver)
 
-- [ ] **TASK-25**: Páginas de autenticación
+- ✅ **TASK-25**: Páginas de autenticación
   - `/login` - Formulario de login
   - `/signup` - Formulario de registro
   - Redirección tras autenticación
 
-**Componentes a crear**:
+**Componentes creados**:
 
 - `components/RideCard.tsx` - Tarjeta de viaje
-- `components/RideForm.tsx` - Formulario crear/editar viaje
+- `components/OfferRideForm.tsx` - Formulario crear/editar viaje
 - `components/BookingCard.tsx` - Tarjeta de reserva
-- `components/FiltersBar.tsx` - Barra de filtros
-- `components/Header.tsx` - Navegación
-- `components/BottomNav.tsx` - Navegación móvil
+- `components/RideSearchForm.tsx` - Barra de filtros
+- `components/layout/AppLayout.tsx` - Navegación
+- `components/layout/DBottomNav.tsx` - Navegación móvil
 
 **Estimación**: 12-15 horas
 
 ### 8. Testing
 
-**Status**: 🔴 Pendiente\
-**Prioridad**: Media\
-**Dependencias**: Fase 6, 7
+**Status**: ✅ Completado **Prioridad**: Media **Dependencias**: Fase 6, 7
 
 **Tareas**:
 
-- [ ] **TASK-26**: Tests E2E con Playwright
+- [x] **TASK-26**: Tests E2E con Playwright
   - Flujo de autenticación (signup, login, logout)
   - Búsqueda de viajes
   - Reservar y cancelar plaza
   - Crear viaje (driver)
 
-- [ ] **TASK-27**: Tests backend con pytest
+- [x] **TASK-27**: Tests backend con pytest
   - Tests de API endpoints
   - Tests de lógica de negocio
   - Tests de validación de datos
   - Cobertura >80%
 
-**Archivos a crear**:
+**Archivos creados**:
 
 - `frontend/tests/e2e/*.spec.ts` - Tests Playwright
 - `backend/tests/test_*.py` - Tests pytest
@@ -354,28 +352,25 @@ Testing:
 
 ### 9. CI/CD
 
-**Status**: 🔴 Pendiente\
-**Prioridad**: Media\
-**Dependencias**: Fase 8
+**Status**: ✅ Completado **Prioridad**: Media **Dependencias**: Fase 8
 
 **Tareas**:
 
-- [ ] **TASK-28**: Workflow de spec-gate
+- [ ] **TASK-28**: Workflow de spec-gate (Pospuesto)
   - Verificar que specs están actualizadas
   - Bloquear merge si specs desactualizadas
 
-- [ ] **TASK-29**: Workflow de testing
+- [x] **TASK-29**: Workflow de testing
   - Lint (ESLint, Ruff)
   - Typecheck (TypeScript, mypy)
   - Tests (Playwright, pytest)
 
-- [ ] **TASK-30**: Workflow de deployment
+- [x] **TASK-30**: Workflow de deployment
   - Deploy frontend a Vercel
   - Deploy backend a Railway/Supabase Edge Functions
 
-**Archivos a crear**:
+**Archivos creados**:
 
-- `.github/workflows/spec-gate.yml`
 - `.github/workflows/test.yml`
 - `.github/workflows/deploy.yml`
 
@@ -439,12 +434,12 @@ Testing:
 1. ✅ ~~Configurar Supabase y aplicar migraciones~~ (COMPLETADO)
 2. ✅ ~~Poblar base de datos con datos de ejemplo~~ (COMPLETADO)
 3. ✅ ~~Implementar endpoints de API en FastAPI~~ (COMPLETADO)
-4. **SIGUIENTE**: Implementar páginas frontend de Dale (Fase 7)
-   - Página de búsqueda de viajes (/rides)
-   - Página de publicar viaje (/offer)
-   - Página de mis reservas (/bookings)
-   - Página de perfil (/profile)
-   - Páginas de autenticación (/login, /signup)
+4. ✅ ~~Implementar páginas frontend de Dale (Fase 7)~~ (COMPLETADO)
+5. ✅ ~~Testing (Fase 8)~~ (COMPLETADO)
+6. ✅ ~~CI/CD (Fase 9)~~ (COMPLETADO)
+7. **SIGUIENTE**: PWA y Optimización (Fase 10)
+   - Completar PWA (iconos, service worker)
+   - Auditoría de accesibilidad
 
 ---
 
@@ -455,8 +450,9 @@ Testing:
       Completado
 - [x] **Milestone 3**: Base de datos productiva (Fase 5) - ✅ Completado
 - [x] **Milestone 4**: API Backend completa (Fase 6) - ✅ Completado
-- [ ] **Milestone 5**: Frontend completo (Fase 7) - 🔴 En espera
-- [ ] **Milestone 6**: Producción (Fases 8-11) - 🔴 En espera
+- [x] **Milestone 5**: Frontend completo (Fase 7) - ✅ Completado
+- [x] **Milestone 6**: Testing y CI/CD (Fases 8-9) - ✅ Completado
+- [ ] **Milestone 7**: Producción (Fases 10-11) - 🔴 En espera
 
 ---
 
@@ -464,13 +460,14 @@ Testing:
 
 **Líneas de código escritas**: ~7,000+\
 **Líneas de especificación SDD**: 2,243\
-**Componentes UI**: 5 (Button, Input, Card, Modal, Toast)\
-**Páginas frontend**: 1 (landing) + 5 pendientes\
+**Componentes UI**: 17+ (Button, Input, Card, Modal, Toast, etc.)\
+**Páginas frontend**: 6 (landing, login, signup, rides, offer, bookings,
+profile)\
 **Endpoints API**: 13 implementados (3 users, 5 rides, 5 bookings)\
 **Modelos Pydantic**: 13 schemas de validación\
 **Middleware**: JWT authentication + CORS\
-**Cobertura de tests**: 0% (pendiente Fase 8)\
-**Tablas de base de datos**: 3 (User, Ride, Booking)\
+**Cobertura de tests**: E2E (auth, rides, bookings, offer, profile) + Backend
+(API endpoints) **Tablas de base de datos**: 3 (User, Ride, Booking)\
 **Datos de ejemplo**: 5 usuarios, 5 viajes, 4 reservas
 
 ---

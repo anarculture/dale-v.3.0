@@ -1,14 +1,31 @@
 import React from "react";
 import { DButton } from "./DButton";
 
-interface DEmptyStateProps {
+interface DEmptyStateBaseProps {
   icon?: React.ReactNode;
   title: string;
   description: string;
+}
+
+interface DEmptyStateWithoutAction extends DEmptyStateBaseProps {
+  actionLabel?: never;
+  onAction?: never;
+  actionHref?: never;
+}
+
+interface DEmptyStateWithCallback extends DEmptyStateBaseProps {
   actionLabel?: string;
   onAction?: () => void;
+  actionHref?: never;
+}
+
+interface DEmptyStateWithHref extends DEmptyStateBaseProps {
+  actionLabel?: string;
+  onAction?: never;
   actionHref?: string;
 }
+
+type DEmptyStateProps = DEmptyStateWithoutAction | DEmptyStateWithCallback | DEmptyStateWithHref;
 
 export const DEmptyState: React.FC<DEmptyStateProps> = ({
   icon,

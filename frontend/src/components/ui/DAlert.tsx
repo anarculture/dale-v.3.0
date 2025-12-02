@@ -32,7 +32,7 @@ export const DAlert: React.FC<DAlertProps> = ({
 
   return (
     <div className={`flex p-4 mb-4 text-sm border rounded-lg ${styles[variant]} ${className}`} role="alert">
-      <Icon className="flex-shrink-0 inline w-5 h-5 mr-3" />
+      <Icon className="flex-shrink-0 inline w-5 h-5 mr-3" aria-hidden="true" />
       <div>
         {title && <span className="font-medium block mb-1">{title}</span>}
         <span>{description}</span>

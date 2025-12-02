@@ -12,12 +12,12 @@ interface RideCardProps {
 
 export const RideCard: React.FC<RideCardProps> = ({ ride }) => {
   const date = new Date(ride.date_time);
-  const formattedDate = date.toLocaleDateString("es-VE", {
+  const formattedDate = date.toLocaleDateString(undefined, {
     weekday: "short",
     day: "numeric",
     month: "short",
   });
-  const formattedTime = date.toLocaleTimeString("es-VE", {
+  const formattedTime = date.toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
   });

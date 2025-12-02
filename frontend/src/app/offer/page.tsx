@@ -4,7 +4,8 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { DCard, DPageSection, DSpinner } from "@/components/ui";
+import { DCard, DSpinner } from "@/components/ui";
+import { DPageSection } from "@/components/layout/DPageSection";
 import { OfferRideForm } from "@/components/rides/OfferRideForm";
 
 export default function OfferPage() {

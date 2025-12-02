@@ -25,7 +25,6 @@ export const LoginForm: React.FC = () => {
         setError(error);
       } else {
         router.push("/rides"); // Default redirect after login
-        router.refresh();
       }
     } catch (err) {
       setError("Ocurrió un error inesperado al iniciar sesión.");

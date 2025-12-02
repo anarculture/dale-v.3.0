@@ -159,6 +159,10 @@ fi
 # Cargar variables de entorno
 source .env 2>/dev/null || true
 
+if [ ! -z "$API_PORT" ]; then
+    BACKEND_PORT=$API_PORT
+fi
+
 log "Iniciando servicios de desarrollo..."
 
 # Iniciar Backend (FastAPI)

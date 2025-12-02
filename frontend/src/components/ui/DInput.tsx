@@ -24,8 +24,8 @@ export const DInput: React.FC<DInputProps> = ({
       isInvalid={!!error || isInvalid}
       errorMessage={error || errorMessage}
       classNames={{
-        inputWrapper: "bg-white",
         ...classNames,
+        inputWrapper: `bg-white ${classNames?.inputWrapper || ""}`,
       }}
       {...props}
     />

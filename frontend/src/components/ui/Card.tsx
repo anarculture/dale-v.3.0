@@ -17,7 +17,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           hover && "transition-all cursor-pointer",
           className
         )}
-        {...props}
+        {...(props as any)}
       >
         {children}
       </HeroUICard>

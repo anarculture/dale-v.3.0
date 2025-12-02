@@ -1,6 +1,6 @@
 'use client';
 
-import { Modal as HeroUIModal } from "@heroui/react";
+import { Modal as HeroUIModal, ModalContent, ModalHeader, ModalBody } from "@heroui/react";
 import { ReactNode } from 'react';
 
 export interface ModalProps {
@@ -26,7 +26,6 @@ export function Modal({
       onClose={onClose}
       size={size}
       hideCloseButton={!showCloseButton}
-      aria-labelledby={title ? 'modal-title' : undefined}
       motionProps={{
         variants: {
           enter: {
@@ -48,16 +47,20 @@ export function Modal({
         },
       }}
     >
-      {title && (
-        <HeroUIModal.Header>
-          <HeroUIModal.Title id="modal-title">
-            {title}
-          </HeroUIModal.Title>
-        </HeroUIModal.Header>
-      )}
-      <HeroUIModal.Body>
-        {children}
-      </HeroUIModal.Body>
+      <ModalContent>
+        {() => (
+          <>
+            {title && (
+              <ModalHeader className="flex flex-col gap-1">
+                {title}
+              </ModalHeader>
+            )}
+            <ModalBody>
+              {children}
+            </ModalBody>
+          </>
+        )}
+      </ModalContent>
     </HeroUIModal>
   );
 }

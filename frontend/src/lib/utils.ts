@@ -25,3 +25,22 @@ export function formatTime(date: Date | string): string {
 export function formatDateTime(date: Date | string): string {
   return `${formatDate(date)} - ${formatTime(date)}`;
 }
+
+export function isValidAvatarUrl(url: string): boolean {
+  try {
+    const parsedUrl = new URL(url);
+    const allowedHosts = [
+      "lh3.googleusercontent.com",
+      "avatars.githubusercontent.com",
+    ];
+    
+    // Check for exact match or subdomain match for supabase
+    return (
+      parsedUrl.protocol === "https:" &&
+      (allowedHosts.includes(parsedUrl.hostname) || 
+       parsedUrl.hostname.endsWith(".supabase.co"))
+    );
+  } catch {
+    return false;
+  }
+}

@@ -38,3 +38,11 @@ logs/
 *.swo
 *.tmp
 *.pid
+
+# Legacy
+dale.2/
+
+# Playwright
+playwright-report/
+test-results/
+test.html

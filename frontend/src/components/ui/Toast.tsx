@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
-import { toast as heroToast } from "@heroui/react";
+import { toast, Toaster } from "sonner";
 
 type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -13,27 +13,28 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const showToast = (type: ToastType, message: string, duration: number = 5000) => {
-    const heroTypeMap = {
-      success: "success" as const,
-      error: "danger" as const,
-      info: "primary" as const,
-      warning: "warning" as const,
-    };
-
-    heroToast.custom(message, {
-      className: "bg-background",
-      classNames: {
-        base: "p-4 rounded-lg border border-divider",
-        content: "text-content1",
-      },
-      color: heroTypeMap[type],
-      timeout: duration,
-    });
+    switch (type) {
+      case 'success':
+        toast.success(message, { duration });
+        break;
+      case 'error':
+        toast.error(message, { duration });
+        break;
+      case 'info':
+        toast.info(message, { duration });
+        break;
+      case 'warning':
+        toast.warning(message, { duration });
+        break;
+      default:
+        toast(message, { duration });
+    }
   };
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
+      <Toaster position="top-center" />
     </ToastContext.Provider>
   );
 }

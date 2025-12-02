@@ -25,7 +25,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const heroVariantMap: Record<string, "solid" | "bordered" | "light" | "flat" | "faded" | "shadow" | "ghost"> = {
+    const heroVariantMap: Record<NonNullable<ButtonProps['variant']>, "solid" | "bordered" | "light" | "flat" | "faded" | "shadow" | "ghost"> = {
       primary: "solid",
       secondary: "bordered",
       ghost: "light",
@@ -33,7 +33,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       outline: "bordered"
     };
 
-    const heroColorMap: Record<string, "primary" | "success" | "warning" | "secondary" | "danger" | "default"> = {
+    const heroColorMap: Record<NonNullable<ButtonProps['variant']>, "primary" | "success" | "warning" | "secondary" | "danger" | "default"> = {
       primary: "primary",
       secondary: "default",
       ghost: "default",
@@ -41,7 +41,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       outline: "default"
     };
 
-    const heroSizeMap: Record<string, "sm" | "md" | "lg"> = {
+    const heroSizeMap: Record<NonNullable<ButtonProps['size']>, "sm" | "md" | "lg"> = {
       sm: "sm",
       md: "md",
       lg: "lg"
@@ -51,7 +51,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <HeroUIButton
         ref={ref}
         variant={heroVariantMap[variant]}
-        color={heroColorMap[variant]}
+        color={heroColorMap[variant] as any}
         size={heroSizeMap[size]}
         isLoading={loading}
         isDisabled={disabled || loading}
@@ -59,7 +59,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           fullWidth && "w-full",
           className
         )}
-        {...props}
+        {...(props as any)}
       >
         {children}
       </HeroUIButton>

@@ -17,6 +17,7 @@ export const SignupForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Signup form submitted", { email, password });
     setError(null);
 
     if (password !== confirmPassword) {
@@ -33,6 +34,7 @@ export const SignupForm: React.FC = () => {
 
     try {
       const { error } = await signUp(email, password);
+      console.log("SignUp result:", { error });
       if (error) {
         setError(error);
       } else {
@@ -42,6 +44,7 @@ export const SignupForm: React.FC = () => {
         router.refresh();
       }
     } catch (err) {
+      console.error("Signup error caught:", err);
       setError("Ocurrió un error inesperado al registrarse.");
       console.error(err);
     } finally {
@@ -52,6 +55,7 @@ export const SignupForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <DAlert variant="error" description={error} />}
+      {error && <div id="debug-error" style={{ color: 'red', fontWeight: 'bold' }}>DEBUG ERROR: {error}</div>}
       
       <DInput
         label="Correo Electrónico"
