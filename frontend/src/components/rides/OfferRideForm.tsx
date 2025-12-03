@@ -1,140 +1,93 @@
-"use client";
-
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { apiClient } from "@/lib/api";
-import { DInput, DButton, DSelect, DTextarea, DAlert, DFormField } from "@/components/ui";
-import { Car, MapPin, Calendar, Clock, DollarSign, Users } from "lucide-react";
-
-const VENEZUELA_CITIES = [
-  { label: "Caracas", value: "Caracas" },
-  { label: "Valencia", value: "Valencia" },
-  { label: "Maracay", value: "Maracay" },
-  { label: "Barquisimeto", value: "Barquisimeto" },
-  { label: "Maracaibo", value: "Maracaibo" },
-  { label: "San Cristóbal", value: "San Cristóbal" },
-  { label: "Mérida", value: "Mérida" },
-  { label: "Puerto La Cruz", value: "Puerto La Cruz" },
-  { label: "Barcelona", value: "Barcelona" },
-  { label: "Puerto Ordaz", value: "Puerto Ordaz" },
-  { label: "Maturín", value: "Maturín" },
-  { label: "La Guaira", value: "La Guaira" },
-];
+import React, { useState } from 'react';
+import { DInput } from '@/components/ui/DInput';
+import { DButton } from '@/components/ui/DButton';
+import { DTextarea } from '@/components/ui/DTextarea';
+import { apiClient } from '@/lib/api';
+import { useToast } from '@/components/ui/Toast';
+import { useRouter } from 'next/navigation';
+import { MapPin, Calendar, Clock, DollarSign, Users } from 'lucide-react';
 
 export const OfferRideForm: React.FC = () => {
+  const { showToast } = useToast();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
+  
   const [formData, setFormData] = useState({
-    from_city: "",
-    to_city: "",
-    date: "",
-    time: "",
-    price: "",
-    seats: "3",
-    notes: "",
+    from_city: '',
+    to_city: '',
+    date: '',
+    time: '',
+    price: '',
+    seats: '3',
+    notes: ''
   });
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    // Reset error when user makes changes
-    if (error) setError(null);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    // Basic validation
-    if (formData.from_city === formData.to_city) {
-      setError("El origen y el destino no pueden ser la misma ciudad.");
-      setLoading(false);
+    
+    // Basic Validation
+    if (!formData.from_city || !formData.to_city || !formData.date || !formData.time || !formData.price || !formData.seats) {
+      showToast('error', 'Please fill in all required fields');
       return;
     }
 
-    const selectedDateTime = new Date(`${formData.date}T${formData.time}`);
-    
-    if (isNaN(selectedDateTime.getTime())) {
-      setError("La fecha u hora del viaje no es válida.");
-      setLoading(false);
+    // Date Validation
+    const selectedDate = new Date(`${formData.date}T${formData.time}`);
+    if (selectedDate < new Date()) {
+      showToast('error', 'Trip date cannot be in the past');
       return;
     }
-    
-    if (selectedDateTime <= new Date()) {
-      setError("La fecha y hora del viaje deben ser en el futuro.");
-      setLoading(false);
-      return;
-    }
+
+    setIsLoading(true);
 
     try {
-      // Combine date and time
-      const dateTime = new Date(`${formData.date}T${formData.time}`);
-      
-      // For MVP, we'll use hardcoded coordinates for major cities or 0,0 if not found
-      // In a real app, we would use the Google Maps API here
-      const mockLat = 10.4806;
-      const mockLon = -66.9036;
-
       await apiClient.createRide({
         from_city: formData.from_city,
-        from_lat: mockLat,
-        from_lon: mockLon,
+        from_lat: 0, // Mock lat/lon for now as we don't have geocoding yet
+        from_lon: 0,
         to_city: formData.to_city,
-        to_lat: mockLat, 
-        to_lon: mockLon,
-        date_time: dateTime.toISOString(),
+        to_lat: 0,
+        to_lon: 0,
+        date_time: selectedDate.toISOString(),
         seats_total: parseInt(formData.seats),
         price: parseFloat(formData.price),
+        notes: formData.notes
       });
-      
-      setSuccess(true);
-      setTimeout(() => {
-        router.push("/rides"); // Redirect to rides list (or my rides)
-        router.refresh();
-      }, 2000);
-    } catch (err: any) {
-      console.error("Error creating ride:", err);
-      setError(err.error || "Ocurrió un error al publicar el viaje. Inténtalo de nuevo.");
+
+      showToast('success', 'Ride published successfully!');
+      router.push('/rides');
+    } catch (error: any) {
+      console.error(error);
+      showToast('error', error.message || 'Failed to publish ride');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  if (success) {
-    return (
-      <DAlert 
-        variant="success" 
-        title="¡Viaje Publicado!" 
-        description="Tu viaje ha sido publicado exitosamente. Redirigiendo..." 
-      />
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && <DAlert variant="error" description={error} />}
-
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <DSelect
-          label="Origen"
-          placeholder="Selecciona ciudad de origen"
-          options={VENEZUELA_CITIES}
-          selectedKeys={formData.from_city ? [formData.from_city] : []}
-          onChange={(e) => handleChange("from_city", e.target.value)}
-          startContent={<MapPin className="text-gray-400" size={18} />}
+        <DInput
+          label="From"
+          name="from_city"
+          placeholder="City of departure"
+          value={formData.from_city}
+          onChange={handleChange}
+          startContent={<MapPin size={18} className="text-gray-400" />}
           isRequired
         />
-
-        <DSelect
-          label="Destino"
-          placeholder="Selecciona ciudad de destino"
-          options={VENEZUELA_CITIES}
-          selectedKeys={formData.to_city ? [formData.to_city] : []}
-          onChange={(e) => handleChange("to_city", e.target.value)}
-          startContent={<MapPin className="text-gray-400" size={18} />}
+        <DInput
+          label="To"
+          name="to_city"
+          placeholder="City of arrival"
+          value={formData.to_city}
+          onChange={handleChange}
+          startContent={<MapPin size={18} className="text-gray-400" />}
           isRequired
         />
       </div>
@@ -142,21 +95,20 @@ export const OfferRideForm: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <DInput
           type="date"
-          label="Fecha"
-          placeholder="Selecciona la fecha"
+          label="Date"
+          name="date"
           value={formData.date}
-          onChange={(e) => handleChange("date", e.target.value)}
-          startContent={<Calendar className="text-gray-400" size={18} />}
+          onChange={handleChange}
+          startContent={<Calendar size={18} className="text-gray-400" />}
           isRequired
         />
-
         <DInput
           type="time"
-          label="Hora"
-          placeholder="Selecciona la hora"
+          label="Time"
+          name="time"
           value={formData.time}
-          onChange={(e) => handleChange("time", e.target.value)}
-          startContent={<Clock className="text-gray-400" size={18} />}
+          onChange={handleChange}
+          startContent={<Clock size={18} className="text-gray-400" />}
           isRequired
         />
       </div>
@@ -164,23 +116,23 @@ export const OfferRideForm: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <DInput
           type="number"
-          label="Precio por Asiento ($)"
+          label="Price per seat"
+          name="price"
           placeholder="0.00"
           value={formData.price}
-          onChange={(e) => handleChange("price", e.target.value)}
-          startContent={<DollarSign className="text-gray-400" size={18} />}
+          onChange={handleChange}
+          startContent={<DollarSign size={18} className="text-gray-400" />}
           min={0}
-          step="0.5"
+          step="0.01"
           isRequired
         />
-
         <DInput
           type="number"
-          label="Asientos Disponibles"
-          placeholder="3"
+          label="Available seats"
+          name="seats"
           value={formData.seats}
-          onChange={(e) => handleChange("seats", e.target.value)}
-          startContent={<Users className="text-gray-400" size={18} />}
+          onChange={handleChange}
+          startContent={<Users size={18} className="text-gray-400" />}
           min={1}
           max={8}
           isRequired
@@ -188,22 +140,19 @@ export const OfferRideForm: React.FC = () => {
       </div>
 
       <DTextarea
-        label="Notas del Viaje"
-        placeholder="Ej: Salgo puntual, no fumar, espacio para maletas medianas..."
+        label="Trip details (optional)"
+        name="notes"
+        placeholder="Meeting point, pet policy, music preference..."
         value={formData.notes}
-        onChange={(e) => handleChange("notes", e.target.value)}
-        minRows={3}
+        onChange={handleChange}
       />
 
-      <DButton 
-        type="submit" 
-        color="primary" 
-        size="lg" 
-        fullWidth 
-        isLoading={loading}
-        startContent={!loading && <Car />}
+      <DButton
+        type="submit"
+        className="w-full h-12 text-lg font-bold"
+        isLoading={isLoading}
       >
-        Publicar Viaje
+        Publish Ride
       </DButton>
     </form>
   );

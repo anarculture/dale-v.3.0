@@ -1,47 +1,17 @@
-"use client";
+'use client';
 
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { AppLayout } from "@/components/layout/AppLayout";
-import { DCard, DSpinner } from "@/components/ui";
-import { DPageSection } from "@/components/layout/DPageSection";
-import { OfferRideForm } from "@/components/rides/OfferRideForm";
+import React from 'react';
+import { OfferRideForm } from '@/components/rides/OfferRideForm';
 
 export default function OfferPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading, router]);
-
-  if (loading) {
-    return (
-      <AppLayout>
-        <DSpinner fullScreen />
-      </AppLayout>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
   return (
-    <AppLayout>
-      <div className="max-w-3xl mx-auto">
-        <DPageSection 
-          title="Publicar un Viaje" 
-          description="Comparte tu auto y reduce costos. Llena los detalles de tu viaje a continuación."
-        >
-          <DCard className="p-2 sm:p-4">
-            <OfferRideForm />
-          </DCard>
-        </DPageSection>
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Publish a Ride</h1>
+        <p className="text-gray-600">Share your journey and save on travel costs.</p>
       </div>
-    </AppLayout>
+      
+      <OfferRideForm />
+    </div>
   );
 }

@@ -39,7 +39,7 @@ Instrucciones generales para la IA del IDE
    - Autenticación: Supabase Auth con JWT; el frontend obtiene el token y lo envía al backend en cabecera Authorization.
 
 2. Metodología de trabajo (SDD + Agile)
-   - Siempre leer primero las especificaciones existentes (.spec/ en el repo v3) y el Plan de Proyecto.
+   - Siempre leer primero las especificaciones existentes (specs/ en el repo v3) y el Plan de Proyecto.
    - Respetar el flujo “especificación → implementación → pruebas”.
    - No inventar nuevas funcionalidades grandes fuera del plan; si es necesario extender, proponerlo como comentario estructurado.
    - Mantener el código alineado con las historias de usuario y criterios de aceptación del Plan.

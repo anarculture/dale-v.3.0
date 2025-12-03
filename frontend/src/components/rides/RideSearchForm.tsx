@@ -1,77 +1,89 @@
-"use client";
+import React, { useState } from 'react';
+import { DInput } from '@/components/ui/DInput';
+import { DButton } from '@/components/ui/DButton';
+import { RideSearchParams } from '@/lib/api';
+import { Search, MapPin, Calendar } from 'lucide-react';
 
-import React, { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { DInput, DButton, DSelect, DCard } from "@/components/ui";
-import { Search, MapPin, Calendar } from "lucide-react";
+interface RideSearchFormProps {
+  onSearch: (params: RideSearchParams) => void;
+  isLoading?: boolean;
+}
 
-const VENEZUELA_CITIES = [
-  { label: "Cualquiera", value: "" },
-  { label: "Caracas", value: "Caracas" },
-  { label: "Valencia", value: "Valencia" },
-  { label: "Maracay", value: "Maracay" },
-  { label: "Barquisimeto", value: "Barquisimeto" },
-  { label: "Maracaibo", value: "Maracaibo" },
-  { label: "San Cristóbal", value: "San Cristóbal" },
-  { label: "Mérida", value: "Mérida" },
-  { label: "Puerto La Cruz", value: "Puerto La Cruz" },
-  { label: "Barcelona", value: "Barcelona" },
-  { label: "Puerto Ordaz", value: "Puerto Ordaz" },
-  { label: "Maturín", value: "Maturín" },
-  { label: "La Guaira", value: "La Guaira" },
-];
+export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, isLoading }) => {
+  const [fromCity, setFromCity] = useState('');
+  const [toCity, setToCity] = useState('');
+  const [date, setDate] = useState('');
 
-export const RideSearchForm: React.FC = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const [fromCity, setFromCity] = useState(searchParams.get("from_city") || "");
-  const [toCity, setToCity] = useState(searchParams.get("to_city") || "");
-  const [date, setDate] = useState(searchParams.get("date") || "");
-
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (fromCity) params.set("from_city", fromCity);
-    if (toCity) params.set("to_city", toCity);
-    if (date) params.set("date", date);
-
-    router.push(`/rides?${params.toString()}`);
+    onSearch({
+      from_city: fromCity || undefined,
+      to_city: toCity || undefined,
+      date: date || undefined,
+    });
   };
 
   return (
-    <DCard className="mb-6">
-      <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <DSelect
-          label="Origen"
-          placeholder="Origen"
-          options={VENEZUELA_CITIES}
-          selectedKeys={fromCity ? [fromCity] : []}
-          onChange={(e) => setFromCity(e.target.value)}
-          startContent={<MapPin className="text-gray-400" size={16} />}
-        />
-        
-        <DSelect
-          label="Destino"
-          placeholder="Destino"
-          options={VENEZUELA_CITIES}
-          selectedKeys={toCity ? [toCity] : []}
-          onChange={(e) => setToCity(e.target.value)}
-          startContent={<MapPin className="text-gray-400" size={16} />}
-        />
-
-        <DInput
-          type="date"
-          label="Fecha"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          startContent={<Calendar className="text-gray-400" size={16} />}
-        />
-
-        <DButton type="submit" color="primary" startContent={<Search size={18} />}>
-          Buscar
-        </DButton>
+    <div className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-3xl shadow-xl text-white">
+      <h2 className="text-3xl font-bold mb-6 text-center">Find your next ride</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex-1 w-full">
+          <DInput
+            label="Leaving from"
+            placeholder="City"
+            value={fromCity}
+            onChange={(e) => setFromCity(e.target.value)}
+            startContent={<MapPin className="text-gray-400" size={18} />}
+            classNames={{
+              inputWrapper: "bg-white/10 border-white/20 text-white placeholder:text-white/60 hover:bg-white/20 focus-within:bg-white/20",
+              input: "text-white placeholder:text-white/60",
+              label: "text-white/80"
+            }}
+            variant="flat"
+          />
+        </div>
+        <div className="flex-1 w-full">
+          <DInput
+            label="Going to"
+            placeholder="City"
+            value={toCity}
+            onChange={(e) => setToCity(e.target.value)}
+            startContent={<MapPin className="text-gray-400" size={18} />}
+            classNames={{
+              inputWrapper: "bg-white/10 border-white/20 text-white placeholder:text-white/60 hover:bg-white/20 focus-within:bg-white/20",
+              input: "text-white placeholder:text-white/60",
+              label: "text-white/80"
+            }}
+            variant="flat"
+          />
+        </div>
+        <div className="w-full md:w-48">
+          <DInput
+            type="date"
+            label="Date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            startContent={<Calendar className="text-gray-400" size={18} />}
+            classNames={{
+              inputWrapper: "bg-white/10 border-white/20 text-white placeholder:text-white/60 hover:bg-white/20 focus-within:bg-white/20",
+              input: "text-white placeholder:text-white/60",
+              label: "text-white/80"
+            }}
+            variant="flat"
+          />
+        </div>
+        <div className="w-full md:w-auto">
+          <DButton
+            type="submit"
+            color="secondary"
+            className="w-full md:w-auto h-14 px-8 font-bold text-lg shadow-lg"
+            isLoading={isLoading}
+            leftIcon={<Search size={20} />}
+          >
+            Search
+          </DButton>
+        </div>
       </form>
-    </DCard>
+    </div>
   );
 };

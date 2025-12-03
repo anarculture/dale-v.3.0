@@ -1,82 +1,97 @@
-"use client";
-
-import React from "react";
-import Link from "next/link";
-import { Ride } from "@/lib/api";
-import { DCard, DBadge } from "@/components/ui";
-import { Calendar, Clock, User, ArrowRight, Users } from "lucide-react";
+import React from 'react';
+import { DCard } from '@/components/ui/DCard';
+import { Ride } from '@/lib/api';
+import { User, MapPin, Clock } from 'lucide-react';
+import { Avatar } from '@heroui/react';
 
 interface RideCardProps {
   ride: Ride;
+  onClick?: () => void;
 }
 
-export const RideCard: React.FC<RideCardProps> = ({ ride }) => {
-  const date = new Date(ride.date_time);
-  const formattedDate = date.toLocaleDateString(undefined, {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-  const formattedTime = date.toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+export const RideCard: React.FC<RideCardProps> = ({ ride, onClick }) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true,
+    }).format(date);
+  };
+
+  // Mock arrival time (2 hours later) for MVP since backend might not provide it yet
+  // or just use the same date if it's a single point. 
+  // Assuming ride.date_time is departure.
+  const departureDate = new Date(ride.date_time);
+  const arrivalDate = new Date(departureDate.getTime() + 2 * 60 * 60 * 1000); // +2 hours mock
 
   return (
-    <Link href={`/rides/${ride.id}`} className="block group">
-      <DCard className="transition-shadow hover:shadow-md cursor-pointer h-full">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
-          
-          {/* Left: Route & Time */}
-          <div className="flex-grow space-y-3">
-            <div className="flex items-center gap-2 text-gray-500 text-sm">
-              <Calendar size={16} />
-              <span className="capitalize">{formattedDate}</span>
-              <span className="mx-1">•</span>
-              <Clock size={16} />
-              <span>{formattedTime}</span>
+    <DCard 
+      className="hover:shadow-md transition-shadow cursor-pointer border border-gray-100" 
+      noPadding
+      isPressable
+      onPress={onClick}
+    >
+      <div className="p-4 flex flex-row justify-between items-stretch">
+        {/* Left: Route Info */}
+        <div className="flex flex-col flex-1 gap-4">
+          {/* Departure */}
+          <div className="flex flex-row gap-3 items-start">
+            <div className="flex flex-col items-center gap-1 min-w-[60px]">
+              <span className="font-bold text-lg text-gray-900">{formatDate(ride.date_time)}</span>
+              {/* <span className="text-xs text-gray-500">Duration</span> */}
             </div>
-
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-primary" />
-                <div className="w-0.5 h-8 bg-gray-200" />
-                <div className="w-2 h-2 rounded-full bg-primary" />
-              </div>
-              <div className="flex flex-col gap-4">
-                <span className="font-semibold text-lg">{ride.from_city}</span>
-                <span className="font-semibold text-lg">{ride.to_city}</span>
-              </div>
+            <div className="flex flex-col items-center pt-1.5 h-full">
+              <div className="w-3 h-3 rounded-full border-2 border-gray-800 bg-white z-10"></div>
+              <div className="w-0.5 bg-gray-300 flex-1 my-1"></div>
             </div>
-
-            <div className="flex items-center gap-2 mt-2">
-              <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-                {ride.driver?.avatar_url ? (
-                  <img src={ride.driver.avatar_url} alt="Driver" className="w-full h-full rounded-full" />
-                ) : (
-                  <User size={14} />
-                )}
-              </div>
-              <span className="text-sm text-gray-600">{ride.driver?.name || "Conductor"}</span>
+            <div className="flex flex-col pt-0.5">
+              <span className="font-bold text-lg text-gray-800">{ride.from_city}</span>
+              <span className="text-sm text-gray-500 truncate max-w-[150px]">{ride.from_lat.toFixed(2)}, {ride.from_lon.toFixed(2)}</span>
             </div>
           </div>
 
-          {/* Right: Price & Seats */}
-          <div className="flex flex-row sm:flex-col justify-between sm:items-end sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 mt-2 sm:mt-0">
-            <div>
-              <span className="text-2xl font-bold text-primary">
-                ${ride.price?.toFixed(2)}
-              </span>
-              <span className="text-xs text-gray-500 block">por asiento</span>
+          {/* Arrival */}
+          <div className="flex flex-row gap-3 items-start">
+            <div className="flex flex-col items-center gap-1 min-w-[60px]">
+              <span className="font-bold text-lg text-gray-500">{formatDate(arrivalDate.toISOString())}</span>
             </div>
-
-            <div className="flex items-center gap-1 text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded-full">
-              <Users size={14} />
-              <span>{ride.seats_available} disp.</span>
+            <div className="flex flex-col items-center pt-1.5">
+              <div className="w-3 h-3 rounded-full border-2 border-gray-800 bg-gray-800 z-10"></div>
+            </div>
+            <div className="flex flex-col pt-0.5">
+              <span className="font-bold text-lg text-gray-800">{ride.to_city}</span>
+              <span className="text-sm text-gray-500 truncate max-w-[150px]">{ride.to_lat.toFixed(2)}, {ride.to_lon.toFixed(2)}</span>
             </div>
           </div>
         </div>
-      </DCard>
-    </Link>
+
+        {/* Right: Price & Driver */}
+        <div className="flex flex-col justify-between items-end pl-4 border-l border-gray-100 min-w-[100px]">
+          <div className="text-2xl font-bold text-green-600">
+            ${ride.price?.toFixed(2) || '0.00'}
+          </div>
+          
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700 hidden sm:block">
+                {ride.driver?.name || 'Driver'}
+              </span>
+              <Avatar 
+                src={ride.driver?.avatar_url || undefined} 
+                name={ride.driver?.name?.charAt(0) || 'D'}
+                size="sm"
+                isBordered
+                color="primary"
+              />
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <User size={12} />
+              <span>{ride.seats_available} seats</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </DCard>
   );
 };
