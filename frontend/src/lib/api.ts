@@ -130,6 +130,10 @@ class ApiClient {
         } as ApiError;
       }
 
+      if (data && typeof data === 'object' && 'data' in data && 'success' in data) {
+        return data.data;
+      }
+
       return data;
     } catch (error) {
       if ((error as ApiError).error) {

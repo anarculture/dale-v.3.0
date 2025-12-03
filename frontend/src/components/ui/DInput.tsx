@@ -17,17 +17,24 @@ export const DInput: React.FC<DInputProps> = ({
   ...props
 }) => {
   return (
-    <Input
-      label={label}
-      variant={variant}
-      color={error ? "danger" : color}
-      isInvalid={!!error || isInvalid}
-      errorMessage={error || errorMessage}
-      classNames={{
-        ...classNames,
-        inputWrapper: `bg-white ${classNames?.inputWrapper || ""}`,
-      }}
-      {...props}
-    />
+    <div className="flex flex-col gap-1.5 w-full">
+      {label && (
+        <span className="text-small font-medium text-foreground-700">
+          {label}
+        </span>
+      )}
+      <Input
+        variant={variant}
+        color={error ? "danger" : color}
+        isInvalid={!!error || isInvalid}
+        errorMessage={error || errorMessage}
+        labelPlacement="outside"
+        classNames={{
+          ...classNames,
+          inputWrapper: `bg-white ${classNames?.inputWrapper || ""}`,
+        }}
+        {...props}
+      />
+    </div>
   );
 };

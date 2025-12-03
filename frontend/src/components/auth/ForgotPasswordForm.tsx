@@ -1,33 +1,32 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { DInput, DButton, DAlert, DFormField } from "@/components/ui";
+import { DInput, DButton, DAlert } from "@/components/ui";
 import Link from "next/link";
 
-export const LoginForm: React.FC = () => {
+export const ForgotPasswordForm: React.FC = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
-  const router = useRouter();
+  const { resetPassword } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setMessage(null);
     setLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
+      const { error, message } = await resetPassword(email);
       if (error) {
         setError(error);
       } else {
-        router.push("/rides"); // Default redirect after login
+        setMessage(message || "Se ha enviado un correo para restablecer tu contraseña.");
       }
     } catch (err) {
-      setError("Ocurrió un error inesperado al iniciar sesión.");
+      setError("Ocurrió un error inesperado.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -37,6 +36,7 @@ export const LoginForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && <DAlert variant="error" description={error} />}
+      {message && <DAlert variant="success" description={message} />}
       
       <DInput
         label="Correo Electrónico"
@@ -46,24 +46,6 @@ export const LoginForm: React.FC = () => {
         onChange={(e) => setEmail(e.target.value)}
         isRequired
       />
-      
-      <DInput
-        label="Contraseña"
-        type="password"
-        placeholder="••••••••"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        isRequired
-      />
-
-      <div className="flex justify-end">
-        <Link 
-          href="/forgot-password" 
-          className="text-sm text-primary hover:text-primary-dark"
-        >
-          ¿Olvidaste tu contraseña?
-        </Link>
-      </div>
 
       <DButton 
         type="submit" 
@@ -71,13 +53,12 @@ export const LoginForm: React.FC = () => {
         isLoading={loading}
         color="primary"
       >
-        Iniciar Sesión
+        Enviar Instrucciones
       </DButton>
 
       <div className="text-center text-sm text-gray-600 mt-4">
-        ¿No tienes una cuenta?{" "}
-        <Link href="/signup" className="text-primary font-medium hover:underline">
-          Regístrate
+        <Link href="/login" className="text-primary font-medium hover:underline">
+          Volver al inicio de sesión
         </Link>
       </div>
     </form>

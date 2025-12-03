@@ -19,7 +19,9 @@ export default function RidesPage() {
     setError(null);
     try {
       const data = await apiClient.searchRides(params);
-      setRides(data);
+      console.log('API Response Data:', data);
+      console.log('Is Array:', Array.isArray(data));
+      setRides(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to fetch rides:', err);
       setError('Failed to load rides. Please try again.');

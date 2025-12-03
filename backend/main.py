@@ -4,6 +4,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import Optional
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 from supabase import create_client, Client
 import uvicorn
 from datetime import datetime
@@ -29,8 +32,10 @@ supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 supabase: Optional[Client]
 if supabase_url and supabase_key:
+    print(f"Supabase configured with URL: {supabase_url}")
     supabase = create_client(supabase_url, supabase_key)
 else:
+    print("Supabase NOT configured")
     supabase = None
 
 
