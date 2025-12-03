@@ -17,7 +17,7 @@ export const DInput: React.FC<DInputProps> = ({
   ...props
 }) => {
   return (
-    <div className="flex flex-col gap-1.5 w-full">
+    <div className="flex flex-col gap-1.5 w-full" suppressHydrationWarning>
       {label && (
         <span className="text-small font-medium text-foreground-700">
           {label}

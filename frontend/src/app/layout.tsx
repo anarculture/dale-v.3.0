@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { HeroUIProvider } from "@heroui/react";
@@ -10,12 +10,17 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#00AFF5",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
   title: "Dale - Comparte viajes y ahorra",
   description: "Encuentra y comparte viajes de forma fácil, económica y sostenible con Dale.",
   manifest: "/manifest.json",
-  themeColor: "#00AFF5",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -30,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-neutral-50`}>
+      <body className={`${inter.variable} font-sans antialiased bg-neutral-50`} suppressHydrationWarning>
         <HeroUIProvider>
           <AuthProvider>
             <ToastProvider>

@@ -1,9 +1,33 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { OfferRideForm } from '@/components/rides/OfferRideForm';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { DSpinner } from '@/components/ui/DSpinner';
 
 export default function OfferPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <DSpinner size="lg" label="Checking authentication..." />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <div className="mb-8 text-center">

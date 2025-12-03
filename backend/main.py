@@ -20,7 +20,7 @@ app = FastAPI(title="Dale API", description="API para la aplicación de rides Da
 # Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3002", "http://127.0.0.1:3002"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,7 +32,7 @@ supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 supabase: Optional[Client]
 if supabase_url and supabase_key:
-    print(f"Supabase configured with URL: {supabase_url}")
+    print("Supabase configured successfully")
     supabase = create_client(supabase_url, supabase_key)
 else:
     print("Supabase NOT configured")

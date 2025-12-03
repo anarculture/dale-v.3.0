@@ -87,7 +87,7 @@ export const RideCard: React.FC<RideCardProps> = ({ ride, onClick }) => {
             </div>
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <User size={12} />
-              <span>{ride.seats_available} seats</span>
+              <span>{ride.seats_available ?? 0} seats</span>
             </div>
           </div>
         </div>

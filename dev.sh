@@ -202,7 +202,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-placeholder}
 EOF
 fi
 
-nohup npm run dev > ../$LOG_DIR/frontend.log 2>&1 &
+nohup env PORT=$FRONTEND_PORT npm run dev > ../$LOG_DIR/frontend.log 2>&1 &
 FRONTEND_PID=$!
 cd ..
 echo $FRONTEND_PID > frontend.pid

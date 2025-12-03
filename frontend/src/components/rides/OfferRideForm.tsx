@@ -62,7 +62,9 @@ export const OfferRideForm: React.FC = () => {
       showToast('success', 'Ride published successfully!');
       router.push('/rides');
     } catch (error: any) {
-      console.error(error);
+      console.error('Submit Error:', error);
+      console.log('Error keys:', Object.keys(error));
+      console.log('Error stringified:', JSON.stringify(error, null, 2));
       showToast('error', error.message || 'Failed to publish ride');
     } finally {
       setIsLoading(false);
@@ -151,6 +153,7 @@ export const OfferRideForm: React.FC = () => {
         type="submit"
         className="w-full h-12 text-lg font-bold"
         isLoading={isLoading}
+        disabled={isLoading}
       >
         Publish Ride
       </DButton>

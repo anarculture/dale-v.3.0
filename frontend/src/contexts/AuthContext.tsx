@@ -43,6 +43,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Initialize API client token getter
+  useEffect(() => {
+    // Import dynamically to avoid circular dependencies if any, 
+    // though here it should be fine as api.ts doesn't import AuthContext
+    const { apiClient } = require('@/lib/api');
+    
+    apiClient.setTokenGetter(async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.access_token ?? null;
+    });
+  }, []);
+
   const signUp = async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({
       email,

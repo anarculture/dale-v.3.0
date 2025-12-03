@@ -51,6 +51,7 @@ export const ForgotPasswordForm: React.FC = () => {
         type="submit" 
         fullWidth 
         isLoading={loading}
+        disabled={loading || !!message}
         color="primary"
       >
         Enviar Instrucciones
