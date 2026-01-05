@@ -7,6 +7,9 @@
   "background_color": "#FFFFFF",
   "theme_color": "#00AFF5",
   "orientation": "portrait",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["travel", "transportation"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -20,5 +23,7 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }
