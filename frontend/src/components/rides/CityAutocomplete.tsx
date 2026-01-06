@@ -4,6 +4,16 @@ import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/Input';
 import { searchPlaces, PlaceSuggestion } from '@/lib/maps';
 import { cn } from '@/lib/utils';
+import { MapPin } from 'lucide-react';
+
+// Top 5 ciudades de Venezuela por población - rutas más transitadas
+const POPULAR_CITIES = [
+  { name: 'Caracas', description: 'Distrito Capital, Venezuela' },
+  { name: 'Maracaibo', description: 'Estado Zulia, Venezuela' },
+  { name: 'Valencia', description: 'Estado Carabobo, Venezuela' },
+  { name: 'Barquisimeto', description: 'Estado Lara, Venezuela' },
+  { name: 'Maracay', description: 'Estado Aragua, Venezuela' },
+];
 
 interface CityAutocompleteProps {
   label: string;
@@ -25,13 +35,20 @@ export function CityAutocomplete({
   const [suggestions, setSuggestions] = useState<PlaceSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPopular, setShowPopular] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Filtrar ciudades populares según el input
+  const filteredPopularCities = POPULAR_CITIES.filter(city =>
+    city.name.toLowerCase().includes(value.toLowerCase())
+  );
 
   // Cerrar sugerencias al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
+        setShowPopular(false);
       }
     }
 
@@ -48,9 +65,12 @@ export function CityAutocomplete({
           const results = await searchPlaces(value);
           setSuggestions(results);
           setShowSuggestions(results.length > 0);
+          setShowPopular(false);
         } catch (error) {
           console.error('Error searching places:', error);
           setSuggestions([]);
+          // Si falla la API, mostrar ciudades populares con filtro
+          setShowPopular(filteredPopularCities.length > 0);
         } finally {
           setLoading(false);
         }
@@ -58,7 +78,7 @@ export function CityAutocomplete({
         setSuggestions([]);
         setShowSuggestions(false);
       }
-    }, 300); // Debounce de 300ms
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [value]);
@@ -67,10 +87,24 @@ export function CityAutocomplete({
     onChange(e.target.value);
   };
 
+  const handleInputFocus = () => {
+    // Mostrar ciudades populares al enfocar si no hay input o hay pocas letras
+    if (value.length < 3) {
+      setShowPopular(true);
+    }
+  };
+
   const handleSelectSuggestion = (suggestion: PlaceSuggestion) => {
     onChange(suggestion.main_text, suggestion.place_id);
     setShowSuggestions(false);
+    setShowPopular(false);
     setSuggestions([]);
+  };
+
+  const handleSelectPopularCity = (cityName: string) => {
+    onChange(cityName);
+    setShowPopular(false);
+    setShowSuggestions(false);
   };
 
   return (
@@ -79,6 +113,7 @@ export function CityAutocomplete({
         label={label}
         value={value}
         onChange={handleInputChange}
+        onFocus={handleInputFocus}
         error={error}
         placeholder={placeholder}
         required={required}
@@ -111,7 +146,35 @@ export function CityAutocomplete({
         </div>
       )}
 
-      {/* Sugerencias */}
+      {/* Ciudades populares de Venezuela */}
+      {showPopular && !showSuggestions && filteredPopularCities.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-neutral-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+          <div className="p-2 border-b border-neutral-100">
+            <p className="px-3 py-1 text-xs text-[#6b7280] uppercase tracking-wide">
+              Ciudades populares
+            </p>
+          </div>
+          {filteredPopularCities.map((city) => (
+            <button
+              key={city.name}
+              type="button"
+              onClick={() => handleSelectPopularCity(city.name)}
+              className={cn(
+                'w-full text-left px-4 py-3 hover:bg-[#fff7ed] transition-colors',
+                'border-b border-neutral-100 last:border-b-0 flex items-center gap-3'
+              )}
+            >
+              <MapPin className="w-4 h-4 text-[#fd5810]" />
+              <div>
+                <p className="font-medium text-neutral-900">{city.name}</p>
+                <p className="text-sm text-neutral-500">{city.description}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Sugerencias de Google Places */}
       {showSuggestions && suggestions.length > 0 && (
         <div className="absolute z-50 w-full mt-1 bg-white border border-neutral-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
           {suggestions.map((suggestion) => (
@@ -120,7 +183,7 @@ export function CityAutocomplete({
               type="button"
               onClick={() => handleSelectSuggestion(suggestion)}
               className={cn(
-                'w-full text-left px-4 py-3 hover:bg-neutral-50 transition-colors',
+                'w-full text-left px-4 py-3 hover:bg-[#fff7ed] transition-colors',
                 'border-b border-neutral-100 last:border-b-0'
               )}
             >

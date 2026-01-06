@@ -1,25 +1,68 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { OfferRideForm } from '@/components/rides/OfferRideForm';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { DSpinner } from '@/components/ui/DSpinner';
+import { useAuth } from '@/contexts/AuthContext';
+import { apiClient } from '@/lib/api';
+import { toast } from 'sonner';
+import { OfferRideForm, OfferRideData } from '@/components/rides/OfferRideForm';
 
 export default function OfferPage() {
-  const { user, loading } = useAuth();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!loading && !user) {
+  // Redirect to login if not authenticated
+  React.useEffect(() => {
+    if (!authLoading && !user) {
+      toast.error('Debes iniciar sesión para publicar un viaje');
       router.push('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading) {
+  const handleSubmit = async (data: OfferRideData) => {
+    if (!user) {
+      toast.error('Debes iniciar sesión para publicar un viaje');
+      router.push('/login');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // Combine date and time into ISO format
+      const dateTime = `${data.date}T${data.time}:00`;
+
+      await apiClient.createRide({
+        from_city: data.from_city,
+        from_lat: 0, // Will be geocoded on backend or updated later
+        from_lon: 0,
+        to_city: data.to_city,
+        to_lat: 0,
+        to_lon: 0,
+        date_time: dateTime,
+        seats_total: data.seats_total,
+        price: data.price,
+        notes: data.notes || undefined,
+      });
+
+      toast.success('¡Viaje publicado exitosamente!');
+      router.push('/rides');
+    } catch (error) {
+      console.error('Error creating ride:', error);
+      toast.error('Error al publicar el viaje. Intenta de nuevo.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  if (authLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <DSpinner size="lg" label="Checking authentication..." />
+      <div className="min-h-screen bg-[#fffbf3] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#fd5810] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -29,13 +72,10 @@ export default function OfferPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Publish a Ride</h1>
-        <p className="text-gray-600">Share your journey and save on travel costs.</p>
-      </div>
-      
-      <OfferRideForm />
-    </div>
+    <OfferRideForm 
+      onSubmit={handleSubmit} 
+      onBack={handleBack}
+      isLoading={submitting} 
+    />
   );
 }

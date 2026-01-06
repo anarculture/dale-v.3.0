@@ -270,7 +270,7 @@ export function RideForm({ onSubmit, loading = false }: RideFormProps) {
                     }
                   }}
                   error={errors.from_city}
-                  placeholder="Madrid, Barcelona..."
+                  placeholder="Caracas, Maracaibo..."
                   required
                 />
 
@@ -284,7 +284,7 @@ export function RideForm({ onSubmit, loading = false }: RideFormProps) {
                     }
                   }}
                   error={errors.to_city}
-                  placeholder="Valencia, Sevilla..."
+                  placeholder="Valencia, Barquisimeto..."
                   required
                 />
               </div>
@@ -348,7 +348,7 @@ export function RideForm({ onSubmit, loading = false }: RideFormProps) {
                 />
 
                 <Input
-                  label="Precio por plaza (€)"
+                  label="Precio por plaza ($)"
                   type="number"
                   min="0"
                   step="0.5"
@@ -419,7 +419,7 @@ export function RideForm({ onSubmit, loading = false }: RideFormProps) {
                     <div>
                       <p className="text-sm text-neutral-500">Precio</p>
                       <p className="font-medium">
-                        {formData.price > 0 ? `€${formData.price.toFixed(2)}` : 'Gratis'}
+                        {formData.price > 0 ? `$${formData.price.toFixed(2)}` : 'Gratis'}
                       </p>
                     </div>
                   </div>
@@ -434,7 +434,7 @@ export function RideForm({ onSubmit, loading = false }: RideFormProps) {
                 <textarea
                   value={formData.notes}
                   onChange={(e) => updateField('notes', e.target.value)}
-                  placeholder="Ej: Salida desde la estación de Atocha. Acepto mascotas. Parada en el camino..."
+                  placeholder="Ej: Salida desde el centro comercial. Acepto mascotas. Parada en el camino..."
                   rows={4}
                   maxLength={500}
                   className="block w-full px-4 py-3 rounded-xl border border-neutral-300 hover:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
