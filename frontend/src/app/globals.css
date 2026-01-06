@@ -1,5 +1,83 @@
 @import "tailwindcss";
 
+/* Agrandir Font Family */
+@font-face {
+  font-family: "Agrandir";
+  src: url("/fonts/Agrandir-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir";
+  src: url("/fonts/Agrandir-TextBold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir";
+  src: url("/fonts/Agrandir-ThinItalic.otf") format("opentype");
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir";
+  src: url("/fonts/Agrandir-GrandLight.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir";
+  src: url("/fonts/Agrandir-GrandHeavy.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir Wide";
+  src: url("/fonts/Agrandir-WideLight.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir Wide";
+  src: url("/fonts/Agrandir-WideBlackItalic.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir Narrow";
+  src: url("/fonts/Agrandir-Narrow.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Agrandir Tight";
+  src: url("/fonts/Agrandir-Tight.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Base body font */
+body {
+  font-family: "Agrandir", system-ui, sans-serif;
+}
+
 @layer utilities {
   @keyframes slide-in-right {
     from {
@@ -14,5 +92,12 @@
 
   .animate-slide-in-right {
     animation: slide-in-right 0.3s ease-out;
+  }
+
+  /* Logo style with Agrandir Wide Black Italic */
+  .font-logo {
+    font-family: "Agrandir Wide", "Agrandir", sans-serif;
+    font-style: italic;
+    font-weight: 900;
   }
 }

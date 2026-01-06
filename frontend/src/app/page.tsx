@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { DaleLogo } from '@/components/ui/DaleLogo';
 
 export default function HomePage() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function HomePage() {
       <div className="lg:hidden flex flex-col items-center justify-between p-6 pb-8 min-h-screen">
         {/* Logo */}
         <div className="pt-16">
-          <h1 className="text-4xl font-bold text-[#fd5810] tracking-tight">Dale!</h1>
+          <DaleLogo size="lg" />
         </div>
         
         {/* Central Illustration & Text */}

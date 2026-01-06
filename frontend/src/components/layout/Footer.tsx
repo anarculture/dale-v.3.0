@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { DaleLogo } from '@/components/ui/DaleLogo';
 
 export function Footer() {
   return (
@@ -7,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-primary">Dale</h3>
+            <DaleLogo size="md" />
             <p className="text-neutral-500 text-sm leading-relaxed">
               La forma más inteligente de viajar. Conecta con personas, comparte gastos y reduce tu huella de carbono.
             </p>
