@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { X, ChevronLeft } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { 
   format, 
   addMonths, 
+  subMonths,
   startOfMonth, 
   endOfMonth, 
   eachDayOfInterval, 
@@ -38,6 +39,8 @@ export function FullScreenDatePicker({
   variant = 'fullscreen',
   className
 }: FullScreenDatePickerProps) {
+  const [currentMonth, setCurrentMonth] = useState(selectedDate || new Date());
+
   // Prevent body scroll when open ONLY if fullscreen
   useEffect(() => {
     if (isOpen && variant === 'fullscreen') {
@@ -52,9 +55,8 @@ export function FullScreenDatePicker({
 
   if (!isOpen) return null;
 
-  // Generate next 12 months
-  const months = Array.from({ length: 12 }, (_, i) => addMonths(new Date(), i));
   const normalizedMinDate = startOfDay(minDate);
+  const isFullscreen = variant === 'fullscreen';
 
   const handleDateClick = (date: Date) => {
     if (isBefore(date, normalizedMinDate)) return;
@@ -62,20 +64,107 @@ export function FullScreenDatePicker({
     onClose();
   };
 
-  const weekDays = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
-  const isFullscreen = variant === 'fullscreen';
+  const handlePrevMonth = () => {
+    setCurrentMonth(prev => subMonths(prev, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(prev => addMonths(prev, 1));
+  };
+
+  const weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+
+  // EMBEDDED VARIANT (Desktop): Single month with navigation
+  if (!isFullscreen) {
+    const firstDayOfMonth = startOfMonth(currentMonth);
+    const lastDayOfMonth = endOfMonth(currentMonth);
+    const startDate = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });
+    const endDate = endOfWeek(lastDayOfMonth, { weekStartsOn: 1 });
+    const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+    return (
+      <div className={cn(
+        "absolute inset-0 z-20 bg-[#fffbf3] rounded-2xl shadow-lg animate-in fade-in duration-200 p-6 flex flex-col",
+        className
+      )}>
+        {/* Header with Month Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <button 
+            onClick={handlePrevMonth}
+            className="p-2 text-[#1a1a1a] hover:bg-neutral-100 rounded-full transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <h3 className="text-xl font-bold text-[#1a1a1a] capitalize">
+            {format(currentMonth, 'MMMM', { locale: es })}
+          </h3>
+          <button 
+            onClick={handleNextMonth}
+            className="p-2 text-[#1a1a1a] hover:bg-neutral-100 rounded-full transition-colors"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Weekday Headers */}
+        <div className="grid grid-cols-7 mb-3">
+          {weekDays.map((day) => (
+            <div key={day} className="text-center text-sm font-medium text-neutral-500">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7 gap-y-2 flex-1">
+          {days.map((day) => {
+            const isCurrentMonth = isSameMonth(day, currentMonth);
+            const isSelected = selectedDate && isSameDay(day, selectedDate);
+            const isTodayDate = isToday(day);
+            const isDisabled = isBefore(day, normalizedMinDate);
+
+            return (
+              <div key={day.toISOString()} className="flex justify-center items-center">
+                <button
+                  onClick={() => handleDateClick(day)}
+                  disabled={isDisabled || !isCurrentMonth}
+                  className={cn(
+                    "w-10 h-10 flex items-center justify-center rounded-full text-base font-medium transition-all",
+                    isSelected && "bg-[#fd5810] text-white shadow-md",
+                    !isSelected && isCurrentMonth && !isDisabled && "text-[#1a1a1a] hover:bg-neutral-100 active:scale-90",
+                    !isCurrentMonth && "text-neutral-300 cursor-default",
+                    isDisabled && isCurrentMonth && "text-neutral-300 cursor-not-allowed",
+                    isTodayDate && !isSelected && isCurrentMonth && "border-2 border-[#fd5810]"
+                  )}
+                >
+                  {format(day, 'd')}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Close button */}
+        <button 
+          onClick={onClose}
+          className="mt-4 w-full py-3 bg-neutral-100 hover:bg-neutral-200 rounded-xl text-[#1a1a1a] font-medium transition-colors"
+        >
+          Cerrar
+        </button>
+      </div>
+    );
+  }
+
+  // FULLSCREEN VARIANT (Mobile): Infinite scroll
+  const months = Array.from({ length: 12 }, (_, i) => addMonths(new Date(), i));
 
   return (
     <div className={cn(
-      "flex flex-col bg-[#fffbf3] animate-in fade-in duration-200",
-      isFullscreen ? "fixed inset-0 z-50 slide-in-from-bottom-full duration-300" : "absolute inset-0 z-20 rounded-2xl",
+      "fixed inset-0 z-50 flex flex-col bg-[#fffbf3] animate-in slide-in-from-bottom-full duration-300",
       className
     )}>
       {/* Header */}
-      <div className={cn(
-        "flex items-center justify-between p-4 border-b border-neutral-100 bg-[#fffbf3] sticky top-0 z-10 shrink-0",
-        !isFullscreen && "rounded-t-2xl"
-      )}>
+      <div className="flex items-center justify-between p-4 border-b border-neutral-100 bg-[#fffbf3] sticky top-0 z-10 shrink-0">
         <button 
           onClick={onClose}
           className="p-2 -ml-2 text-[#1a1a1a] hover:bg-neutral-100 rounded-full transition-colors"
@@ -93,7 +182,7 @@ export function FullScreenDatePicker({
         
         {/* Weekday Headers */}
         <div className="grid grid-cols-7 mb-2">
-          {weekDays.map((day) => (
+          {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
             <div key={day} className="text-center text-sm font-medium text-neutral-400 uppercase tracking-wider">
               {day}
             </div>
@@ -107,15 +196,9 @@ export function FullScreenDatePicker({
           {months.map((month) => {
             const firstDayOfMonth = startOfMonth(month);
             const lastDayOfMonth = endOfMonth(month);
-            
-            // Get all days including padding for the first week
             const startDate = startOfWeek(firstDayOfMonth);
             const endDate = endOfWeek(lastDayOfMonth);
-            
-            const days = eachDayOfInterval({
-              start: startDate,
-              end: endDate
-            });
+            const days = eachDayOfInterval({ start: startDate, end: endDate });
 
             return (
               <div key={month.toISOString()} className="mb-8">
@@ -124,8 +207,7 @@ export function FullScreenDatePicker({
                 </h3>
                 
                 <div className="grid grid-cols-7 gap-y-4">
-                  {days.map((day, dayIdx) => {
-                    // Check if day belongs to current month (to handle padding visibility)
+                  {days.map((day) => {
                     const isCurrentMonth = isSameMonth(day, month);
                     const isSelected = selectedDate && isSameDay(day, selectedDate);
                     const isTodayDate = isToday(day);
@@ -140,16 +222,13 @@ export function FullScreenDatePicker({
                         <button
                           onClick={() => handleDateClick(day)}
                           disabled={isDisabled}
-                          className={`
-                            relative w-10 h-10 flex items-center justify-center rounded-full text-lg font-medium transition-all
-                            ${isSelected 
-                              ? 'bg-[#fd5810] text-white shadow-lg shadow-orange-500/20' 
-                              : isDisabled
-                                ? 'text-neutral-300 cursor-not-allowed'
-                                : 'text-[#1a1a1a] hover:bg-neutral-100 active:scale-90'
-                            }
-                            ${isTodayDate && !isSelected ? 'text-[#fd5810]' : ''}
-                          `}
+                          className={cn(
+                            "relative w-10 h-10 flex items-center justify-center rounded-full text-lg font-medium transition-all",
+                            isSelected && "bg-[#fd5810] text-white shadow-lg shadow-orange-500/20",
+                            !isSelected && !isDisabled && "text-[#1a1a1a] hover:bg-neutral-100 active:scale-90",
+                            isDisabled && "text-neutral-300 cursor-not-allowed",
+                            isTodayDate && !isSelected && "text-[#fd5810]"
+                          )}
                         >
                           {format(day, 'd')}
                           {isTodayDate && !isSelected && (
