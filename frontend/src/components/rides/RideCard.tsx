@@ -1,97 +1,105 @@
+'use client';
+
 import React from 'react';
-import { DCard } from '@/components/ui/DCard';
+import { BadgeCheck } from 'lucide-react';
 import { Ride } from '@/lib/api';
-import { User, MapPin, Clock } from 'lucide-react';
-import { Avatar } from '@heroui/react';
 
 interface RideCardProps {
   ride: Ride;
   onClick?: () => void;
+  className?: string;
 }
 
-export const RideCard: React.FC<RideCardProps> = ({ ride, onClick }) => {
-  const formatDate = (dateString: string) => {
+export const RideCard: React.FC<RideCardProps> = ({ ride, onClick, className = '' }) => {
+  // Format time from ISO date string
+  const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    }).format(date);
+    return date.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
   };
 
-  // Mock arrival time (2 hours later) for MVP since backend might not provide it yet
-  // or just use the same date if it's a single point. 
-  // Assuming ride.date_time is departure.
+  // Calculate mock arrival time (+2 hours) since backend doesn't provide it
   const departureDate = new Date(ride.date_time);
-  const arrivalDate = new Date(departureDate.getTime() + 2 * 60 * 60 * 1000); // +2 hours mock
+  const arrivalDate = new Date(departureDate.getTime() + 2 * 60 * 60 * 1000);
+
+  // Driver info with fallbacks
+  const driverName = ride.driver?.name || 'Conductor';
+  const driverAvatar = ride.driver?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${driverName}`;
+  const isVerified = true; // Mock verification status - not in API yet
+  const driverRating = 4.8; // Mock rating - not in API yet
 
   return (
-    <DCard 
-      className="hover:shadow-md transition-shadow cursor-pointer border border-gray-100" 
-      noPadding
-      isPressable
-      onPress={onClick}
+    <div
+      onClick={onClick}
+      className={`
+        bg-white rounded-2xl p-5 shadow-sm border border-gray-100
+        hover:shadow-md transition-all duration-200 cursor-pointer active:scale-[0.99]
+        ${className}
+      `}
     >
-      <div className="p-4 flex flex-row justify-between items-stretch">
-        {/* Left: Route Info */}
-        <div className="flex flex-col flex-1 gap-4">
-          {/* Departure */}
-          <div className="flex flex-row gap-3 items-start">
-            <div className="flex flex-col items-center gap-1 min-w-[60px]">
-              <span className="font-bold text-lg text-gray-900">{formatDate(ride.date_time)}</span>
-              {/* <span className="text-xs text-gray-500">Duration</span> */}
-            </div>
-            <div className="flex flex-col items-center pt-1.5 h-full">
-              <div className="w-3 h-3 rounded-full border-2 border-gray-800 bg-white z-10"></div>
-              <div className="w-0.5 bg-gray-300 flex-1 my-1"></div>
-            </div>
-            <div className="flex flex-col pt-0.5">
-              <span className="font-bold text-lg text-gray-800">{ride.from_city}</span>
-              <span className="text-sm text-gray-500 truncate max-w-[150px]">{ride.from_lat.toFixed(2)}, {ride.from_lon.toFixed(2)}</span>
-            </div>
-          </div>
-
-          {/* Arrival */}
-          <div className="flex flex-row gap-3 items-start">
-            <div className="flex flex-col items-center gap-1 min-w-[60px]">
-              <span className="font-bold text-lg text-gray-500">{formatDate(arrivalDate.toISOString())}</span>
-            </div>
-            <div className="flex flex-col items-center pt-1.5">
-              <div className="w-3 h-3 rounded-full border-2 border-gray-800 bg-gray-800 z-10"></div>
-            </div>
-            <div className="flex flex-col pt-0.5">
-              <span className="font-bold text-lg text-gray-800">{ride.to_city}</span>
-              <span className="text-sm text-gray-500 truncate max-w-[150px]">{ride.to_lat.toFixed(2)}, {ride.to_lon.toFixed(2)}</span>
-            </div>
-          </div>
+      {/* Route Timeline */}
+      <div className="flex items-start gap-4 mb-4">
+        {/* Timeline dots */}
+        <div className="flex flex-col items-center gap-1 pt-1">
+          <div className="w-3 h-3 rounded-full bg-[#fd5810]" />
+          <div className="w-0.5 h-12 bg-gray-200" />
+          <div className="w-3 h-3 rounded-full bg-[#fd5810]" />
         </div>
-
-        {/* Right: Price & Driver */}
-        <div className="flex flex-col justify-between items-end pl-4 border-l border-gray-100 min-w-[100px]">
-          <div className="text-2xl font-bold text-green-600">
-            ${ride.price?.toFixed(2) || '0.00'}
+        
+        {/* Route details */}
+        <div className="flex-1 space-y-3">
+          {/* Origin */}
+          <div>
+            <div className="text-lg font-semibold text-[#1a1a1a]">{formatTime(ride.date_time)}</div>
+            <div className="text-sm text-[#6b7280]">{ride.from_city}</div>
           </div>
           
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-700 hidden sm:block">
-                {ride.driver?.name || 'Driver'}
-              </span>
-              <Avatar 
-                src={ride.driver?.avatar_url || undefined} 
-                name={ride.driver?.name?.charAt(0) || 'D'}
-                size="sm"
-                isBordered
-                color="primary"
-              />
-            </div>
-            <div className="flex items-center gap-1 text-xs text-gray-500">
-              <User size={12} />
-              <span>{ride.seats_available ?? 0} seats</span>
-            </div>
+          {/* Destination */}
+          <div>
+            <div className="text-lg font-semibold text-[#1a1a1a]">{formatTime(arrivalDate.toISOString())}</div>
+            <div className="text-sm text-[#6b7280]">{ride.to_city}</div>
           </div>
         </div>
+        
+        {/* Price */}
+        <div className="text-right">
+          <div className="text-2xl font-bold text-[#1a1a1a]">
+            ${ride.price?.toFixed(0) || '0'}
+          </div>
+          <div className="text-xs text-[#6b7280]">por persona</div>
+        </div>
       </div>
-    </DCard>
+      
+      {/* Driver Info */}
+      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center gap-3">
+          {/* Avatar with verification badge */}
+          <div className="relative">
+            <img
+              src={driverAvatar}
+              alt={driverName}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+            {isVerified && (
+              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-[#fd5810] rounded-full flex items-center justify-center">
+                <BadgeCheck className="w-3 h-3 text-white" />
+              </div>
+            )}
+          </div>
+          <div>
+            <div className="text-sm font-medium text-[#1a1a1a]">{driverName}</div>
+            <div className="text-xs text-[#6b7280]">★ {driverRating}</div>
+          </div>
+        </div>
+        
+        {/* Seats available */}
+        <div className="text-xs text-[#6b7280]">
+          {ride.seats_available} {ride.seats_available === 1 ? 'asiento' : 'asientos'}
+        </div>
+      </div>
+    </div>
   );
 };

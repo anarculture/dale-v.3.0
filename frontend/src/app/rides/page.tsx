@@ -2,87 +2,69 @@
 
 import React, { useEffect, useState } from 'react';
 import { RideSearchForm } from '@/components/rides/RideSearchForm';
-import { RideCard } from '@/components/rides/RideCard';
+import { RideList } from '@/components/rides/RideList';
 import { apiClient, Ride, RideSearchParams } from '@/lib/api';
-import { DEmptyState } from '@/components/ui/DEmptyState';
-import { DSpinner } from '@/components/ui/DSpinner';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function RidesPage() {
   const router = useRouter();
   const [rides, setRides] = useState<Ride[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+  const [searchParams, setSearchParams] = useState<RideSearchParams>({});
 
   const fetchRides = async (params: RideSearchParams = {}) => {
     setLoading(true);
-    setError(null);
+    setSearchParams(params);
     try {
       const data = await apiClient.searchRides(params);
-      console.log('API Response Data:', data);
-      console.log('Is Array:', Array.isArray(data));
       setRides(Array.isArray(data) ? data : []);
+      setSearchPerformed(true);
     } catch (err) {
       console.error('Failed to fetch rides:', err);
-      setError('Failed to load rides. Please try again.');
+      toast.error('Error al cargar viajes. Intenta de nuevo.');
+      setRides([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchRides();
-  }, []);
-
   const handleSearch = (params: RideSearchParams) => {
     fetchRides(params);
   };
 
-  const handleRideClick = (rideId: string) => {
-    router.push(`/rides/${rideId}`);
+  const handleRideClick = (ride: Ride) => {
+    router.push(`/rides/${ride.id}`);
+  };
+
+  const handleBack = () => {
+    if (searchPerformed) {
+      setSearchPerformed(false);
+      setRides([]);
+    } else {
+      router.back();
+    }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8">
-        <RideSearchForm onSearch={handleSearch} isLoading={loading} />
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Available Rides</h2>
-        
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <DSpinner size="lg" label="Finding the best rides for you..." />
-          </div>
-        ) : error ? (
-          <div className="text-center py-12 text-red-500">
-            {error}
-            <button 
-              onClick={() => fetchRides()} 
-              className="block mx-auto mt-4 text-blue-600 hover:underline"
-            >
-              Try again
-            </button>
-          </div>
-        ) : rides.length === 0 ? (
-          <DEmptyState 
-            title="No rides found" 
-            description="Try changing your search criteria or check back later."
-            icon="car"
-          />
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {rides.map((ride) => (
-              <RideCard 
-                key={ride.id} 
-                ride={ride} 
-                onClick={() => handleRideClick(ride.id)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+    <div className="min-h-screen bg-[#fffbf3]">
+      {!searchPerformed ? (
+        <RideSearchForm 
+          onSearch={handleSearch} 
+          onBack={handleBack}
+          isLoading={loading} 
+        />
+      ) : (
+        <RideList 
+          rides={rides}
+          loading={loading}
+          origin={searchParams.from_city}
+          destination={searchParams.to_city}
+          date={searchParams.date}
+          onRideClick={handleRideClick}
+        />
+      )}
     </div>
   );
 }
