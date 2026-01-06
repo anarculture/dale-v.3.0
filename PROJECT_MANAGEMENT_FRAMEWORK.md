@@ -436,15 +436,9 @@ docker push
 
 ## 📊 Progress Dashboard
 
-### Overall Status
-
-| Phase          | Progress    | Status         |
-| -------------- | ----------- | -------------- |
-| 1. Planning    | ███████████ | ✅ Complete    |
-| 2. Foundation  | ███████████ | ✅ Complete    |
-| 3. Development | ████████░░  | 🔄 In Progress |
-| 4. Quality     | █████░░░░░  | 🔄 In Progress |
-| 5. Launch      | ░░░░░░░░░░  | ⏳ Pending     |
+> **Note**: For current project status, progress metrics, and sprint focus,
+> please refer to the **[PROJECT_STATUS.md](./PROJECT_STATUS.md)** file. This
+> document focuses on the _methodology_ and _framework_ definitions.
 
 ### Current Sprint Focus
 
