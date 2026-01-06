@@ -11,12 +11,26 @@ export default function HomePage() {
     router.push('/rides');
   };
 
+  const handleLoginClick = () => {
+    router.push('/login');
+  };
+
   const handlePublishClick = () => {
     router.push('/offer');
   };
 
   return (
-    <div className="min-h-screen bg-[#fffbf3] flex flex-col">
+    <div className="min-h-screen bg-[#fffbf3] flex flex-col relative">
+      {/* Mobile Top Right Login Button */}
+      <div className="lg:hidden absolute top-6 right-6 z-10">
+        <button 
+          onClick={handleLoginClick}
+          className="px-4 py-2 bg-white text-[#fd5810] font-bold rounded-full shadow-sm border border-[#fd5810] active:scale-[0.98] transition-transform"
+        >
+          Iniciar Sesión
+        </button>
+      </div>
+
       {/* Mobile Layout */}
       <div className="lg:hidden flex flex-col items-center justify-between p-6 pb-8 min-h-screen">
         {/* Logo */}
@@ -66,7 +80,17 @@ export default function HomePage() {
       </div>
 
       {/* Desktop Layout */}
-      <div className="hidden lg:flex flex-1 items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 items-center justify-center p-12 relative">
+        {/* Desktop Top Right Login Button */}
+        <div className="absolute top-8 right-12 z-10">
+          <button 
+            onClick={handleLoginClick}
+            className="px-6 py-2.5 bg-white text-[#fd5810] font-bold rounded-full shadow-sm border-2 border-[#fd5810] hover:bg-[#fd5810] hover:text-white transition-all duration-200 hover:-translate-y-0.5"
+          >
+            Iniciar Sesión
+          </button>
+        </div>
+        
         <div className="max-w-6xl w-full grid grid-cols-2 gap-12 items-center">
           {/* Left: Illustration */}
           <div className="flex flex-col items-center justify-center">
