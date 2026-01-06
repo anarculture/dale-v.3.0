@@ -13,9 +13,25 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#00AFF5',
-          light: '#33BFF7',
-          dark: '#0099DC',
+          DEFAULT: '#fd5810', // Orange
+          light: '#ff7733', 
+          dark: '#e34b0a', 
+        },
+        secondary: {
+          DEFAULT: '#fc5e59', // Coral
+          light: '#fd7e7a',
+          dark: '#e04f4a',
+        },
+        accent: {
+          DEFAULT: '#ffa53c', // Amber
+          light: '#ffb966',
+          dark: '#e6902b',
+        },
+        surface: {
+          DEFAULT: '#fffbf3', // Cream
+          50: '#ffffff',
+          100: '#fffbf3', // Base cream
+          200: '#fdf3e0',
         },
         success: {
           DEFAULT: '#10B981',
@@ -28,12 +44,12 @@ const config: Config = {
           dark: '#DC2626',
         },
         warning: {
-          DEFAULT: '#F59E0B',
-          light: '#FBBF24',
-          dark: '#D97706',
+          DEFAULT: '#ffa53c', // Using accent for warning
+          light: '#ffb966',
+          dark: '#e6902b',
         },
         neutral: {
-          DEFAULT: '#6B7280',
+          DEFAULT: '#1a1a1a', // Near black for text
           50: '#F9FAFB',
           100: '#F3F4F6',
           200: '#E5E7EB',
@@ -47,15 +63,16 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['Agrandir', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
       },
       borderRadius: {
-        'xl': '12px',
-        '2xl': '16px',
+        'xl': '16px',
+        '2xl': '24px',
+        'full': '9999px',
       },
       boxShadow: {
-        'card': '0 2px 8px rgba(0, 0, 0, 0.08)',
-        'card-hover': '0 4px 12px rgba(0, 0, 0, 0.12)',
+        'card': '0 4px 16px rgba(253, 88, 16, 0.12)',
+        'card-hover': '0 8px 24px rgba(253, 88, 16, 0.18)',
       },
     },
   },
