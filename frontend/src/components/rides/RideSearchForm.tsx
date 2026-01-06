@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MapPin, Calendar, Users, ChevronLeft, Loader2 } from 'lucide-react';
 import { RideSearchParams, ApiError } from '@/lib/api';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { FullScreenDatePicker } from '@/components/ui/FullScreenDatePicker';
 
 // Top 5 ciudades de Venezuela por población - rutas más transitadas
 const POPULAR_CITIES = [
@@ -99,6 +101,7 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
   const [date, setDate] = useState('');
   const [passengers, setPassengers] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -148,7 +151,14 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
               <label className="block mb-2 text-sm font-medium text-[#1a1a1a]">Fecha</label>
               <div className="relative">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280]"><Calendar className="w-5 h-5" /></div>
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white ${errors.date ? 'border-red-500' : ''}`} />
+                <input 
+                  type="text" 
+                  readOnly
+                  placeholder="Seleccionar fecha"
+                  value={date ? format(new Date(date), 'dd/MM/yyyy') : ''}
+                  onClick={() => setShowDatePicker(true)}
+                  className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white cursor-pointer select-none ${errors.date ? 'border-red-500' : ''}`} 
+                />
               </div>
               {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date}</p>}
             </div>
@@ -192,7 +202,14 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
                 <label className="block mb-2 text-sm font-medium text-[#1a1a1a]">Fecha</label>
                 <div className="relative">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280]"><Calendar className="w-5 h-5" /></div>
-                  <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white ${errors.date ? 'border-red-500' : ''}`} />
+                  <input 
+                    type="text" 
+                    readOnly
+                    placeholder="Seleccionar fecha"
+                    value={date ? format(new Date(date), 'dd/MM/yyyy') : ''}
+                    onClick={() => setShowDatePicker(true)}
+                    className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white cursor-pointer select-none ${errors.date ? 'border-red-500' : ''}`} 
+                  />
                 </div>
                 {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date}</p>}
               </div>
@@ -229,6 +246,13 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
           </div>
         </div>
       </div>
+      <FullScreenDatePicker 
+        isOpen={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        onSelect={(d) => setDate(d.toISOString())}
+        selectedDate={date ? new Date(date) : null}
+        minDate={new Date()}
+      />
     </div>
   );
 };
