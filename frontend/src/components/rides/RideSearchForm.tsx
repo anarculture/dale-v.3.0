@@ -182,6 +182,14 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
           <div className="mt-6 p-4 bg-[#fff7ed] rounded-xl">
             <p className="text-sm text-[#fd5810]">💡 <span className="text-[#6b7280]">Consejo: Reserva con anticipación para mejores precios</span></p>
           </div>
+          <FullScreenDatePicker 
+            isOpen={showDatePicker}
+            onClose={() => setShowDatePicker(false)}
+            onSelect={(d) => setDate(d.toISOString())}
+            selectedDate={date ? new Date(date) : null}
+            minDate={new Date()}
+            variant="fullscreen"
+          />
         </div>
       </div>
 
@@ -192,7 +200,7 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
             <h1 className="text-4xl font-bold text-[#1a1a1a] mb-2">Buscar un viaje</h1>
             <p className="text-lg text-[#6b7280]">Encuentra conductores en tu ruta y viaja cómodo</p>
           </div>
-          <div className="bg-white rounded-2xl p-8 shadow-lg space-y-6">
+          <div className="bg-white rounded-2xl p-8 shadow-lg space-y-6 relative overflow-hidden">
             <div className="grid grid-cols-2 gap-6">
               <CityInput label="¿Desde dónde?" placeholder="Ciudad de origen" value={fromCity} onChange={setFromCity} error={errors.fromCity} />
               <CityInput label="¿A dónde vas?" placeholder="Ciudad de destino" value={toCity} onChange={setToCity} error={errors.toCity} />
@@ -230,6 +238,14 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
                 {isLoading ? (<><Loader2 className="w-5 h-5 animate-spin" />Buscando...</>) : 'Buscar viajes disponibles'}
               </button>
             </div>
+            <FullScreenDatePicker 
+              isOpen={showDatePicker}
+              onClose={() => setShowDatePicker(false)}
+              onSelect={(d) => setDate(d.toISOString())}
+              selectedDate={date ? new Date(date) : null}
+              minDate={new Date()}
+              variant="embedded"
+            />
           </div>
           <div className="mt-6 p-6 bg-[#fff7ed] rounded-2xl">
             <div className="flex items-start gap-4">
@@ -246,13 +262,6 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
           </div>
         </div>
       </div>
-      <FullScreenDatePicker 
-        isOpen={showDatePicker}
-        onClose={() => setShowDatePicker(false)}
-        onSelect={(d) => setDate(d.toISOString())}
-        selectedDate={date ? new Date(date) : null}
-        minDate={new Date()}
-      />
     </div>
   );
 };

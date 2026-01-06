@@ -17,6 +17,7 @@ import {
   startOfDay
 } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface FullScreenDatePickerProps {
   isOpen: boolean;
@@ -24,6 +25,8 @@ interface FullScreenDatePickerProps {
   onSelect: (date: Date) => void;
   selectedDate?: Date | null;
   minDate?: Date;
+  variant?: 'fullscreen' | 'embedded';
+  className?: string;
 }
 
 export function FullScreenDatePicker({ 
@@ -31,11 +34,13 @@ export function FullScreenDatePicker({
   onClose, 
   onSelect, 
   selectedDate, 
-  minDate = new Date() 
+  minDate = new Date(),
+  variant = 'fullscreen',
+  className
 }: FullScreenDatePickerProps) {
-  // Prevent body scroll when open
+  // Prevent body scroll when open ONLY if fullscreen
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && variant === 'fullscreen') {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -43,7 +48,7 @@ export function FullScreenDatePicker({
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isOpen, variant]);
 
   if (!isOpen) return null;
 
@@ -58,11 +63,19 @@ export function FullScreenDatePicker({
   };
 
   const weekDays = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  const isFullscreen = variant === 'fullscreen';
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#fffbf3] animate-in slide-in-from-bottom-full duration-300">
+    <div className={cn(
+      "flex flex-col bg-[#fffbf3] animate-in fade-in duration-200",
+      isFullscreen ? "fixed inset-0 z-50 slide-in-from-bottom-full duration-300" : "absolute inset-0 z-20 rounded-2xl",
+      className
+    )}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-neutral-100 bg-[#fffbf3] sticky top-0 z-10 shrink-0">
+      <div className={cn(
+        "flex items-center justify-between p-4 border-b border-neutral-100 bg-[#fffbf3] sticky top-0 z-10 shrink-0",
+        !isFullscreen && "rounded-t-2xl"
+      )}>
         <button 
           onClick={onClose}
           className="p-2 -ml-2 text-[#1a1a1a] hover:bg-neutral-100 rounded-full transition-colors"

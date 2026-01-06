@@ -324,6 +324,14 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
               💡 <span className="text-[#6b7280]">Consejo: Indica claramente el punto de encuentro para facilitar la coordinación</span>
             </p>
           </div>
+          <FullScreenDatePicker 
+            isOpen={showDatePicker}
+            onClose={() => setShowDatePicker(false)}
+            onSelect={(date) => updateField('date', date.toISOString())}
+            selectedDate={formData.date ? new Date(formData.date) : null}
+            minDate={new Date()}
+            variant="fullscreen"
+          />
         </div>
       </div>
 
@@ -341,7 +349,7 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
             <p className="text-lg text-[#6b7280]">Comparte tu viaje y ahorra en cada trayecto</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg space-y-6">
+          <div className="bg-white rounded-2xl p-8 shadow-lg space-y-6 relative overflow-hidden">
             {/* Cities Row */}
             <div className="grid grid-cols-2 gap-6">
               <CityInput 
@@ -467,6 +475,14 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
                 {isLoading ? (<><Loader2 className="w-5 h-5 animate-spin" />Publicando...</>) : 'Publicar viaje'}
               </button>
             </div>
+            <FullScreenDatePicker 
+              isOpen={showDatePicker}
+              onClose={() => setShowDatePicker(false)}
+              onSelect={(date) => updateField('date', date.toISOString())}
+              selectedDate={formData.date ? new Date(formData.date) : null}
+              minDate={new Date()}
+              variant="embedded"
+            />
           </div>
 
           {/* Tips */}
@@ -485,13 +501,6 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
           </div>
         </div>
       </div>
-      <FullScreenDatePicker 
-        isOpen={showDatePicker}
-        onClose={() => setShowDatePicker(false)}
-        onSelect={(date) => updateField('date', date.toISOString())}
-        selectedDate={formData.date ? new Date(formData.date) : null}
-        minDate={new Date()}
-      />
     </div>
   );
 };
