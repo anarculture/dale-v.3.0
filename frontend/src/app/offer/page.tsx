@@ -29,8 +29,9 @@ export default function OfferPage() {
 
     setSubmitting(true);
     try {
-      // Combine date and time into ISO format
-      const dateTime = `${data.date}T${data.time}:00`;
+      // Extract YYYY-MM-DD from ISO string and combine with time
+      const datePart = data.date.split('T')[0];  // "2026-01-08T..." → "2026-01-08"
+      const dateTime = `${datePart}T${data.time}:00`;
 
       await apiClient.createRide({
         from_city: data.from_city,

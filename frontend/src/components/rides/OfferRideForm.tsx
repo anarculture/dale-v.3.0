@@ -377,11 +377,12 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
                     <Calendar className="w-5 h-5" />
                   </div>
                   <input 
-                    type="date" 
-                    value={formData.date} 
-                    onChange={(e) => updateField('date', e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white ${errors.date ? 'border-red-500' : ''}`} 
+                    type="text" 
+                    readOnly
+                    placeholder="Seleccionar fecha"
+                    value={formData.date ? format(new Date(formData.date), 'dd/MM/yyyy') : ''}
+                    onClick={() => setShowDatePicker(true)}
+                    className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white cursor-pointer select-none ${errors.date ? 'border-red-500' : ''}`} 
                   />
                 </div>
                 {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date}</p>}

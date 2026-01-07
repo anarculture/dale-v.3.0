@@ -15,7 +15,6 @@ export interface User {
   email: string;
   name: string;
   avatar_url: string | null;
-  role: 'rider' | 'driver';
   created_at: string;
 }
 
@@ -182,7 +181,11 @@ class ApiClient {
     
     if (params?.from_city) queryParams.append('from_city', params.from_city);
     if (params?.to_city) queryParams.append('to_city', params.to_city);
-    if (params?.date) queryParams.append('date', params.date);
+    if (params?.date) {
+      // Extract YYYY-MM-DD from ISO string (e.g., "2026-01-21T04:00:00.000Z" → "2026-01-21")
+      const dateOnly = params.date.split('T')[0];
+      queryParams.append('date', dateOnly);
+    }
     if (params?.min_seats) queryParams.append('min_seats', params.min_seats.toString());
     if (params?.max_price) queryParams.append('max_price', params.max_price.toString());
 

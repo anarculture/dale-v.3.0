@@ -10,11 +10,12 @@ from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
 
-# Importar routers
-from app.routes import users, rides, bookings
-
-# Cargar variables de entorno
+# CRITICAL: Load environment variables BEFORE importing app modules
+# auth.py reads SUPABASE_JWT_SECRET at import time
 load_dotenv()
+
+# Importar routers (after load_dotenv!)
+from app.routes import users, rides, bookings
 
 
 @asynccontextmanager

@@ -215,7 +215,7 @@ export default function SignupPage() {
           <div className="max-w-lg text-center">
             <div className="mb-8">
               <div className="w-48 h-48 mx-auto bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-sm">
-                <span className="text-8xl">🚗</span>
+                <img src="/favicon.png" alt="Dale" className="w-36 h-36 object-contain" />
               </div>
             </div>
             <h2 className="text-4xl font-bold text-white mb-4">

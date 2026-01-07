@@ -14,7 +14,6 @@ class UserBase(BaseModel):
     email: str = Field(..., pattern=r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
     name: str = Field(..., min_length=2, max_length=100)
     avatar_url: Optional[str] = None
-    role: Literal["rider", "driver"] = "rider"
 
 
 class UserCreate(UserBase):
@@ -24,7 +23,6 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=100)
     avatar_url: Optional[str] = None
-    role: Optional[Literal["rider", "driver"]] = None
 
 
 class UserResponse(UserBase):
@@ -52,7 +50,10 @@ class RideBase(BaseModel):
     @field_validator('date_time')
     @classmethod
     def validate_future_date(cls, v):
-        if v < datetime.now():
+        # Make comparison timezone-naive to avoid UTC vs local issues
+        # Only reject if date is more than 1 day in the past
+        from datetime import timedelta
+        if v.replace(tzinfo=None) < (datetime.now() - timedelta(days=1)):
             raise ValueError('La fecha del viaje debe ser futura')
         return v
 

@@ -37,7 +37,7 @@ function HomeContent() {
           <div className="mb-8 relative">
             <div className="w-48 h-48 bg-gradient-to-br from-[#fd5810] to-[#ff8c4b] rounded-3xl shadow-2xl flex items-center justify-center transform rotate-6 hover:rotate-12 transition-transform duration-300">
               <div className="transform -rotate-6">
-                <div className="text-8xl">🚗</div>
+                <img src="/favicon.png" alt="Dale" className="w-36 h-36 object-contain" />
               </div>
             </div>
             {/* Decorative circles */}
@@ -84,7 +84,7 @@ function HomeContent() {
           <div className="flex flex-col items-center justify-center">
             <div className="relative">
               <div className="w-96 h-96 bg-gradient-to-br from-[#fd5810] to-[#ff8c4b] rounded-[3rem] shadow-2xl flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
-                <div className="text-[12rem]">🚗</div>
+                <img src="/favicon.png" alt="Dale" className="w-72 h-72 object-contain" />
               </div>
               {/* Decorative elements */}
               <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#fff7ed] rounded-full animate-bounce" style={{ animationDelay: '0.5s' }} />

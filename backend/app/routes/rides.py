@@ -6,7 +6,7 @@ from supabase import Client
 from typing import List, Optional
 from datetime import datetime, timedelta
 from app.models.schemas import RideCreate, RideResponse, TokenPayload
-from app.middleware.auth import get_current_user, require_role
+from app.middleware.auth import get_current_user
 from app.utils.database import get_db
 
 router = APIRouter(prefix="/api/rides", tags=["rides"])
@@ -15,13 +15,13 @@ router = APIRouter(prefix="/api/rides", tags=["rides"])
 @router.post("", response_model=RideResponse, status_code=201)
 async def create_ride(
     ride: RideCreate,
-    current_user: TokenPayload = Depends(require_role("driver")),
+    current_user: TokenPayload = Depends(get_current_user),
     db: Client = Depends(get_db)
 ):
     """
     Crea un nuevo viaje.
     
-    **Requiere autenticación y rol de conductor (driver).**
+    **Requiere autenticación.**
     
     El campo `seats_available` se inicializa automáticamente con el valor de `seats_total`.
     """
@@ -37,6 +37,8 @@ async def create_ride(
         ride_data = ride.model_dump()
         ride_data["driver_id"] = current_user.sub
         ride_data["seats_available"] = ride.seats_total
+        # Convert datetime to ISO string for Supabase
+        ride_data["date_time"] = ride.date_time.isoformat()
         
         # Insertar viaje
         response = db.table("Ride").insert(ride_data).execute()

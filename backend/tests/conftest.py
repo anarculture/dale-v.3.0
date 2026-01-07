@@ -58,8 +58,7 @@ def sample_user_data():
     return {
         "id": "test-user-123",
         "email": "test@example.com",
-        "name": "Usuario Test",
-        "role": "user"
+        "name": "Usuario Test"
     }
 
 
