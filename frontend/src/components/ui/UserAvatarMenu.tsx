@@ -142,7 +142,7 @@ export const UserAvatarMenu: React.FC = () => {
           </div>
 
           {/* Desktop: Dropdown */}
-          <div className="hidden lg:block absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-[#e5e7eb] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="hidden lg:block absolute right-0 top-full mt-2 w-64 bg-card rounded-2xl shadow-xl border border-[#e5e7eb] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
             {/* User Info */}
             <div className="px-5 py-4 border-b border-[#e5e7eb] bg-[#fafafa]">
               <p className="text-sm text-[#6b7280]">Conectado como</p>

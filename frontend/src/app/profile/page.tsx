@@ -135,7 +135,7 @@ export default function ProfilePage() {
 
         {/* Menu Items */}
         <div className="p-6 space-y-3">
-          <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-card rounded-2xl overflow-hidden shadow-sm">
             {menuItems.map((item, index) => {
               const Icon = item.icon;
               const isDanger = item.variant === 'danger';
@@ -174,7 +174,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Additional Info Card */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm">
+          <div className="bg-card rounded-2xl p-5 shadow-sm">
             <h3 className="text-sm font-semibold text-[#1a1a1a] mb-3">Información de la cuenta</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
@@ -200,7 +200,7 @@ export default function ProfilePage() {
           <div className="grid grid-cols-3 gap-6">
             {/* Left: Profile Card */}
             <div className="col-span-1">
-              <div className="bg-white rounded-2xl p-6 shadow-sm sticky top-8">
+              <div className="bg-card rounded-2xl p-6 shadow-sm sticky top-8">
                 <div className="flex flex-col items-center">
                   {/* Avatar */}
                   <div className="relative mb-4">
@@ -251,7 +251,7 @@ export default function ProfilePage() {
             {/* Right: Menu & Info */}
             <div className="col-span-2 space-y-6">
               {/* Menu Items */}
-              <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <div className="bg-card rounded-2xl overflow-hidden shadow-sm">
                 <div className="p-6 border-b border-gray-100">
                   <h3 className="text-xl font-bold text-[#1a1a1a]">Configuración de cuenta</h3>
                 </div>
@@ -298,7 +298,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Additional Info Card */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm">
+              <div className="bg-card rounded-2xl p-6 shadow-sm">
                 <h3 className="text-lg font-bold text-[#1a1a1a] mb-4">Información de la cuenta</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between py-2 border-b border-gray-100">

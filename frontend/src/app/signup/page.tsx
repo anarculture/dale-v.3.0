@@ -68,7 +68,7 @@ export default function SignupPage() {
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-card rounded-2xl p-6 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Error Alert */}
               {error && (

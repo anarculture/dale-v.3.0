@@ -173,7 +173,7 @@ export const RideList: React.FC<RideListProps> = ({
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-white rounded-2xl">
+            <div className="text-center py-20 bg-card rounded-2xl">
               <div className="text-8xl mb-6">🔍</div>
               <h3 className="text-2xl font-semibold text-[#1a1a1a] mb-3">No hay viajes disponibles</h3>
               <p className="text-lg text-[#6b7280] mb-6">

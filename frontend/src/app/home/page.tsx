@@ -54,7 +54,7 @@ function HomeContent() {
         </div>
         
         {/* Bottom CTA Container */}
-        <div className="w-full max-w-md bg-white rounded-t-3xl p-6 -mx-6 shadow-2xl">
+        <div className="w-full max-w-md bg-card rounded-t-3xl p-6 -mx-6 shadow-2xl">
           <div className="space-y-3">
             <button
               onClick={handleSearchClick}
@@ -109,7 +109,7 @@ function HomeContent() {
             <div className="grid grid-cols-2 gap-4">
               <div 
                 onClick={handleSearchClick}
-                className="bg-white rounded-2xl p-6 cursor-pointer hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-[#fd5810] group"
+                className="bg-card rounded-2xl p-6 cursor-pointer hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-[#fd5810] group"
               >
                 <div className="w-12 h-12 bg-[#fff7ed] rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#fd5810] transition-colors">
                   <span className="text-2xl group-hover:scale-110 transition-transform">🔍</span>
@@ -122,7 +122,7 @@ function HomeContent() {
 
               <div 
                 onClick={handlePublishClick}
-                className="bg-white rounded-2xl p-6 cursor-pointer hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-[#fd5810] group"
+                className="bg-card rounded-2xl p-6 cursor-pointer hover:shadow-lg transition-all duration-200 border-2 border-transparent hover:border-[#fd5810] group"
               >
                 <div className="w-12 h-12 bg-[#fff7ed] rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#fd5810] transition-colors">
                   <span className="text-2xl group-hover:scale-110 transition-transform">➕</span>

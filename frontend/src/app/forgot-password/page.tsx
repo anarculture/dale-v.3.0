@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="bg-card rounded-2xl p-6 shadow-sm">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Error Alert */}
               {error && (
@@ -162,7 +162,7 @@ export default function ForgotPasswordPage() {
           </div>
 
           {/* Form */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg">
+          <div className="bg-card rounded-2xl p-8 shadow-lg">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Error Alert */}
               {error && (
