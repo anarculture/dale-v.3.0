@@ -26,7 +26,7 @@ export default function LoginPage() {
       if (authError) {
         setError(authError);
       } else {
-        router.push('/rides');
+        router.push('/home');
       }
     } catch (err) {
       setError('Ocurrió un error inesperado al iniciar sesión.');

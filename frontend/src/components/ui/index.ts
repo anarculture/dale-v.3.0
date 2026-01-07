@@ -15,3 +15,4 @@ export * from "./DAlert";
 export * from "./DSpinner";
 export * from "./DEmptyState";
 export * from "./DaleLogo";
+export * from "./UserAvatarMenu";
