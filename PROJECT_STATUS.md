@@ -87,6 +87,13 @@ graph LR
 - [x] **UI**: Responsive design using "Kirk UI" styled components (Cards,
       Inputs, Modals).
 
+### ⚠️ Missing Features (from Original Plan)
+
+- [ ] **Messaging**: Internal chat or contact method (currently missing).
+- [ ] **Reviews**: System to rate/review drivers and passengers (currently
+      missing).
+- [ ] **Admin Panel**: Basic moderation interface (currently missing).
+
 ---
 
 ## 🔄 Phase 4: QUALITY (In Progress)

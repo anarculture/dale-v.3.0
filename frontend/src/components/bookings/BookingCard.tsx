@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import { Booking, apiClient } from "@/lib/api";
 import { DCard, DButton, DBadge } from "@/components/ui";
-import { Calendar, Clock, MapPin, XCircle, CheckCircle, AlertCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, XCircle, CheckCircle, AlertCircle, MessageCircle, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BookingCardProps {
   booking: Booking;
@@ -12,6 +13,7 @@ interface BookingCardProps {
 
 export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
   const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const handleCancel = async () => {
@@ -54,6 +56,15 @@ export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
 
   const status = statusConfig[booking.status] || statusConfig.pending;
   const StatusIcon = status.icon;
+
+  // Contact Logic
+  const isRider = user?.id === booking.rider_id;
+  // If I am rider, I want to see driver. If I am driver, I want to see rider.
+  const contactUser = isRider ? booking.ride.driver : booking.rider;
+  const contactPhone = contactUser?.phone;
+  const contactName = contactUser?.name || "Usuario";
+  
+  const showContact = booking.status === "confirmed" && contactPhone;
 
   return (
     <DCard className="mb-4">
@@ -101,6 +112,34 @@ export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
             </p>
             <p className="text-xs text-gray-400">{booking.seats_booked} asiento(s)</p>
           </div>
+
+          {/* Contact Section */}
+          {showContact && (
+            <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-green-50/50 p-3 rounded-lg">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                  <Phone size={16} />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">
+                    {isRider ? "Conductor" : "Pasajero"}
+                  </p>
+                  <p className="text-sm font-medium text-gray-900">{contactName}</p>
+                  <p className="text-xs text-gray-600">{contactPhone}</p>
+                </div>
+              </div>
+              
+              <DButton
+                size="sm"
+                color="success"
+                className="w-full sm:w-auto bg-[#25D366] hover:bg-[#128C7E] text-white border-transparent"
+                startContent={<MessageCircle size={16} />}
+                onPress={() => window.open(`https://wa.me/${contactPhone?.replace(/\+/g, "")}`, "_blank")}
+              >
+                WhatsApp
+              </DButton>
+            </div>
+          )}
 
           {booking.status !== "cancelled" && (
             <DButton 

@@ -14,6 +14,7 @@ class UserBase(BaseModel):
     email: str = Field(..., pattern=r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
     name: str = Field(..., min_length=2, max_length=100)
     avatar_url: Optional[str] = None
+    phone: Optional[str] = Field(None, pattern=r"^\+?[1-9]\d{1,14}$", description="International format phone number")
 
 
 class UserCreate(UserBase):
@@ -23,6 +24,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=2, max_length=100)
     avatar_url: Optional[str] = None
+    phone: Optional[str] = None
 
 
 class UserResponse(UserBase):

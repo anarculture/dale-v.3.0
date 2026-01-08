@@ -2,12 +2,14 @@
 
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
-El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
-y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+El formato está basado en
+[Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/), y este proyecto
+adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Added
+
 - Sistema de configuración de linting y formatting completo
 - Configuración de VS Code para desarrollo optimizado
 - Sistema de debugging automatizado para frontend y backend
@@ -15,13 +17,15 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Configuración de corrección ortográfica en código
 
 ### Changed
+
 - Configuración mejorada de ESLint con reglas más estrictas
 - Integración de Prettier para formatting consistente
 - Scripts automatizados de calidad de código
 
-## [1.0.0] - 2025-10-29
+## [1.0.0] - 2026-01-08
 
 ### Added
+
 - **Frontend**: Aplicación Next.js con TypeScript y Tailwind CSS
 - **Backend**: API FastAPI con Python
 - **Base de datos**: Configuración de Supabase
@@ -31,7 +35,8 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - **Documentación**: Documentación completa del proyecto
 
 ### Features
-- Sistema de gestión de pedidos y restaurantes
+
+- Sistema de gestión de viajes y reservas (Carpooling)
 - Geolocalización y mapas interactivos
 - Interfaz de usuario responsiva y moderna
 - Autenticación y autorización de usuarios
@@ -39,6 +44,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - Deploy automático con Vercel
 
 ### Technical Stack
+
 - **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
 - **Backend**: FastAPI, Python 3.11
 - **Database**: Supabase (PostgreSQL)
@@ -48,6 +54,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 - **Development**: ESLint, Prettier, Husky, lint-staged
 
 ### Development
+
 - Configuración completa de Docker Compose
 - Scripts de automatización para desarrollo
 - Documentación de deployment y Docker

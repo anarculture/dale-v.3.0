@@ -11,6 +11,8 @@ export default function ProfilePage() {
   const { user: authUser, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<User | null>(null);
+  const [phone, setPhone] = useState('');
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
 
   useEffect(() => {
@@ -26,6 +28,7 @@ export default function ProfilePage() {
       try {
         const userData = await apiClient.getMyProfile();
         setProfile(userData);
+        setPhone(userData.phone || '');
       } catch (error) {
         console.error('Failed to fetch profile:', error);
       } finally {
@@ -68,6 +71,17 @@ export default function ProfilePage() {
     { id: 'help', label: 'Ayuda', icon: HelpCircle, href: '#', description: 'Centro de ayuda y soporte' },
     { id: 'logout', label: 'Cerrar sesión', icon: LogOut, variant: 'danger' as const, action: handleLogout },
   ];
+
+  async function handleUpdatePhone() {
+    try {
+      await apiClient.updateMyProfile({ phone });
+      setProfile(prev => prev ? { ...prev, phone } : null);
+      setIsEditingPhone(false);
+      toast.success('Teléfono actualizado');
+    } catch (error) {
+      toast.error('Error al actualizar teléfono');
+    }
+  }
 
   async function handleLogout() {
     try {
@@ -180,6 +194,26 @@ export default function ProfilePage() {
               <div className="flex justify-between">
                 <span className="text-[#6b7280]">Correo</span>
                 <span className="text-[#1a1a1a]">{userEmail}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[#6b7280]">Teléfono</span>
+                {isEditingPhone ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="w-32 px-2 py-1 text-sm border rounded"
+                      placeholder="+58..."
+                    />
+                    <button onClick={handleUpdatePhone} className="text-[#fd5810] text-xs font-bold">Guardar</button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <span className="text-[#1a1a1a]">{profile?.phone || 'Sin registrar'}</span>
+                    <button onClick={() => setIsEditingPhone(true)} className="text-[#fd5810] text-xs">Editar</button>
+                  </div>
+                )}
               </div>
               <div className="flex justify-between">
                 <span className="text-[#6b7280]">Miembro desde</span>
@@ -304,6 +338,26 @@ export default function ProfilePage() {
                   <div className="flex justify-between py-2 border-b border-gray-100">
                     <span className="text-[#6b7280]">Correo</span>
                     <span className="text-[#1a1a1a]">{userEmail}</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100 items-center">
+                    <span className="text-[#6b7280]">Teléfono</span>
+                    {isEditingPhone ? (
+                      <div className="flex gap-2">
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-40 px-3 py-1 text-sm border rounded-lg"
+                          placeholder="+58..."
+                        />
+                        <button onClick={handleUpdatePhone} className="bg-[#fd5810] text-white px-3 py-1 rounded-lg text-sm">Guardar</button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 items-center">
+                        <span className="text-[#1a1a1a] font-medium">{profile?.phone || 'Sin registrar'}</span>
+                        <button onClick={() => setIsEditingPhone(true)} className="text-[#fd5810] text-sm hover:underline">Editar</button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex justify-between py-2 border-b border-gray-100">
                     <span className="text-[#6b7280]">Miembro desde</span>
