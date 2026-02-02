@@ -16,7 +16,21 @@ export interface User {
   name: string;
   avatar_url: string | null;
   phone?: string | null;
+  average_rating?: number | null;
+  rating_count?: number;
   created_at: string;
+}
+
+export interface Review {
+  id: string;
+  booking_id: string;
+  author_id: string;
+  subject_id: string;
+  score: number;
+  comment: string | null;
+  role: 'rider' | 'driver';
+  created_at: string;
+  author?: User;
 }
 
 export interface Ride {
@@ -282,6 +296,31 @@ class ApiClient {
     return this.request<Booking>(`/api/bookings/${bookingId}/confirm`, {
       method: 'PATCH',
     });
+  }
+
+  // ==================== REVIEWS ====================
+
+  /**
+   * Crear una reseña para un usuario después de un viaje
+   */
+  async createReview(data: {
+    booking_id: string;
+    subject_id: string;
+    score: number;
+    comment?: string;
+    role: 'rider' | 'driver';
+  }): Promise<Review> {
+    return this.request<Review>('/api/reviews', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Obtener reseñas de un usuario
+   */
+  async getUserReviews(userId: string): Promise<Review[]> {
+    return this.request<Review[]>(`/api/reviews/user/${userId}`);
   }
 }
 

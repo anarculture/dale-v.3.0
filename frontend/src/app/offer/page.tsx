@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { OfferRideForm, OfferRideData } from '@/components/rides/OfferRideForm';
+import { DBottomNav } from '@/components/layout/DBottomNav';
 
 export default function OfferPage() {
   const router = useRouter();
@@ -73,10 +74,13 @@ export default function OfferPage() {
   }
 
   return (
-    <OfferRideForm 
-      onSubmit={handleSubmit} 
-      onBack={handleBack}
-      isLoading={submitting} 
-    />
+    <>
+      <OfferRideForm 
+        onSubmit={handleSubmit} 
+        onBack={handleBack}
+        isLoading={submitting} 
+      />
+      <DBottomNav />
+    </>
   );
 }

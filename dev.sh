@@ -48,7 +48,7 @@ echo -e "${NC}"
 mkdir -p $LOG_DIR
 
 # Verificar que estamos en el directorio correcto
-if [ ! -f "requirements.txt" ] || [ ! -d "frontend" ] || [ ! -f "backend/main.py" ]; then
+if [ ! -f "requirements.txt" ] || [ ! -d "frontend" ] || [ ! -f "backend/app/main.py" ]; then
     error "Este script debe ejecutarse desde el directorio raíz del proyecto Dale"
     error "Archivos requeridos no encontrados"
     exit 1
@@ -170,13 +170,15 @@ log "Levantando backend en http://$BACKEND_HOST:$BACKEND_PORT"
 
 # Activar entorno virtual y ejecutar backend
 source venv/bin/activate
-export PYTHONPATH="$PWD:$PYTHONPATH"
 export SUPABASE_URL="${SUPABASE_URL:-https://placeholder.supabase.co}"
 export SUPABASE_SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-placeholder}"
 export SUPABASE_JWT_SECRET="${SUPABASE_JWT_SECRET:-placeholder}"
 
-nohup uvicorn backend.main:app --host $BACKEND_HOST --port $BACKEND_PORT --reload > $LOG_DIR/backend.log 2>&1 &
+# Ejecutar desde el directorio backend para que los imports relativos funcionen
+cd backend
+nohup uvicorn app.main:app --host $BACKEND_HOST --port $BACKEND_PORT --reload > ../$LOG_DIR/backend.log 2>&1 &
 BACKEND_PID=$!
+cd ..
 echo $BACKEND_PID > backend.pid
 
 # Esperar un poco para que el backend se inicie
@@ -261,28 +263,37 @@ show_logs() {
     show_colored_logs
 }
 
-# Preguntar si mostrar logs
-read -p "¿Deseas ver los logs en tiempo real? (y/n): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    show_logs
-else
-    # Mantener el script ejecutándose para que los servicios sigan activos
-    log "Servicios ejecutándose en segundo plano..."
-    log "Usa 'tail -f $LOG_DIR/backend.log' para ver logs del backend"
-    log "Usa 'tail -f $LOG_DIR/frontend.log' para ver logs del frontend"
-    log "Presiona Ctrl+C para detener los servicios"
-    
-    # Esperar hasta que se reciba SIGINT
-    while true; do
-        sleep 1
-        # Verificar que los procesos aún estén activos
-        if ! kill -0 $BACKEND_PID 2>/dev/null || ! kill -0 $FRONTEND_PID 2>/dev/null; then
-            warn "Uno de los servicios se detuvo inesperadamente"
-            break
-        fi
-    done
-fi
+# Mostrar logs en tiempo real automáticamente (no interactivo)
+log "Mostrando logs en tiempo real (Ctrl+C para salir)..."
+echo ""
+
+# Mostrar logs con colores intercalados
+tail -f $LOG_DIR/backend.log 2>/dev/null | sed "s/^/${BLUE}[BACKEND]${NC} /" &
+BACKEND_LOG_PID=$!
+
+tail -f $LOG_DIR/frontend.log 2>/dev/null | sed "s/^/${PURPLE}[FRONTEND]${NC} /" &
+FRONTEND_LOG_PID=$!
+
+# Esperar hasta que se reciba SIGINT o un proceso muera
+while true; do
+    sleep 2
+    # Verificar que los procesos aún estén activos
+    if ! kill -0 $BACKEND_PID 2>/dev/null || ! kill -0 $FRONTEND_PID 2>/dev/null; then
+        warn "Uno de los servicios se detuvo inesperadamente"
+        # Mostrar últimos logs de errores
+        echo ""
+        error "Últimos logs del backend:"
+        tail -20 $LOG_DIR/backend.log 2>/dev/null
+        echo ""
+        error "Últimos logs del frontend:"
+        tail -20 $LOG_DIR/frontend.log 2>/dev/null
+        break
+    fi
+done
+
+# Limpiar procesos de log al salir
+kill $BACKEND_LOG_PID 2>/dev/null
+kill $FRONTEND_LOG_PID 2>/dev/null
 
 # Limpiar al salir
 cleanup

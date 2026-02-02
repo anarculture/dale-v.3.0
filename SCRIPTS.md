@@ -1,10 +1,12 @@
 # Scripts de Desarrollo - Dale
 
-Este directorio contiene scripts para automatizar el desarrollo y la gestión de la aplicación Dale.
+Este directorio contiene scripts para automatizar el desarrollo y la gestión de
+la aplicación Dale.
 
 ## Scripts Disponibles
 
 ### 🚀 install.sh
+
 **Instalación de dependencias**
 
 ```bash
@@ -12,6 +14,7 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 ```
 
 **Funcionalidades:**
+
 - Verifica Python 3 y pip
 - Crea entorno virtual de Python
 - Instala dependencias del backend (FastAPI)
@@ -20,12 +23,14 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 - Verifica la instalación
 
 **Salida esperada:**
+
 - Entorno virtual en `venv/`
 - Dependencias de backend instaladas
 - Dependencias de frontend instaladas
 - Archivo `.env` creado
 
 ### ⚡ dev.sh
+
 **Servidor de desarrollo completo**
 
 ```bash
@@ -33,6 +38,7 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 ```
 
 **Funcionalidades:**
+
 - Levanta backend (FastAPI) y frontend (Next.js) en paralelo
 - Verificación de puertos disponibles
 - Manejo automático de puertos en uso
@@ -42,28 +48,18 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 - Manejo robusto de errores
 
 **Puertos por defecto:**
+
 - Backend: http://localhost:8000
 - Frontend: http://localhost:3000
 - API Docs: http://localhost:8000/docs
 
 **Logs:**
+
 - `logs/backend.log` - Logs del backend
 - `logs/frontend.log` - Logs del frontend
 
-### 🏃 start.sh
-**Inicio rápido simplificado**
-
-```bash
-./start.sh
-```
-
-**Funcionalidades:**
-- Versión simplificada de dev.sh
-- Levanta ambos servicios sin logs detallados
-- Verificaciones básicas
-- Más rápido para desarrollo diario
-
 ### 🛑 stop.sh
+
 **Detener servicios**
 
 ```bash
@@ -71,6 +67,7 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 ```
 
 **Funcionalidades:**
+
 - Detiene todos los servicios en ejecución
 - Limpia procesos por PID y por puerto
 - Detiene procesos huérfanos
@@ -78,6 +75,7 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 ## Uso Básico
 
 ### Primer Uso
+
 ```bash
 # 1. Instalar dependencias
 ./install.sh
@@ -90,15 +88,14 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 ```
 
 ### Desarrollo Diario
-```bash
-# Opción 1: Script completo (recomendado)
-./dev.sh
 
-# Opción 2: Inicio rápido
-./start.sh
+```bash
+# Iniciar servidores de desarrollo (backend + frontend)
+./dev.sh
 
 # Para detener servicios
 ./stop.sh
+# O presiona Ctrl+C en la terminal donde corre dev.sh
 ```
 
 ## Estructura de Archivos
@@ -106,12 +103,11 @@ Este directorio contiene scripts para automatizar el desarrollo y la gestión de
 ```
 /workspace/dale/
 ├── install.sh          # Instalación de dependencias
-├── dev.sh             # Desarrollo completo
-├── start.sh           # Inicio rápido
-├── stop.sh            # Detener servicios
-├── .env               # Variables de entorno (creado por install.sh)
-├── venv/              # Entorno virtual Python (creado por install.sh)
-└── logs/              # Directorio de logs (creado por dev.sh)
+├── dev.sh              # Desarrollo completo
+├── stop.sh             # Detener servicios
+├── .env                # Variables de entorno (creado por install.sh)
+├── venv/               # Entorno virtual Python (creado por install.sh)
+└── logs/               # Directorio de logs (creado por dev.sh)
     ├── backend.log
     └── frontend.log
 ```
@@ -136,24 +132,28 @@ FRONTEND_PORT=3000
 ## Características de los Scripts
 
 ### ✅ Manejo de Errores
+
 - Verificación de dependencias antes de ejecutar
 - Validación de puertos disponibles
 - Limpieza automática en caso de error
 - Mensajes de error descriptivos
 
 ### 📝 Logging
+
 - Logs estructurados con timestamps
 - Colores para mejor legibilidad
 - Separación de logs por servicio
 - Opciones para ver logs en tiempo real
 
 ### 🔄 Gestión de Procesos
+
 - Inicio en paralelo de servicios
 - Tracking de PIDs
 - Limpieza automática al salir
 - Kill por señal (SIGINT, SIGTERM)
 
 ### 🛡️ Verificaciones
+
 - Puertos disponibles
 - Archivos de configuración
 - Dependencias del sistema
@@ -162,6 +162,7 @@ FRONTEND_PORT=3000
 ## Solución de Problemas
 
 ### Error: "Puerto ya en uso"
+
 ```bash
 # Opción 1: Detener servicios existentes
 ./stop.sh
@@ -173,12 +174,14 @@ export FRONTEND_PORT=3001
 ```
 
 ### Error: "Entorno virtual no encontrado"
+
 ```bash
 # Reinstallar dependencias
 ./install.sh
 ```
 
 ### Error: "Node.js no encontrado"
+
 ```bash
 # Instalar Node.js (Ubuntu/Debian)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -193,6 +196,7 @@ npm --version
 ```
 
 ### Verificar servicios
+
 ```bash
 # Verificar backend
 curl http://localhost:8000/health
@@ -228,6 +232,7 @@ pip install -r requirements.txt
 ## Desarrollo Avanzado
 
 ### Variables de Entorno Personalizadas
+
 ```bash
 # Usar puerto personalizado
 API_PORT=8001 FRONTEND_PORT=3001 ./dev.sh
@@ -237,6 +242,7 @@ API_HOST=127.0.0.1 ./dev.sh
 ```
 
 ### Logs Verbosos
+
 ```bash
 # Activar logs detallados
 export DEBUG=1
@@ -244,6 +250,7 @@ export DEBUG=1
 ```
 
 ### Modo Silent
+
 ```bash
 # Suprimir prompts interactivos
 export CI=true
@@ -252,4 +259,5 @@ export CI=true
 
 ---
 
-**Nota:** Todos los scripts incluyen manejo de errores robusto y logging detallado para facilitar el desarrollo y la depuración.
+**Nota:** Todos los scripts incluyen manejo de errores robusto y logging
+detallado para facilitar el desarrollo y la depuración.

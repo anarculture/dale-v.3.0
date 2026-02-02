@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiClient, User } from '@/lib/api';
 import { ChevronRight, Car, CreditCard, HelpCircle, LogOut, BadgeCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { DBottomNav } from '@/components/layout/DBottomNav';
 
 export default function ProfilePage() {
   const { user: authUser, loading: authLoading, signOut } = useAuth();
@@ -59,14 +60,14 @@ export default function ProfilePage() {
   const userAvatar = profile?.avatar_url || authUser.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${userName}`;
   const userEmail = profile?.email || authUser.email || '';
   const isVerified = true; // Mock - not in API yet
-  const rating = 4.8; // Mock - not in API yet
-  const ridesCompleted = 12; // Mock - not in API yet
+  const rating = profile?.average_rating ?? null;
+  const ratingCount = profile?.rating_count ?? 0;
   const memberSince = profile?.created_at 
     ? new Date(profile.created_at).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
     : 'Enero 2025';
 
   const menuItems = [
-    { id: 'rides', label: 'Mis viajes', icon: Car, badge: ridesCompleted, href: '/bookings', description: 'Ver historial completo' },
+    { id: 'rides', label: 'Mis viajes', icon: Car, href: '/bookings', description: 'Ver historial completo' },
     { id: 'payments', label: 'Pagos', icon: CreditCard, href: '#', description: 'Métodos de pago y facturas' },
     { id: 'help', label: 'Ayuda', icon: HelpCircle, href: '#', description: 'Centro de ayuda y soporte' },
     { id: 'logout', label: 'Cerrar sesión', icon: LogOut, variant: 'danger' as const, action: handleLogout },
@@ -130,7 +131,7 @@ export default function ProfilePage() {
             <div className="flex items-center gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <span className="text-xl">★</span>
-                <span>{rating}</span>
+                <span>{rating !== null ? rating.toFixed(1) : '—'}</span>
               </div>
               <div className="w-1 h-1 bg-white/50 rounded-full" />
               <div className="flex items-center gap-1">
@@ -220,8 +221,8 @@ export default function ProfilePage() {
                 <span className="text-[#1a1a1a]">{memberSince}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#6b7280]">Viajes completados</span>
-                <span className="text-[#1a1a1a]">{ridesCompleted}</span>
+                <span className="text-[#6b7280]">Reseñas</span>
+                <span className="text-[#1a1a1a]">{ratingCount}</span>
               </div>
             </div>
           </div>
@@ -256,7 +257,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-3 text-sm text-[#6b7280] mb-4">
                     <div className="flex items-center gap-1">
                       <span className="text-2xl text-[#fd5810]">★</span>
-                      <span className="text-[#1a1a1a] font-medium">{rating}</span>
+                      <span className="text-[#1a1a1a] font-medium">{rating !== null ? rating.toFixed(1) : '—'}</span>
                     </div>
                     <div className="w-1 h-1 bg-gray-300 rounded-full" />
                     <div className="flex items-center gap-1">
@@ -269,11 +270,11 @@ export default function ProfilePage() {
                   <div className="w-full pt-4 border-t border-gray-100">
                     <div className="grid grid-cols-2 gap-4 text-center">
                       <div>
-                        <div className="text-2xl font-bold text-[#fd5810]">{ridesCompleted}</div>
-                        <div className="text-xs text-[#6b7280]">Viajes</div>
+                        <div className="text-2xl font-bold text-[#fd5810]">{ratingCount}</div>
+                        <div className="text-xs text-[#6b7280]">Reseñas</div>
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-[#fd5810]">{rating}</div>
+                        <div className="text-2xl font-bold text-[#fd5810]">{rating !== null ? rating.toFixed(1) : '—'}</div>
                         <div className="text-xs text-[#6b7280]">Rating</div>
                       </div>
                     </div>
@@ -364,8 +365,8 @@ export default function ProfilePage() {
                     <span className="text-[#1a1a1a]">{memberSince}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-[#6b7280]">Viajes completados</span>
-                    <span className="text-[#1a1a1a]">{ridesCompleted}</span>
+                    <span className="text-[#6b7280]">Reseñas</span>
+                    <span className="text-[#1a1a1a]">{ratingCount}</span>
                   </div>
                   <div className="flex justify-between py-2">
                     <span className="text-[#6b7280]">Estado de verificación</span>
@@ -377,6 +378,8 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      
+      <DBottomNav />
     </div>
   );
 }

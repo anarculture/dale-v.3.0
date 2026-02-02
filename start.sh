@@ -48,8 +48,8 @@ if [ ! -d "venv" ]; then
 fi
 
 # Verificar archivos necesarios
-if [ ! -f "backend/main.py" ]; then
-    error "Archivo backend/main.py no encontrado"
+if [ ! -f "backend/app/main.py" ]; then
+    error "Archivo backend/app/main.py no encontrado"
     exit 1
 fi
 
@@ -82,14 +82,15 @@ log "Iniciando servicios..."
 # Iniciar Backend en background
 log "Backend iniciando en puerto $BACKEND_PORT..."
 source venv/bin/activate
-export PYTHONPATH="$PWD:$PYTHONPATH"
 
 # Cargar variables de entorno si existe .env
 source .env 2>/dev/null || true
 
-# Iniciar backend
-uvicorn backend.main:app --host $BACKEND_HOST --port $BACKEND_PORT --reload &
+# Iniciar backend desde su directorio
+cd backend
+uvicorn app.main:app --host $BACKEND_HOST --port $BACKEND_PORT --reload &
 BACKEND_PID=$!
+cd ..
 
 # Esperar que el backend se inicie
 sleep 2

@@ -1,113 +1,119 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, BadgeCheck, Star, MapPin, Calendar, MessageCircle } from "lucide-react";
+import { ChevronLeft, BadgeCheck, Star, MapPin, Calendar, MessageCircle, Loader2 } from "lucide-react";
 import { DButton } from "@/components/ui/DButton";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/Avatar";
+import { apiClient, User, Review, Ride } from "@/lib/api";
 
-interface Review {
-  id: string;
-  author: string;
-  authorAvatar: string;
-  rating: number;
-  comment: string;
-  date: string;
-  tripRoute: string;
-}
-
-interface TripOffer {
-  id: string;
-  origin: string;
-  destination: string;
-  date: string;
-  time: string;
-  price: number;
-  seatsAvailable: number;
-}
-
-interface UserProfile {
-  id: string;
-  name: string;
-  avatar: string;
-  rating: number;
-  verified: boolean;
-  memberSince: string;
+interface UserProfile extends User {
   bio?: string;
-  tripsCompleted: number;
   isDriver: boolean;
 }
-
-// Mock data for demo
-const mockUser: UserProfile = {
-  id: "1",
-  name: "Carlos Méndez",
-  avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-  rating: 4.9,
-  verified: true,
-  memberSince: "enero 2023",
-  bio: "Conductor experimentado con más de 5 años compartiendo viajes. Me encanta conocer gente nueva y hacer que los viajes sean cómodos y seguros. Siempre puntual y con buena música en el auto.",
-  tripsCompleted: 124,
-  isDriver: true,
-};
-
-const mockReviews: Review[] = [
-  {
-    id: "1",
-    author: "Ana García",
-    authorAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    rating: 5.0,
-    comment: "Excelente conductor, muy puntual y amable. El auto estaba muy limpio y cómodo.",
-    date: "15 dic 2024",
-    tripRoute: "Caracas → Valencia",
-  },
-  {
-    id: "2",
-    author: "Pedro Rodríguez",
-    authorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-    rating: 4.8,
-    comment: "Muy buen viaje, llegamos a tiempo. Recomendado!",
-    date: "10 dic 2024",
-    tripRoute: "Valencia → Caracas",
-  },
-];
-
-const mockTripOffers: TripOffer[] = [
-  {
-    id: "1",
-    origin: "Caracas",
-    destination: "Valencia",
-    date: "10 ene 2025",
-    time: "08:00",
-    price: 25,
-    seatsAvailable: 2,
-  },
-  {
-    id: "2",
-    origin: "Valencia",
-    destination: "Caracas",
-    date: "12 ene 2025",
-    time: "14:00",
-    price: 28,
-    seatsAvailable: 3,
-  },
-];
 
 export default function PublicProfilePage() {
   const router = useRouter();
   const params = useParams();
   const userId = params.id as string;
 
-  // In production, fetch user data based on userId
-  const user = mockUser;
-  const reviews = mockReviews;
-  const tripOffers = mockTripOffers;
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [tripOffers, setTripOffers] = useState<Ride[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!userId) return;
+      
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Fetch user profile
+        const userData = await apiClient.getUserProfile(userId);
+        setUser({
+          ...userData,
+          isDriver: true, // Will be determined by whether they have rides
+          bio: undefined, // Backend doesn't have bio yet
+        });
+
+        // Fetch user reviews
+        const reviewsData = await apiClient.getUserReviews(userId);
+        setReviews(reviewsData);
+
+        // Fetch user's published rides (trips they're offering as driver)
+        const allRides = await apiClient.searchRides();
+        const userRides = allRides.filter(ride => ride.driver_id === userId);
+        setTripOffers(userRides);
+        
+        // Update isDriver based on whether they have rides
+        if (userRides.length > 0) {
+          setUser(prev => prev ? { ...prev, isDriver: true } : null);
+        }
+
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("No se pudo cargar el perfil del usuario");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchUserData();
+  }, [userId]);
 
   const handleBack = () => router.back();
   const handleMessageClick = () => {
     // TODO: Navigate to messaging screen
     console.log("Message user:", userId);
   };
+
+  // Format date for display
+  const formatMemberSince = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  };
+
+  const formatRideDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  const formatRideTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          <span className="text-neutral-500">Cargando perfil...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !user) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl p-6 shadow-card text-center max-w-md">
+          <h2 className="text-xl font-semibold text-neutral mb-2">Error</h2>
+          <p className="text-neutral-500 mb-4">{error || "Usuario no encontrado"}</p>
+          <DButton onClick={handleBack}>Volver</DButton>
+        </div>
+      </div>
+    );
+  }
+
+  const memberSince = formatMemberSince(user.created_at);
+  const userRating = user.average_rating ?? 0;
+  const reviewCount = user.rating_count ?? 0;
 
   return (
     <div className="min-h-screen bg-surface">
@@ -126,10 +132,10 @@ export default function PublicProfilePage() {
             {/* Avatar */}
             <div className="relative mb-4">
               <Avatar className="w-28 h-28 border-4 border-white shadow-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={user.avatar_url || undefined} alt={user.name} />
                 <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
               </Avatar>
-              {user.verified && (
+              {user.isDriver && (
                 <div className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
                   <BadgeCheck className="w-6 h-6 text-primary" />
                 </div>
@@ -138,7 +144,7 @@ export default function PublicProfilePage() {
 
             <h2 className="text-2xl font-bold mb-2">{user.name}</h2>
 
-            {user.verified && (
+            {user.isDriver && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/20 rounded-full text-sm mb-3">
                 <BadgeCheck className="w-4 h-4" />
                 <span>Conductor verificado</span>
@@ -150,14 +156,14 @@ export default function PublicProfilePage() {
               <div className="text-center">
                 <div className="flex items-center gap-1 justify-center mb-1">
                   <Star className="w-4 h-4 fill-white" />
-                  <span className="text-lg font-semibold">{user.rating}</span>
+                  <span className="text-lg font-semibold">{userRating.toFixed(1)}</span>
                 </div>
                 <span className="text-white/80">Valoración</span>
               </div>
               <div className="w-px h-10 bg-white/30" />
               <div className="text-center">
-                <div className="text-lg font-semibold mb-1">{user.tripsCompleted}</div>
-                <span className="text-white/80">Viajes</span>
+                <div className="text-lg font-semibold mb-1">{reviewCount}</div>
+                <span className="text-white/80">Reseñas</span>
               </div>
             </div>
           </div>
@@ -169,7 +175,7 @@ export default function PublicProfilePage() {
           <div className="bg-white rounded-xl p-4 shadow-card">
             <div className="flex items-center gap-2 text-neutral-500">
               <Calendar className="w-4 h-4" />
-              <span className="text-sm">Miembro desde {user.memberSince}</span>
+              <span className="text-sm">Miembro desde {memberSince}</span>
             </div>
           </div>
 
@@ -186,37 +192,40 @@ export default function PublicProfilePage() {
             <h3 className="text-lg text-neutral font-semibold mb-4">
               Reseñas ({reviews.length})
             </h3>
-            <div className="space-y-4">
-              {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="border-b border-neutral-100 last:border-0 pb-4 last:pb-0"
-                >
-                  <div className="flex gap-3 mb-2">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={review.authorAvatar} alt={review.author} />
-                      <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-neutral font-medium">{review.author}</span>
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-primary text-primary" />
-                          <span className="text-sm text-neutral">{review.rating}</span>
+            {reviews.length === 0 ? (
+              <p className="text-neutral-500 text-sm">Este usuario aún no tiene reseñas.</p>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="border-b border-neutral-100 last:border-0 pb-4 last:pb-0"
+                  >
+                    <div className="flex gap-3 mb-2">
+                      <Avatar className="w-10 h-10">
+                        <AvatarImage src={review.author?.avatar_url || undefined} alt={review.author?.name} />
+                        <AvatarFallback>{review.author?.name?.charAt(0) || "?"}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-neutral font-medium">{review.author?.name || "Usuario"}</span>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 fill-primary text-primary" />
+                            <span className="text-sm text-neutral">{review.score}</span>
+                          </div>
                         </div>
-                      </div>
-                      <p className="text-sm text-neutral-500 mb-2">{review.comment}</p>
-                      <div className="flex items-center gap-2 text-xs text-neutral-500">
-                        <MapPin className="w-3 h-3" />
-                        <span>{review.tripRoute}</span>
-                        <span>•</span>
-                        <span>{review.date}</span>
+                        {review.comment && (
+                          <p className="text-sm text-neutral-500 mb-2">{review.comment}</p>
+                        )}
+                        <div className="flex items-center gap-2 text-xs text-neutral-500">
+                          <span>{new Date(review.created_at).toLocaleDateString('es-ES')}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* CTA */}
@@ -248,10 +257,10 @@ export default function PublicProfilePage() {
                   {/* Avatar */}
                   <div className="relative mb-4">
                     <Avatar className="w-32 h-32 border-4 border-surface-200 shadow-lg">
-                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarImage src={user.avatar_url || undefined} alt={user.name} />
                       <AvatarFallback className="text-3xl">{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    {user.verified && (
+                    {user.isDriver && (
                       <div className="absolute bottom-2 right-2 w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg">
                         <BadgeCheck className="w-6 h-6 text-white" />
                       </div>
@@ -260,7 +269,7 @@ export default function PublicProfilePage() {
 
                   <h2 className="text-2xl text-neutral font-bold mb-3">{user.name}</h2>
 
-                  {user.verified && (
+                  {user.isDriver && (
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-surface-200 text-primary rounded-full text-sm mb-4 font-medium">
                       <BadgeCheck className="w-4 h-4" />
                       <span>Conductor verificado</span>
@@ -273,21 +282,21 @@ export default function PublicProfilePage() {
                       <div>
                         <div className="flex items-center gap-1 justify-center mb-1">
                           <Star className="w-5 h-5 fill-primary text-primary" />
-                          <span className="text-2xl text-neutral font-bold">{user.rating}</span>
+                          <span className="text-2xl text-neutral font-bold">{userRating.toFixed(1)}</span>
                         </div>
                         <div className="text-xs text-neutral-500">Valoración</div>
                       </div>
                       <div>
                         <div className="text-2xl text-neutral font-bold mb-1">
-                          {user.tripsCompleted}
+                          {reviewCount}
                         </div>
-                        <div className="text-xs text-neutral-500">Viajes</div>
+                        <div className="text-xs text-neutral-500">Reseñas</div>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2 text-sm text-neutral-500 justify-center pt-4 border-t border-neutral-100">
                       <Calendar className="w-4 h-4" />
-                      <span>Miembro desde {user.memberSince}</span>
+                      <span>Miembro desde {memberSince}</span>
                     </div>
                   </div>
 
@@ -320,37 +329,40 @@ export default function PublicProfilePage() {
                 <h3 className="text-xl text-neutral font-semibold mb-6">
                   Reseñas ({reviews.length})
                 </h3>
-                <div className="space-y-6">
-                  {reviews.map((review) => (
-                    <div
-                      key={review.id}
-                      className="border-b border-neutral-100 last:border-0 pb-6 last:pb-0"
-                    >
-                      <div className="flex gap-4 mb-3">
-                        <Avatar className="w-12 h-12">
-                          <AvatarImage src={review.authorAvatar} alt={review.author} />
-                          <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-neutral font-medium">{review.author}</span>
-                            <div className="flex items-center gap-1">
-                              <Star className="w-5 h-5 fill-primary text-primary" />
-                              <span className="text-neutral">{review.rating}</span>
+                {reviews.length === 0 ? (
+                  <p className="text-neutral-500">Este usuario aún no tiene reseñas.</p>
+                ) : (
+                  <div className="space-y-6">
+                    {reviews.map((review) => (
+                      <div
+                        key={review.id}
+                        className="border-b border-neutral-100 last:border-0 pb-6 last:pb-0"
+                      >
+                        <div className="flex gap-4 mb-3">
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={review.author?.avatar_url || undefined} alt={review.author?.name} />
+                            <AvatarFallback>{review.author?.name?.charAt(0) || "?"}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-neutral font-medium">{review.author?.name || "Usuario"}</span>
+                              <div className="flex items-center gap-1">
+                                <Star className="w-5 h-5 fill-primary text-primary" />
+                                <span className="text-neutral">{review.score}</span>
+                              </div>
                             </div>
-                          </div>
-                          <p className="text-neutral-500 mb-3 leading-relaxed">{review.comment}</p>
-                          <div className="flex items-center gap-2 text-sm text-neutral-500">
-                            <MapPin className="w-4 h-4" />
-                            <span>{review.tripRoute}</span>
-                            <span>•</span>
-                            <span>{review.date}</span>
+                            {review.comment && (
+                              <p className="text-neutral-500 mb-3 leading-relaxed">{review.comment}</p>
+                            )}
+                            <div className="flex items-center gap-2 text-sm text-neutral-500">
+                              <span>{new Date(review.created_at).toLocaleDateString('es-ES')}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -364,16 +376,17 @@ export default function PublicProfilePage() {
                       <div
                         key={trip.id}
                         className="p-4 bg-surface rounded-xl hover:bg-surface-200 transition cursor-pointer"
+                        onClick={() => router.push(`/rides/${trip.id}`)}
                       >
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <MapPin className="w-4 h-4 text-primary" />
-                              <span className="text-neutral font-medium">{trip.origin}</span>
+                              <span className="text-neutral font-medium">{trip.from_city}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="w-4 h-4 text-neutral-500" />
-                              <span className="text-neutral-500">{trip.destination}</span>
+                              <span className="text-neutral-500">{trip.to_city}</span>
                             </div>
                           </div>
                           <div className="text-right">
@@ -383,11 +396,11 @@ export default function PublicProfilePage() {
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <div className="text-neutral-500">
-                            {trip.date} • {trip.time}
+                            {formatRideDate(trip.date_time)} • {formatRideTime(trip.date_time)}
                           </div>
                           <div className="text-neutral-500">
-                            {trip.seatsAvailable}{" "}
-                            {trip.seatsAvailable === 1 ? "asiento" : "asientos"}
+                            {trip.seats_available}{" "}
+                            {trip.seats_available === 1 ? "asiento" : "asientos"}
                           </div>
                         </div>
                       </div>

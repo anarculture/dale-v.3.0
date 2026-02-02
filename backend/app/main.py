@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Importar routers (after load_dotenv!)
-from app.routes import users, rides, bookings
+from app.routes import users, rides, bookings, reviews, notifications
 
 
 @asynccontextmanager
@@ -65,6 +65,8 @@ app.add_middleware(
 app.include_router(users.router)
 app.include_router(rides.router)
 app.include_router(bookings.router)
+app.include_router(reviews.router)
+app.include_router(notifications.router)
 
 
 # Manejador global de errores de validación
@@ -126,8 +128,8 @@ async def api_info():
     return {
         "endpoints": {
             "users": {
-                "GET /api/me": "Obtener perfil del usuario autenticado",
-                "PATCH /api/me": "Actualizar perfil del usuario",
+                "GET /api/users/me": "Obtener perfil del usuario autenticado",
+                "PATCH /api/users/me": "Actualizar perfil del usuario",
                 "GET /api/users/{id}": "Obtener perfil público de usuario"
             },
             "rides": {

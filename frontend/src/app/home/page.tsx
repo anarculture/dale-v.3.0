@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { DaleLogo } from '@/components/ui/DaleLogo';
 import { UserAvatarMenu } from '@/components/ui/UserAvatarMenu';
 import { RequireAuth } from '@/components/auth/RequireAuth';
+import { DBottomNav } from '@/components/layout/DBottomNav';
 
 function HomeContent() {
   const router = useRouter();
@@ -160,6 +161,7 @@ export default function HomePage() {
   return (
     <RequireAuth>
       <HomeContent />
+      <DBottomNav />
     </RequireAuth>
   );
 }

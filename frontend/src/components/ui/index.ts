@@ -18,3 +18,5 @@ export * from "./DaleLogo";
 export * from "./UserAvatarMenu";
 export * from "./Switch";
 export * from "./Avatar";
+export * from "./StarRating";
+export * from "./ReviewCard";

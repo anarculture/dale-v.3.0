@@ -30,6 +30,8 @@ class UserUpdate(BaseModel):
 class UserResponse(UserBase):
     id: UUID
     created_at: datetime
+    average_rating: Optional[float] = None
+    rating_count: int = 0
 
     class Config:
         from_attributes = True
@@ -120,3 +122,68 @@ class TokenPayload(BaseModel):
     exp: int
     iat: int
     role: Optional[str] = None
+
+
+# ============= REVIEW/RATING MODELS =============
+
+class ReviewCreate(BaseModel):
+    booking_id: UUID
+    subject_id: UUID
+    score: int = Field(..., ge=1, le=5)
+    comment: Optional[str] = Field(None, max_length=500)
+    role: Literal["rider", "driver"]
+
+
+class ReviewResponse(BaseModel):
+    id: UUID
+    booking_id: UUID
+    author_id: UUID
+    subject_id: UUID
+    score: int
+    comment: Optional[str] = None
+    role: Literal["rider", "driver"]
+    created_at: datetime
+    author: Optional[UserResponse] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ============= NOTIFICATION MODELS =============
+
+class NotificationCreate(BaseModel):
+    """Schema for creating a notification (internal use)."""
+    user_id: UUID
+    title: str = Field(..., min_length=1, max_length=200)
+    body: str = Field(..., min_length=1, max_length=1000)
+    type: str = Field(..., min_length=1, max_length=50)
+    metadata: Optional[dict] = None
+
+
+class NotificationResponse(BaseModel):
+    """Schema for notification API response."""
+    id: UUID
+    user_id: UUID
+    title: str
+    body: str
+    type: str
+    is_read: bool
+    metadata: Optional[dict] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class PaginatedNotificationsResponse(BaseModel):
+    """Schema for paginated notifications list."""
+    notifications: list[NotificationResponse]
+    total: int
+    page: int
+    page_size: int
+    has_more: bool
+
+
+class UnreadCountResponse(BaseModel):
+    """Schema for unread notifications count."""
+    count: int

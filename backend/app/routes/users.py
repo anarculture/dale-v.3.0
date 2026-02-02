@@ -7,7 +7,7 @@ from app.models.schemas import UserResponse, UserUpdate, TokenPayload
 from app.middleware.auth import get_current_user
 from app.utils.database import get_db
 
-router = APIRouter(prefix="/api", tags=["users"])
+router = APIRouter(prefix="/api/users", tags=["users"])
 
 
 @router.get("/me", response_model=UserResponse)
@@ -74,7 +74,7 @@ async def update_my_profile(
         raise HTTPException(status_code=500, detail=f"Error al actualizar perfil: {str(e)}")
 
 
-@router.get("/users/{user_id}", response_model=UserResponse)
+@router.get("/{user_id}", response_model=UserResponse)
 async def get_user_by_id(
     user_id: str,
     db: Client = Depends(get_db)

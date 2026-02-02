@@ -6,6 +6,7 @@ import { RideList } from '@/components/rides/RideList';
 import { apiClient, Ride, RideSearchParams } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { DBottomNav } from '@/components/layout/DBottomNav';
 
 export default function RidesPage() {
   const router = useRouter();
@@ -48,7 +49,7 @@ export default function RidesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffbf3]">
+    <div className="min-h-screen bg-[#fffbf3] pb-20">
       {!searchPerformed ? (
         <RideSearchForm 
           onSearch={handleSearch} 
@@ -65,6 +66,7 @@ export default function RidesPage() {
           onRideClick={handleRideClick}
         />
       )}
+      <DBottomNav />
     </div>
   );
 }
