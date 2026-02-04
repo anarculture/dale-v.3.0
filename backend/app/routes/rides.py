@@ -1,13 +1,14 @@
 """
 Rutas de API para gestión de viajes (rides).
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from supabase import Client
 from typing import List, Optional
 from datetime import datetime, timedelta
 from app.models.schemas import RideCreate, RideResponse, TokenPayload
 from app.middleware.auth import get_current_user
 from app.utils.database import get_db
+from app.services.notifications import NotificationService
 
 router = APIRouter(prefix="/api/rides", tags=["rides"])
 
@@ -188,6 +189,7 @@ async def get_my_rides(
 @router.delete("/{ride_id}", status_code=204)
 async def delete_ride(
     ride_id: str,
+    background_tasks: BackgroundTasks,
     current_user: TokenPayload = Depends(get_current_user),
     db: Client = Depends(get_db)
 ):
@@ -212,8 +214,29 @@ async def delete_ride(
                 detail="No tienes permiso para eliminar este viaje"
             )
         
+        # Get all passengers with active bookings for this ride to notify them
+        bookings_response = db.table("Booking").select("rider_id").eq(
+            "ride_id", ride_id
+        ).neq("status", "cancelled").execute()
+        
+        passenger_ids = [b["rider_id"] for b in bookings_response.data] if bookings_response.data else []
+        destination_city = ride["to_city"]
+        
         # Eliminar viaje (las reservas se eliminarán en cascada)
         db.table("Ride").delete().eq("id", ride_id).execute()
+        
+        # Notify all passengers about ride cancellation
+        if passenger_ids:
+            async def send_ride_cancellation_notifications():
+                notification_service = NotificationService(db)
+                for passenger_id in passenger_ids:
+                    await notification_service.notify_ride_cancelled(
+                        rider_id=passenger_id,
+                        destination_city=destination_city,
+                        ride_id=ride_id
+                    )
+            
+            background_tasks.add_task(send_ride_cancellation_notifications)
         
         return None
         

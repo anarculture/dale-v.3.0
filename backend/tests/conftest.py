@@ -13,7 +13,7 @@ import sys
 # Añadir el directorio padre al path para imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from main import app
+from app.main import app
 
 
 @pytest.fixture(scope="session")

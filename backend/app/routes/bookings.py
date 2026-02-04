@@ -1,12 +1,13 @@
 """
 Rutas de API para gestión de reservas (bookings).
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from supabase import Client
 from typing import List
 from app.models.schemas import BookingCreate, BookingResponse, TokenPayload
 from app.middleware.auth import get_current_user
 from app.utils.database import get_db
+from app.services.notifications import NotificationService
 
 router = APIRouter(prefix="/api/bookings", tags=["bookings"])
 
@@ -14,6 +15,7 @@ router = APIRouter(prefix="/api/bookings", tags=["bookings"])
 @router.post("", response_model=BookingResponse, status_code=201)
 async def create_booking(
     booking: BookingCreate,
+    background_tasks: BackgroundTasks,
     current_user: TokenPayload = Depends(get_current_user),
     db: Client = Depends(get_db)
 ):
@@ -83,6 +85,23 @@ async def create_booking(
         booking_with_details = db.table("Booking").select(
             "*, ride:Ride(*, driver:User(*)), rider:User(*)"
         ).eq("id", created_booking["id"]).execute()
+        
+        # Get rider name for notification
+        rider_response = db.table("User").select("name").eq("id", current_user.sub).execute()
+        rider_name = rider_response.data[0]["name"] if rider_response.data else "Un usuario"
+        
+        # Send notification to driver about new booking request
+        async def send_booking_notification():
+            notification_service = NotificationService(db)
+            await notification_service.notify_booking_request(
+                driver_id=ride["driver_id"],
+                rider_name=rider_name,
+                destination_city=ride["to_city"],
+                booking_id=created_booking["id"],
+                ride_id=str(booking.ride_id)
+            )
+        
+        background_tasks.add_task(send_booking_notification)
         
         if booking_with_details.data and len(booking_with_details.data) > 0:
             return BookingResponse(**booking_with_details.data[0])
@@ -160,6 +179,7 @@ async def get_booking_by_id(
 @router.delete("/{booking_id}", status_code=204)
 async def cancel_booking(
     booking_id: str,
+    background_tasks: BackgroundTasks,
     current_user: TokenPayload = Depends(get_current_user),
     db: Client = Depends(get_db)
 ):
@@ -214,6 +234,26 @@ async def cancel_booking(
             "id", ride["id"]
         ).execute()
         
+        # Send notification to the counterparty about cancellation
+        # Get current user's name for notification
+        canceller_response = db.table("User").select("name").eq("id", current_user.sub).execute()
+        canceller_name = canceller_response.data[0]["name"] if canceller_response.data else "Un usuario"
+        
+        # Notify the other party (if rider cancelled, notify driver; if driver cancelled, notify rider)
+        notify_user_id = ride["driver_id"] if is_rider else booking["rider_id"]
+        
+        async def send_cancellation_notification():
+            notification_service = NotificationService(db)
+            await notification_service.notify_booking_cancelled(
+                user_id=notify_user_id,
+                cancelled_by_name=canceller_name,
+                destination_city=ride["to_city"],
+                booking_id=booking_id,
+                ride_id=ride["id"]
+            )
+        
+        background_tasks.add_task(send_cancellation_notification)
+        
         return None
         
     except HTTPException:
@@ -225,6 +265,7 @@ async def cancel_booking(
 @router.patch("/{booking_id}/confirm", response_model=BookingResponse)
 async def confirm_booking(
     booking_id: str,
+    background_tasks: BackgroundTasks,
     current_user: TokenPayload = Depends(get_current_user),
     db: Client = Depends(get_db)
 ):
@@ -270,6 +311,18 @@ async def confirm_booking(
         booking_with_details = db.table("Booking").select(
             "*, ride:Ride(*, driver:User(*)), rider:User(*)"
         ).eq("id", booking_id).execute()
+        
+        # Send notification to rider about confirmation
+        async def send_confirmation_notification():
+            notification_service = NotificationService(db)
+            await notification_service.notify_booking_confirmed(
+                rider_id=booking["rider_id"],
+                destination_city=booking["ride"]["to_city"],
+                booking_id=booking_id,
+                ride_id=booking["ride"]["id"]
+            )
+        
+        background_tasks.add_task(send_confirmation_notification)
         
         if booking_with_details.data and len(booking_with_details.data) > 0:
             return BookingResponse(**booking_with_details.data[0])

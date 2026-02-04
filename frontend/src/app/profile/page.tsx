@@ -65,9 +65,11 @@ export default function ProfilePage() {
   const memberSince = profile?.created_at 
     ? new Date(profile.created_at).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
     : 'Enero 2025';
+    
+  const ridesCompleted = 12; // Mock - not in API yet
 
   const menuItems = [
-    { id: 'rides', label: 'Mis viajes', icon: Car, href: '/bookings', description: 'Ver historial completo' },
+    { id: 'rides', label: 'Mis viajes', icon: Car, badge: ridesCompleted, href: '/bookings', description: 'Ver historial completo' },
     { id: 'payments', label: 'Pagos', icon: CreditCard, href: '#', description: 'Métodos de pago y facturas' },
     { id: 'help', label: 'Ayuda', icon: HelpCircle, href: '#', description: 'Centro de ayuda y soporte' },
     { id: 'logout', label: 'Cerrar sesión', icon: LogOut, variant: 'danger' as const, action: handleLogout },
