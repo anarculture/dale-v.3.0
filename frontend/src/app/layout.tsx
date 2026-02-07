@@ -1,8 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { HeroUIProvider } from "@heroui/react";
-import { AuthProvider } from "@/contexts/AuthContext";
+import dynamic from "next/dynamic";
 import { ToastProvider } from "@/components/ui";
+
+// Load AuthProvider only on client side to avoid SSR/SSG issues with Supabase
+const AuthProvider = dynamic(
+  () => import("@/contexts/AuthContext").then((mod) => mod.AuthProvider),
+  { ssr: false }
+);
+
 
 export const viewport: Viewport = {
   themeColor: "#fd5810",
