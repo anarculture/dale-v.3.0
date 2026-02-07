@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, BadgeCheck, Star, MapPin, Calendar, MessageCircle, Loader2 } from "lucide-react";
-import { DButton } from "@/components/ui/DButton";
+import { ChevronLeft, BadgeCheck, Star, MapPin, Calendar, MessageCircle } from "lucide-react";
+import { DButton, FullScreenLoader } from "@/components/ui";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/Avatar";
 import { apiClient, User, Review, Ride } from "@/lib/api";
 
@@ -88,14 +88,7 @@ export default function PublicProfilePage() {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          <span className="text-neutral-500">Cargando perfil...</span>
-        </div>
-      </div>
-    );
+    return <FullScreenLoader />;
   }
 
   // Error state

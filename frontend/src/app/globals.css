@@ -73,6 +73,20 @@
   font-display: swap;
 }
 
+/* Dale! Brand Colors */
+:root {
+  --primary-orange: #fd5810;
+  --background-cream: #fffbf3;
+  --surface-beige: #eae8dc;
+  --surface-white: #ffffff;
+  --text-heading: #1a1a1a;
+  --text-body: #6b7280;
+  --secondary-bg: #fff7ed;
+  --secondary: #fff7ed;
+  --muted: #f3f4f6;
+  --border: rgba(0, 0, 0, 0.1);
+}
+
 /* Base body font */
 body {
   font-family: "Agrandir", system-ui, sans-serif;

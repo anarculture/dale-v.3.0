@@ -1,17 +1,23 @@
 'use client';
 
 import React from 'react';
-import { DaleLogo } from '@/components/ui/DaleLogo';
+import { DaleLogo } from './DaleLogo';
 
 /**
- * Global Loading Screen
+ * FullScreenLoader - Premium full-screen loading component
  * 
- * Premium full-screen loading UI shown during:
- * - Route navigation
- * - Dev server compilation
- * - Initial page loads
+ * Use this for:
+ * - Auth checking states
+ * - Page-level loading
+ * - Any full-screen loading overlay
+ * 
+ * Features:
+ * - Cream gradient background
+ * - Animated DaleLogo with pulse effect
+ * - Bouncing orange dots with glow
+ * - Smooth fade-in transition
  */
-export default function Loading() {
+export const FullScreenLoader: React.FC = () => {
   return (
     <div 
       className="fixed inset-0 z-50 flex flex-col items-center justify-center animate-loading-fade-in overflow-hidden"
@@ -50,4 +56,4 @@ export default function Loading() {
       </div>
     </div>
   );
-}
+};

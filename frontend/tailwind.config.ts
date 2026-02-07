@@ -49,7 +49,7 @@ const config: Config = {
           dark: '#e6902b',
         },
         card: {
-          DEFAULT: '#eae8dc', // Card background
+          DEFAULT: '#ffffff', // Card background
         },
         neutral: {
           DEFAULT: '#1a1a1a', // Near black for text

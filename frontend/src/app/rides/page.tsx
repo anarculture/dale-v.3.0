@@ -7,6 +7,7 @@ import { apiClient, Ride, RideSearchParams } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { DBottomNav } from '@/components/layout/DBottomNav';
+import { DesktopTopNav } from '@/components/layout/DesktopTopNav';
 
 export default function RidesPage() {
   const router = useRouter();
@@ -50,6 +51,7 @@ export default function RidesPage() {
 
   return (
     <div className="min-h-screen bg-[#fffbf3] pb-20">
+      <DesktopTopNav />
       {!searchPerformed ? (
         <RideSearchForm 
           onSearch={handleSearch} 

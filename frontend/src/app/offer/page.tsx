@@ -7,6 +7,8 @@ import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { OfferRideForm, OfferRideData } from '@/components/rides/OfferRideForm';
 import { DBottomNav } from '@/components/layout/DBottomNav';
+import { DesktopTopNav } from '@/components/layout/DesktopTopNav';
+import { FullScreenLoader } from '@/components/ui';
 
 export default function OfferPage() {
   const router = useRouter();
@@ -62,11 +64,7 @@ export default function OfferPage() {
   };
 
   if (authLoading) {
-    return (
-      <div className="min-h-screen bg-[#fffbf3] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#fd5810] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <FullScreenLoader />;
   }
 
   if (!user) {
@@ -74,13 +72,14 @@ export default function OfferPage() {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-[#fffbf3]">
+      <DesktopTopNav />
       <OfferRideForm 
         onSubmit={handleSubmit} 
         onBack={handleBack}
         isLoading={submitting} 
       />
       <DBottomNav />
-    </>
+    </div>
   );
 }

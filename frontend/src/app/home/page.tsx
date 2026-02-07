@@ -3,12 +3,15 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { DaleLogo } from '@/components/ui/DaleLogo';
-import { UserAvatarMenu } from '@/components/ui/UserAvatarMenu';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { DBottomNav } from '@/components/layout/DBottomNav';
+import { DesktopTopNav } from '@/components/layout/DesktopTopNav';
+import { useAuth } from '@/contexts/AuthContext';
 
 function HomeContent() {
   const router = useRouter();
+  const { user } = useAuth();
+  const userAvatar = user?.user_metadata?.avatar_url;
 
   const handleSearchClick = () => {
     router.push('/rides');
@@ -20,13 +23,11 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen bg-[#fffbf3] flex flex-col relative">
-      {/* Mobile Top Right Avatar Menu */}
-      <div className="lg:hidden absolute top-6 right-6 z-10">
-        <UserAvatarMenu />
-      </div>
+      {/* Desktop Top Navigation */}
+      <DesktopTopNav userAvatar={userAvatar} />
 
       {/* Mobile Layout */}
-      <div className="lg:hidden flex flex-col items-center justify-between p-6 pb-8 min-h-screen">
+      <div className="lg:hidden flex flex-col items-center justify-between p-6 pb-24 min-h-screen">
         {/* Logo */}
         <div className="pt-16">
           <DaleLogo size="lg" />
@@ -75,11 +76,6 @@ function HomeContent() {
 
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-1 items-center justify-center p-12 relative">
-        {/* Desktop Top Right Avatar Menu */}
-        <div className="absolute top-8 right-12 z-10">
-          <UserAvatarMenu />
-        </div>
-        
         <div className="max-w-6xl w-full grid grid-cols-2 gap-12 items-center">
           {/* Left: Illustration */}
           <div className="flex flex-col items-center justify-center">

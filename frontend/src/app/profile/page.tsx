@@ -7,6 +7,8 @@ import { apiClient, User } from '@/lib/api';
 import { ChevronRight, Car, CreditCard, HelpCircle, LogOut, BadgeCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { DBottomNav } from '@/components/layout/DBottomNav';
+import { DesktopTopNav } from '@/components/layout/DesktopTopNav';
+import { FullScreenLoader } from '@/components/ui';
 
 export default function ProfilePage() {
   const { user: authUser, loading: authLoading, signOut } = useAuth();
@@ -44,11 +46,7 @@ export default function ProfilePage() {
 
   // Loading state
   if (authLoading || profileLoading) {
-    return (
-      <div className="min-h-screen bg-[#fffbf3] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#fd5810] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <FullScreenLoader />;
   }
 
   if (!authUser) {
@@ -65,11 +63,9 @@ export default function ProfilePage() {
   const memberSince = profile?.created_at 
     ? new Date(profile.created_at).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
     : 'Enero 2025';
-    
-  const ridesCompleted = 12; // Mock - not in API yet
 
   const menuItems = [
-    { id: 'rides', label: 'Mis viajes', icon: Car, badge: ridesCompleted, href: '/bookings', description: 'Ver historial completo' },
+    { id: 'rides', label: 'Mis viajes', icon: Car, href: '/bookings', description: 'Ver historial completo' },
     { id: 'payments', label: 'Pagos', icon: CreditCard, href: '#', description: 'Métodos de pago y facturas' },
     { id: 'help', label: 'Ayuda', icon: HelpCircle, href: '#', description: 'Centro de ayuda y soporte' },
     { id: 'logout', label: 'Cerrar sesión', icon: LogOut, variant: 'danger' as const, action: handleLogout },
@@ -108,6 +104,9 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#fffbf3]">
+      {/* Desktop Top Navigation */}
+      <DesktopTopNav />
+      
       {/* Mobile Layout */}
       <div className="lg:hidden pb-24">
         {/* Header */}
@@ -177,12 +176,6 @@ export default function ProfilePage() {
                   <span className={`flex-1 text-left font-medium ${isDanger ? 'text-red-500' : 'text-[#1a1a1a]'}`}>
                     {item.label}
                   </span>
-                  
-                  {item.badge && (
-                    <span className="px-2.5 py-1 bg-[#f3f4f6] rounded-full text-xs text-[#6b7280]">
-                      {item.badge}
-                    </span>
-                  )}
                   
                   <ChevronRight className={`w-5 h-5 ${isDanger ? 'text-red-500' : 'text-[#6b7280]'}`} />
                 </button>
@@ -321,12 +314,6 @@ export default function ProfilePage() {
                           <div className="text-sm text-[#6b7280]">{item.description}</div>
                         )}
                       </div>
-                      
-                      {item.badge && (
-                        <span className="px-3 py-1.5 bg-[#f3f4f6] rounded-full text-sm text-[#6b7280]">
-                          {item.badge}
-                        </span>
-                      )}
                       
                       <ChevronRight className={`w-5 h-5 ${isDanger ? 'text-red-500' : 'text-[#6b7280]'}`} />
                     </button>

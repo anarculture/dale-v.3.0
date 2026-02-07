@@ -4,6 +4,7 @@ import React from 'react';
 import { ChevronLeft, SlidersHorizontal, Calendar } from 'lucide-react';
 import { Ride } from '@/lib/api';
 import { RideCard } from './RideCard';
+import { FullScreenLoader } from '@/components/ui';
 
 interface RideListProps {
   rides: Ride[];
@@ -47,12 +48,7 @@ export const RideList: React.FC<RideListProps> = ({
 
   // Loading state
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#fffbf3] flex flex-col items-center justify-center py-12">
-        <div className="w-8 h-8 border-4 border-[#fd5810] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-[#6b7280] text-sm">Buscando los mejores viajes...</p>
-      </div>
-    );
+    return <FullScreenLoader />;
   }
 
   return (
