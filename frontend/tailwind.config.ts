@@ -82,7 +82,50 @@ const config: Config = {
   darkMode: "class",
   plugins: [
     forms,
-    heroui(),
+    heroui({
+      themes: {
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: "#fd5810", // Orange
+              foreground: "#ffffff",
+            },
+            secondary: {
+              DEFAULT: "#fc5e59", // Coral
+              foreground: "#ffffff",
+            },
+            success: {
+              DEFAULT: "#10B981",
+              foreground: "#ffffff",
+            },
+            danger: {
+              DEFAULT: "#EF4444",
+              foreground: "#ffffff",
+            },
+            warning: {
+              DEFAULT: "#ffa53c", // Accent/Amber
+              foreground: "#ffffff",
+            },
+            content1: {
+              DEFAULT: "#ffffff",
+              foreground: "#1a1a1a",
+            },
+          },
+        },
+        dark: {
+          colors: {
+            primary: {
+              DEFAULT: "#fd5810", // Orange
+              foreground: "#ffffff",
+            },
+            secondary: {
+              DEFAULT: "#fc5e59", // Coral
+              foreground: "#ffffff",
+            },
+          },
+        },
+      },
+    }),
   ],
 };
 export default config;

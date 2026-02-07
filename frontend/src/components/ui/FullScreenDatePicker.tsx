@@ -84,7 +84,7 @@ export function FullScreenDatePicker({
 
     return (
       <div className={cn(
-        "absolute inset-0 z-20 bg-[#fffbf3] rounded-2xl shadow-lg animate-in fade-in duration-200 p-6 flex flex-col",
+        "absolute inset-0 z-20 bg-white rounded-2xl shadow-lg animate-in fade-in duration-200 p-6 flex flex-col",
         className
       )}>
         {/* Header with Month Navigation */}
@@ -160,11 +160,11 @@ export function FullScreenDatePicker({
 
   return (
     <div className={cn(
-      "fixed inset-0 z-50 flex flex-col bg-[#fffbf3] animate-in slide-in-from-bottom-full duration-300",
+      "fixed inset-0 z-50 flex flex-col bg-white animate-in slide-in-from-bottom-full duration-300",
       className
     )}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-neutral-100 bg-[#fffbf3] sticky top-0 z-10 shrink-0">
+      <div className="flex items-center justify-between p-4 border-b border-neutral-100 bg-white sticky top-0 z-10 shrink-0">
         <button 
           onClick={onClose}
           className="p-2 -ml-2 text-[#1a1a1a] hover:bg-neutral-100 rounded-full transition-colors"

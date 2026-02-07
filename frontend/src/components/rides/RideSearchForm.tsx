@@ -144,7 +144,7 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
           <h2 className="text-xl font-semibold text-[#1a1a1a]">Buscar viaje</h2>
         </div>
         <div className="p-6">
-          <div className="bg-card rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
             <CityInput label="¿Desde dónde?" placeholder="Ciudad de origen" value={fromCity} onChange={setFromCity} error={errors.fromCity} />
             <CityInput label="¿A dónde vas?" placeholder="Ciudad de destino" value={toCity} onChange={setToCity} error={errors.toCity} />
             <div className="w-full">
@@ -200,7 +200,7 @@ export const RideSearchForm: React.FC<RideSearchFormProps> = ({ onSearch, onBack
             <h1 className="text-4xl font-bold text-[#1a1a1a] mb-2">Buscar un viaje</h1>
             <p className="text-lg text-[#6b7280]">Encuentra conductores en tu ruta y viaja cómodo</p>
           </div>
-          <div className="bg-card rounded-2xl p-8 shadow-lg space-y-6 relative overflow-hidden">
+          <div className="bg-white rounded-2xl p-8 shadow-lg space-y-6 relative overflow-hidden">
             <div className="grid grid-cols-2 gap-6">
               <CityInput label="¿Desde dónde?" placeholder="Ciudad de origen" value={fromCity} onChange={setFromCity} error={errors.fromCity} />
               <CityInput label="¿A dónde vas?" placeholder="Ciudad de destino" value={toCity} onChange={setToCity} error={errors.toCity} />

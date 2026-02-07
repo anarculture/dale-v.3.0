@@ -80,7 +80,7 @@ export default function NotificationSettingsPage() {
 
         <div className="p-4 space-y-4">
           {/* Viajes Section */}
-          <div className="bg-surface-200 rounded-xl p-5 shadow-card">
+          <div className="bg-white rounded-xl p-5 shadow-card">
             <h3 className="text-lg text-neutral mb-4 font-semibold">Viajes</h3>
             <div className="space-y-1 divide-y divide-neutral-100">
               <SettingRow
@@ -102,7 +102,7 @@ export default function NotificationSettingsPage() {
           </div>
 
           {/* Chat Section */}
-          <div className="bg-surface-200 rounded-xl p-5 shadow-card">
+          <div className="bg-white rounded-xl p-5 shadow-card">
             <h3 className="text-lg text-neutral mb-4 font-semibold">Chat</h3>
             <div className="space-y-1 divide-y divide-neutral-100">
               <SettingRow
@@ -124,7 +124,7 @@ export default function NotificationSettingsPage() {
           </div>
 
           {/* Promociones Section */}
-          <div className="bg-surface-200 rounded-xl p-5 shadow-card">
+          <div className="bg-white rounded-xl p-5 shadow-card">
             <h3 className="text-lg text-neutral mb-4 font-semibold">Promociones</h3>
             <div className="space-y-1 divide-y divide-neutral-100">
               <SettingRow
@@ -146,7 +146,7 @@ export default function NotificationSettingsPage() {
           </div>
 
           {/* Info Card */}
-          <div className="bg-surface-200 rounded-xl p-4">
+          <div className="bg-white rounded-xl p-4">
             <p className="text-sm text-neutral-500">
               <span className="text-primary">💡</span> Puedes cambiar estas preferencias en
               cualquier momento. Las notificaciones importantes del sistema siempre se enviarán.
@@ -200,7 +200,7 @@ export default function NotificationSettingsPage() {
             </div>
 
             {/* Chat Section */}
-            <div className="bg-surface-200 rounded-2xl p-8 shadow-card">
+            <div className="bg-white rounded-2xl p-8 shadow-card">
               <h3 className="text-2xl text-neutral mb-4 font-semibold">Chat</h3>
               <p className="text-neutral-500 mb-6">
                 Mantente conectado con otros pasajeros y conductores
@@ -225,7 +225,7 @@ export default function NotificationSettingsPage() {
             </div>
 
             {/* Promociones Section */}
-            <div className="bg-surface-200 rounded-2xl p-8 shadow-card">
+            <div className="bg-white rounded-2xl p-8 shadow-card">
               <h3 className="text-2xl text-neutral mb-4 font-semibold">Promociones</h3>
               <div className="space-y-2 divide-y divide-neutral-100">
                 <SettingRow
@@ -247,7 +247,7 @@ export default function NotificationSettingsPage() {
             </div>
 
             {/* Info Card */}
-            <div className="bg-surface-200 rounded-2xl p-6">
+            <div className="bg-white rounded-2xl p-6">
               <div className="flex gap-4">
                 <span className="text-4xl">💡</span>
                 <div>

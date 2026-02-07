@@ -56,7 +56,7 @@ function HomeContent() {
         </div>
         
         {/* Bottom CTA Container */}
-        <div className="w-full max-w-md bg-card rounded-t-3xl p-6 -mx-6 shadow-2xl">
+        <div className="w-full max-w-md bg-card rounded-3xl p-6 shadow-2xl">
           <div className="space-y-3">
             <button
               onClick={handleSearchClick}

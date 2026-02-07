@@ -105,12 +105,12 @@ export default function NotificationsPage() {
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`bg-surface-200 rounded-xl p-4 shadow-card ${
+                  className={`bg-card rounded-xl p-4 shadow-card ${
                     !notification.read ? "border-l-4 border-primary" : ""
                   }`}
                 >
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-surface-200 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-surface flex items-center justify-center">
                       {getIcon(notification.type)}
                     </div>
 
@@ -185,12 +185,12 @@ export default function NotificationsPage() {
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`bg-surface-200 rounded-xl p-6 shadow-card transition-all hover:shadow-card-hover ${
+                  className={`bg-card rounded-xl p-6 shadow-card transition-all hover:shadow-card-hover ${
                     !notification.read ? "border-l-4 border-primary" : ""
                   }`}
                 >
                   <div className="flex gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-surface-200 flex items-center justify-center">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-full bg-surface flex items-center justify-center">
                       {getIcon(notification.type)}
                     </div>
 

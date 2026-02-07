@@ -188,7 +188,7 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
         </div>
         
         <div className="p-6">
-          <div className="bg-card rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-white rounded-2xl p-6 shadow-sm space-y-4">
             {/* Origin */}
             <CityInput 
               label="¿Desde dónde sales?" 
@@ -349,7 +349,7 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
             <p className="text-lg text-[#6b7280]">Comparte tu viaje y ahorra en cada trayecto</p>
           </div>
 
-          <div className="bg-card rounded-2xl p-8 shadow-lg space-y-6 relative overflow-hidden">
+          <div className="bg-white rounded-2xl p-8 shadow-lg space-y-6 relative overflow-hidden">
             {/* Cities Row */}
             <div className="grid grid-cols-2 gap-6">
               <CityInput 
