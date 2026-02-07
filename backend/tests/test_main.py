@@ -4,14 +4,14 @@ from unittest.mock import Mock, patch
 def test_health(client):
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json()["status"] == "ok"
+    assert response.json()["status"] == "healthy"
 
 def test_root(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert "Dale API" in response.json()["message"]
+    assert "Dale API" in response.json()["name"]
 
-@patch("main.get_supabase_client")
+@patch("app.routes.rides.get_supabase_client")
 def test_search_rides(mock_get_client, client):
     # Mock supabase response
     mock_client = Mock()
@@ -32,6 +32,6 @@ def test_search_rides(mock_get_client, client):
     response = client.get("/api/rides")
     assert response.status_code == 200
     data = response.json()
-    assert data["success"] is True
-    assert len(data["data"]) == 1
-    assert data["data"][0]["from_city"] == "Caracas"
+    assert isinstance(data, list)
+    assert len(data) == 1
+    assert data[0]["from_city"] == "Caracas"

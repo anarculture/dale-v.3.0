@@ -55,8 +55,8 @@ export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
       toast.success("¡Reseña enviada con éxito!");
       setShowReviewModal(false);
       router.refresh();
-    } catch (error: any) {
-      const message = error?.detail || "No se pudo enviar la reseña.";
+    } catch (error: unknown) {
+      const message = (error as { detail?: string })?.detail || "No se pudo enviar la reseña.";
       toast.error(message);
     } finally {
       setReviewLoading(false);
@@ -108,7 +108,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({ booking }) => {
         <div className="flex flex-col md:flex-row justify-between gap-4">
           <div className="flex-grow space-y-3">
             <div className="flex items-center justify-between md:justify-start gap-4">
-              <DBadge color={status.color as any} variant="flat" className="flex items-center gap-1">
+              <DBadge color={status.color} variant="flat" className="flex items-center gap-1">
                 <StatusIcon size={14} />
                 {status.label}
               </DBadge>

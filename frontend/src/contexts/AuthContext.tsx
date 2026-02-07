@@ -47,11 +47,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Import dynamically to avoid circular dependencies if any, 
     // though here it should be fine as api.ts doesn't import AuthContext
-    const { apiClient } = require('@/lib/api');
-    
-    apiClient.setTokenGetter(async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session?.access_token ?? null;
+    import('@/lib/api').then(({ apiClient }) => {
+      apiClient.setTokenGetter(async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        return session?.access_token ?? null;
+      });
     });
   }, []);
 

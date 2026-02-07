@@ -33,7 +33,7 @@ def client():
 @pytest.fixture
 def mock_supabase_client():
     """Mock del cliente de Supabase"""
-    with patch('main.supabase') as mock:
+    with patch('app.database.supabase') as mock:
         mock_client = Mock()
         mock_client.auth.get_user.return_value = {"user": None}
         mock_client.table.return_value.select.return_value.execute.return_value = {
@@ -105,7 +105,7 @@ def unit_test_client():
 @pytest.fixture
 def integration_test_client(mock_supabase_client):
     """Cliente para tests de integración con mocks"""
-    with patch('main.supabase', mock_supabase_client):
+    with patch('app.database.supabase', mock_supabase_client):
         return TestClient(app)
 
 
