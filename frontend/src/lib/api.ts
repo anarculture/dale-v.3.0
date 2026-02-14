@@ -3,12 +3,15 @@
  * Maneja autenticación automática con tokens JWT de Supabase
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-if (!API_BASE_URL) {
-  throw new Error(
-    'NEXT_PUBLIC_API_BASE_URL is not set. ' +
-    'Add it to frontend/.env.local for local dev or to Vercel Environment Variables for production.'
-  );
+function getApiBaseUrl(): string {
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (!url) {
+    throw new Error(
+      'NEXT_PUBLIC_API_BASE_URL is not set. ' +
+      'Add it to frontend/.env.local for local dev or to Vercel Environment Variables for production.'
+    );
+  }
+  return url;
 }
 
 export interface ApiError {
@@ -330,5 +333,20 @@ class ApiClient {
   }
 }
 
-// Instancia singleton del cliente API
-export const apiClient = new ApiClient(API_BASE_URL);
+// Lazy singleton – instantiated on first access, not at import/build time
+let _apiClient: ApiClient | null = null;
+
+export function getApiClient(): ApiClient {
+  if (!_apiClient) {
+    _apiClient = new ApiClient(getApiBaseUrl());
+  }
+  return _apiClient;
+}
+
+// Backward-compatible named export using a getter so existing
+// `import { apiClient }` statements keep working without calling at import time.
+export const apiClient: ApiClient = new Proxy({} as ApiClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getApiClient(), prop, receiver);
+  },
+});

@@ -10,7 +10,9 @@ from typing import Optional
 from app.models.schemas import TokenPayload
 
 # Configuración
-SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET", "")
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
+if not SUPABASE_JWT_SECRET:
+    raise RuntimeError("SUPABASE_JWT_SECRET environment variable is required")
 JWT_ALGORITHM = "HS256"
 JWT_AUDIENCE = os.getenv("JWT_AUDIENCE", "authenticated")
 
