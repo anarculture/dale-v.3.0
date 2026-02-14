@@ -7,8 +7,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
+import logging
 import os
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 # CRITICAL: Load environment variables BEFORE importing app modules
 # auth.py reads SUPABASE_JWT_SECRET at import time
@@ -24,14 +27,13 @@ async def lifespan(app: FastAPI):
     Lifecycle events para inicialización y limpieza.
     """
     # Startup
-    print("🚀 Iniciando Dale API...")
-    print(f"   - Supabase URL: {os.getenv('SUPABASE_URL')}")
-    print(f"   - Environment: {os.getenv('APP_BASE_URL', 'http://localhost:8000')}")
+    logger.info("Dale API starting up")
+    logger.info("Supabase connection configured: %s", bool(os.getenv("SUPABASE_URL")))
     
     yield
     
     # Shutdown
-    print("👋 Cerrando Dale API...")
+    logger.info("Dale API shutting down")
 
 
 # Crear aplicación FastAPI
