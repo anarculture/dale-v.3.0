@@ -21,3 +21,5 @@ export * from "./Avatar";
 export * from "./StarRating";
 export * from "./ReviewCard";
 export * from "./FullScreenLoader";
+export * from "./DalePriceSelector";
+export * from "./DaleTimeSelector";

@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MapPin, Calendar, Clock, Users, DollarSign, FileText, ChevronLeft, Loader2 } from 'lucide-react';
+import { MapPin, Calendar, Users, FileText, ChevronLeft, Loader2 } from 'lucide-react';
+import { DalePriceSelector } from '@/components/ui/DalePriceSelector';
+import { DaleTimeSelector } from '@/components/ui/DaleTimeSelector';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { FullScreenDatePicker } from '@/components/ui/FullScreenDatePicker';
@@ -111,7 +113,7 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
     date: '',
     time: '',
     seats_total: 3,
-    price: 0,
+    price: 5,
     notes: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -145,8 +147,8 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
     if (formData.seats_total < 1 || formData.seats_total > 8) {
       newErrors.seats_total = 'Entre 1 y 8 asientos';
     }
-    if (formData.price < 0) {
-      newErrors.price = 'El precio no puede ser negativo';
+    if (formData.price < 5) {
+      newErrors.price = 'El precio mínimo es $5';
     }
 
     setErrors(newErrors);
@@ -227,21 +229,12 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
             </div>
 
             {/* Time */}
-            <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-[#1a1a1a]">Hora de salida</label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <input 
-                  type="time" 
-                  value={formData.time} 
-                  onChange={(e) => updateField('time', e.target.value)}
-                  className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white ${errors.time ? 'border-red-500' : ''}`} 
-                />
-              </div>
-              {errors.time && <p className="mt-1 text-sm text-red-500">{errors.time}</p>}
-            </div>
+            <DaleTimeSelector
+              label="Hora de salida"
+              value={formData.time}
+              onChange={(time) => updateField('time', time)}
+            />
+            {errors.time && <p className="mt-1 text-sm text-red-500">{errors.time}</p>}
 
             {/* Seats */}
             <div>
@@ -267,25 +260,14 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
             </div>
 
             {/* Price */}
-            <div className="w-full">
-              <label className="block mb-2 text-sm font-medium text-[#1a1a1a]">Precio por asiento ($)</label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                  <DollarSign className="w-5 h-5" />
-                </div>
-                <input 
-                  type="number" 
-                  min="0"
-                  step="0.5"
-                  value={formData.price} 
-                  onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
-                  placeholder="0.00"
-                  className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white ${errors.price ? 'border-red-500' : ''}`} 
-                />
-              </div>
-              <p className="mt-1 text-xs text-[#6b7280]">Deja en 0 si el viaje es gratis</p>
-              {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
-            </div>
+            <DalePriceSelector
+              label="Precio por asiento ($)"
+              value={formData.price}
+              onChange={(price) => updateField('price', price)}
+              min={5}
+              max={100}
+            />
+            {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
 
             {/* Notes */}
             <div className="w-full">
@@ -388,18 +370,11 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
                 {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date}</p>}
               </div>
               <div className="w-full">
-                <label className="block mb-2 text-sm font-medium text-[#1a1a1a]">Hora de salida</label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <input 
-                    type="time" 
-                    value={formData.time} 
-                    onChange={(e) => updateField('time', e.target.value)}
-                    className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white ${errors.time ? 'border-red-500' : ''}`} 
-                  />
-                </div>
+                <DaleTimeSelector
+                  label="Hora de salida"
+                  value={formData.time}
+                  onChange={(time) => updateField('time', time)}
+                />
                 {errors.time && <p className="mt-1 text-sm text-red-500">{errors.time}</p>}
               </div>
             </div>
@@ -428,22 +403,13 @@ export const OfferRideForm: React.FC<OfferRideFormProps> = ({ onSubmit, onBack, 
                 </div>
               </div>
               <div className="w-full">
-                <label className="block mb-2 text-sm font-medium text-[#1a1a1a]">Precio por asiento ($)</label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                    <DollarSign className="w-5 h-5" />
-                  </div>
-                  <input 
-                    type="number" 
-                    min="0"
-                    step="0.5"
-                    value={formData.price} 
-                    onChange={(e) => updateField('price', parseFloat(e.target.value) || 0)}
-                    placeholder="0.00"
-                    className={`w-full h-14 px-4 pl-12 rounded-xl bg-[#f3f4f6] border-2 border-transparent transition-all duration-200 text-[#1a1a1a] focus:outline-none focus:border-[#fd5810] focus:bg-white ${errors.price ? 'border-red-500' : ''}`} 
-                  />
-                </div>
-                <p className="mt-1 text-xs text-[#6b7280]">Deja en 0 si el viaje es gratis</p>
+                <DalePriceSelector
+                  label="Precio por asiento ($)"
+                  value={formData.price}
+                  onChange={(price) => updateField('price', price)}
+                  min={5}
+                  max={100}
+                />
               </div>
             </div>
 

@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeft, MapPin, Calendar, Users, Clock, DollarSign, Trash2 } from "lucide-react";
+import { ChevronLeft, MapPin, Calendar, Users, Trash2 } from "lucide-react";
 import { DInput } from "@/components/ui/DInput";
 import { DButton } from "@/components/ui/DButton";
+import { DalePriceSelector } from "@/components/ui/DalePriceSelector";
+import { DaleTimeSelector } from "@/components/ui/DaleTimeSelector";
 
 interface RideData {
   id: string;
@@ -97,12 +99,10 @@ export default function EditRidePage() {
                 startContent={<Calendar className="w-5 h-5" />}
               />
 
-              <DInput
+              <DaleTimeSelector
                 label="Hora"
-                type="time"
                 value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                startContent={<Clock className="w-5 h-5" />}
+                onChange={(time) => setFormData({ ...formData, time })}
               />
             </div>
 
@@ -133,12 +133,12 @@ export default function EditRidePage() {
                 </div>
               </div>
 
-              <DInput
+              <DalePriceSelector
                 label="Precio"
-                type="number"
-                value={formData.price.toString()}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                startContent={<DollarSign className="w-5 h-5" />}
+                value={formData.price}
+                onChange={(price) => setFormData({ ...formData, price })}
+                min={5}
+                max={100}
               />
             </div>
 
@@ -249,20 +249,18 @@ export default function EditRidePage() {
                 startContent={<Calendar className="w-5 h-5" />}
               />
 
-              <DInput
+              <DaleTimeSelector
                 label="Hora de salida"
-                type="time"
                 value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                startContent={<Clock className="w-5 h-5" />}
+                onChange={(time) => setFormData({ ...formData, time })}
               />
 
-              <DInput
+              <DalePriceSelector
                 label="Precio por persona"
-                type="number"
-                value={formData.price.toString()}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                startContent={<DollarSign className="w-5 h-5" />}
+                value={formData.price}
+                onChange={(price) => setFormData({ ...formData, price })}
+                min={5}
+                max={100}
               />
             </div>
 

@@ -64,3 +64,5 @@ jobs:
 
       - name: Run tests
         run: pytest
+        env:
+          SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
