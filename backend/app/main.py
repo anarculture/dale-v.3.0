@@ -37,14 +37,16 @@ async def lifespan(app: FastAPI):
 
 
 # Crear aplicación FastAPI
+_is_prod = os.getenv("ENV") == "production"
+
 app = FastAPI(
     title="Dale API",
     description="API REST para la plataforma de viajes compartidos Dale",
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/docs",
-    redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    docs_url=None if _is_prod else "/docs",
+    redoc_url=None if _is_prod else "/redoc",
+    openapi_url=None if _is_prod else "/openapi.json",
 )
 
 
@@ -111,7 +113,7 @@ async def root():
         "name": "Dale API",
         "version": "1.0.0",
         "status": "running",
-        "docs": "/docs"
+        "docs": None if _is_prod else "/docs"
     }
 
 
