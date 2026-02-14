@@ -46,15 +46,21 @@ app = FastAPI(
 )
 
 
-# Configurar CORS
+# Configurar CORS — entirely environment-driven
+# Set CORS_ORIGINS as a comma-separated list, e.g.:
+#   Dev:  CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+#   Prod: CORS_ORIGINS=https://dale.app,https://www.dale.app
+_raw_origins = os.getenv("CORS_ORIGINS", "")
+_cors_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+
+# allow_origin_regex handles Vercel preview URLs (*.vercel.app)
+# which CORSMiddleware's allow_origins list cannot glob-match.
+_cors_regex = os.getenv("CORS_ORIGIN_REGEX", r"https://.*\.vercel\.app")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",  # Next.js dev
-        "http://localhost:3001",  # Alternativo
-        "https://*.vercel.app",   # Vercel preview/prod
-        os.getenv("FRONTEND_URL", "")
-    ],
+    allow_origins=_cors_origins,
+    allow_origin_regex=_cors_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

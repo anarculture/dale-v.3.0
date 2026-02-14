@@ -159,9 +159,12 @@ fi
 # Cargar variables de entorno
 source .env 2>/dev/null || true
 
-if [ ! -z "$API_PORT" ]; then
-    BACKEND_PORT=$API_PORT
-fi
+# Port check already handled BACKEND_PORT assignment.
+# We should NOT overwrite it with API_PORT from .env unless we want to force it,
+# but the check_port logic above was specifically to find a free port.
+# If API_PORT was set, it was used as the initial value for BACKEND_PORT anyway (line 18).
+# So we can remove this block or ensure it doesn't revert the change.
+# Removing the block is safest as BACKEND_PORT is already set correctly.
 
 log "Iniciando servicios de desarrollo..."
 

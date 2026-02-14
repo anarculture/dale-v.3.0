@@ -3,7 +3,13 @@
  * Maneja autenticación automática con tokens JWT de Supabase
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+if (!API_BASE_URL) {
+  throw new Error(
+    'NEXT_PUBLIC_API_BASE_URL is not set. ' +
+    'Add it to frontend/.env.local for local dev or to Vercel Environment Variables for production.'
+  );
+}
 
 export interface ApiError {
   error: string;
