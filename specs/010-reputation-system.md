@@ -3,7 +3,7 @@
 ## 1. Overview
 
 The Reputation System establishes trust between strangers by allowing drivers
-and riders to rate and review each other after a completed trip.
+and riders to rate and review each other after a **completed booking**.
 
 ## 2. Core Mechanics
 
@@ -16,7 +16,8 @@ and riders to rate and review each other after a completed trip.
 
 ### 2.2 Eligibility
 
-- **Who can rate?** Only users with a `confirmed` booking for a specific ride.
+- **Who can rate?** Only users associated with a **completed booking** for a
+  specific ride.
 - **When?**
   - **Start**: After the ride's scheduled arrival time (Ride Date + Approx
     Duration).
@@ -24,6 +25,20 @@ and riders to rate and review each other after a completed trip.
 - **Mutual Blindness**: Users cannot see the other person's review until they
   have submitted their own OR until the 14-day window closes. This prevents
   retaliatory negative reviews.
+
+### 2.3 Booking State Definitions
+
+The following booking states determine whether a rating is permitted:
+
+| State       | Description                                                                | Rating Allowed? |
+| :---------- | :------------------------------------------------------------------------- | :-------------- |
+| `COMPLETED` | Both driver and rider confirmed the ride took place as scheduled.          | ✅ Yes          |
+| `CANCELLED` | The booking was cancelled by either party before the ride was carried out. | ❌ No           |
+| `NO_SHOW`   | One party did not appear for the ride; the other party flagged a no-show.  | ❌ No           |
+
+> Only bookings in the **COMPLETED** state are eligible for ratings and reviews.
+> Bookings in CANCELLED or NO_SHOW states may not receive ratings; NO_SHOW
+> incidents are handled separately through the Trust & Safety process (see §5).
 
 ## 3. Database Schema
 
@@ -57,8 +72,9 @@ CREATE TABLE ratings (
 
 - **Moderation**: Users can report a review if it violates content policy (Hate
   speech, spam).
-- **Exclusion**: Reviews from "No Show" bookings might be handled differently
-  (e.g., allowed but labeled).
+- **NO_SHOW Handling**: Bookings marked `NO_SHOW` do not permit ratings (see
+  §2.3). A separate no-show counter is tracked on the offending user's profile
+  and may affect their trust score.
 
 ## 6. Frontend Components
 

@@ -6,6 +6,12 @@
 function getApiBaseUrl(): string {
   const url = process.env.NEXT_PUBLIC_API_BASE_URL;
   if (!url) {
+    // During Next.js static prerendering (build time) the env var may not
+    // exist.  Return a placeholder so the build succeeds – no real fetch
+    // happens during SSG.  At runtime the env var MUST be set.
+    if (typeof window === 'undefined') {
+      return 'http://_prerender_placeholder';
+    }
     throw new Error(
       'NEXT_PUBLIC_API_BASE_URL is not set. ' +
       'Add it to frontend/.env.local for local dev or to Vercel Environment Variables for production.'
