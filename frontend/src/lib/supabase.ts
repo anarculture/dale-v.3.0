@@ -10,31 +10,31 @@ function getSupabaseClient(): SupabaseClient {
   if (_supabase) return _supabase;
   
   if (!supabaseUrl || !supabaseAnonKey) {
-    // During build/SSG or if env vars are missing, log a warning instead of crashing
-    console.warn('Missing Supabase environment variables. Features requiring Supabase will not work.');
-    
-    // Return a dummy client that satisfies the interface but does nothing/logs warnings
-    // We cast to SupabaseClient to avoid implementing the entire massive interface
-    // This allows the app to load even if Supabase is misconfigured
+    // At runtime (in the browser), missing env vars is a hard error — fail fast
+    // so developers see a clear message instead of silent auth failures.
+    if (typeof window !== 'undefined') {
+      throw new Error(
+        'Missing Supabase environment variables (NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY). ' +
+        'Check your .env.local file or Vercel environment config.'
+      );
+    }
+
+    // During build-time SSG (server, no window), return a no-op dummy so
+    // static page generation doesn't crash.
+    console.warn('Missing Supabase environment variables — using build-time dummy client.');
     return new Proxy({} as SupabaseClient, {
       get(_target, prop) {
-        // Allow 'auth' to be accessed so auth.getSession() calls don't crash top-level code
         if (prop === 'auth') {
           return {
             getSession: async () => ({ data: { session: null }, error: null }),
             onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-            signUp: async () => ({ error: { message: 'Supabase not configured' } }),
-            signInWithPassword: async () => ({ error: { message: 'Supabase not configured' } }),
+            signUp: async () => ({ data: null, error: null }),
+            signInWithPassword: async () => ({ data: null, error: null }),
             signOut: async () => ({}),
-            resetPasswordForEmail: async () => ({ error: { message: 'Supabase not configured' } }),
+            resetPasswordForEmail: async () => ({ data: null, error: null }),
           };
         }
-        
-        // Return a function that logs a warning for any other method call
-        return () => {
-          console.warn(`Attempted to call Supabase command "${String(prop)}" but Supabase is not configured.`);
-          return { data: null, error: { message: 'Supabase environment variables missing' } };
-        };
+        return () => ({ data: null, error: null });
       }
     });
   }
