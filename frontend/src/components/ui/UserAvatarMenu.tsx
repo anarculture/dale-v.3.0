@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -119,7 +120,7 @@ export const UserAvatarMenu: React.FC = () => {
                   <ChevronUp className="w-4 h-4" />
                 </button>
                 {/* Logo */}
-                <img src="/logo.png" alt="Dale!" className="h-6 w-auto object-contain" />
+                <Image src="/logo.png" alt="Dale!" width={80} height={24} className="h-6 w-auto object-contain" />
               </div>
 
               {/* Menu Items */}

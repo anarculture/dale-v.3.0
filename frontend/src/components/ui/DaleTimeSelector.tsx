@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 
 interface DaleTimeSelectorProps {
@@ -10,17 +10,15 @@ interface DaleTimeSelectorProps {
 
 export function DaleTimeSelector({ label, value, onChange, icon }: DaleTimeSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedHour, setSelectedHour] = useState('08');
-  const [selectedMinute, setSelectedMinute] = useState('00');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Parse initial value
-  useEffect(() => {
+  // Derive hour and minute from the value prop (no effect needed)
+  const { selectedHour, selectedMinute } = useMemo(() => {
     if (value) {
       const [hour, minute] = value.split(':');
-      setSelectedHour(hour || '08');
-      setSelectedMinute(minute || '00');
+      return { selectedHour: hour || '08', selectedMinute: minute || '00' };
     }
+    return { selectedHour: '08', selectedMinute: '00' };
   }, [value]);
 
   // Close dropdown when clicking outside
@@ -38,8 +36,6 @@ export function DaleTimeSelector({ label, value, onChange, icon }: DaleTimeSelec
   const minutes = ['00', '15', '30', '45'];
 
   const handleTimeSelect = (hour: string, minute: string) => {
-    setSelectedHour(hour);
-    setSelectedMinute(minute);
     onChange(`${hour}:${minute}`);
     setIsOpen(false);
   };
@@ -53,7 +49,7 @@ export function DaleTimeSelector({ label, value, onChange, icon }: DaleTimeSelec
           {label}
         </label>
       )}
-      
+
       {/* Input Display */}
       <button
         type="button"
@@ -89,11 +85,10 @@ export function DaleTimeSelector({ label, value, onChange, icon }: DaleTimeSelec
                       key={hour}
                       type="button"
                       onClick={() => handleTimeSelect(hour, selectedMinute)}
-                      className={`w-full py-2.5 px-3 rounded-lg text-sm transition-all ${
-                        hour === selectedHour
+                      className={`w-full py-2.5 px-3 rounded-lg text-sm transition-all ${hour === selectedHour
                           ? 'bg-[#fd5810] text-white font-medium shadow-sm'
                           : 'text-[#1a1a1a] hover:bg-[#eae8dc]'
-                      }`}
+                        }`}
                     >
                       {hour}:00
                     </button>
@@ -110,11 +105,10 @@ export function DaleTimeSelector({ label, value, onChange, icon }: DaleTimeSelec
                       key={minute}
                       type="button"
                       onClick={() => handleTimeSelect(selectedHour, minute)}
-                      className={`w-full py-2.5 px-3 rounded-lg text-sm transition-all ${
-                        minute === selectedMinute
+                      className={`w-full py-2.5 px-3 rounded-lg text-sm transition-all ${minute === selectedMinute
                           ? 'bg-[#fd5810] text-white font-medium shadow-sm'
                           : 'text-[#1a1a1a] hover:bg-[#eae8dc]'
-                      }`}
+                        }`}
                     >
                       :{minute}
                     </button>
