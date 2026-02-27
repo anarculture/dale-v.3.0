@@ -118,8 +118,8 @@ export const UserAvatarMenu: React.FC = () => {
                   </div>
                   <ChevronUp className="w-4 h-4" />
                 </button>
-                {/* Logo placeholder */}
-                <div className="text-2xl font-bold text-[#fd5810]">Dale</div>
+                {/* Logo */}
+                <img src="/logo.png" alt="Dale!" className="h-6 w-auto object-contain" />
               </div>
 
               {/* Menu Items */}

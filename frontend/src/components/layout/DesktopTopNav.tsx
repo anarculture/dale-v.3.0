@@ -24,9 +24,7 @@ export function DesktopTopNav({ userAvatar }: DesktopTopNavProps) {
       <div className="max-w-[1440px] mx-auto px-8 h-16 flex items-center justify-between w-full">
         {/* Logo */}
         <Link href="/home" className="flex items-center">
-          <span className="text-2xl font-bold text-[var(--text-heading)] tracking-tight">
-            Dale!
-          </span>
+          <img src="/logo.png" alt="Dale!" className="h-8 w-auto object-contain" />
         </Link>
 
         {/* Center Navigation */}
