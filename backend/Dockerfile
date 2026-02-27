@@ -57,14 +57,15 @@ ENV SUPABASE_URL=${SUPABASE_URL:-""}
 ENV SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-""}
 ENV SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET:-""}
 
-# Configurar puerto
-ENV PORT=8000
+# Puerto (Railway inyecta PORT en runtime)
+ENV PORT=${PORT:-8000}
 
-# Exponer puerto
+# Exponer puerto por defecto
 EXPOSE 8000
 
 # Comando por defecto para producción
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4 --log-level info --access-log
+# Usar sh -c explícitamente para garantizar expansión de variables
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4 --log-level info --access-log"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
@@ -72,6 +73,6 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 
 # Metadata
 LABEL maintainer="Dale Team" \
-      version="1.0.0" \
-      description="Backend FastAPI para plataforma de rides Dale" \
-      python.version="3.11"
+    version="1.0.0" \
+    description="Backend FastAPI para plataforma de rides Dale" \
+    python.version="3.11"
